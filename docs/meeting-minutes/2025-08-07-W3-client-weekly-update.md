@@ -17,7 +17,7 @@
 **Date:**  2025-08-07
 <!-- Enter the date of the meeting in the format: 2025-03-15 -->
 
-**Week:**  W3
+**Week:**  W3, Thursday
 <!-- Specify the week number and day of the week, e.g., W2, Thursday -->
 
 **Type (client/internal/mentor):**  client
