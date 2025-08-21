@@ -1,0 +1,50 @@
+# <span style="color: lightblue;">Team 9 Project Proposal</span>
+
+## <span style="color: lightblue;">Explainable Natural Language Query Interface for Relational Databases Using a Multi-Agent System</span>
+
+With the growing adoption of Large Language Models (LLMs), many professionals now use AI tools to assist with tasks such as database querying and SQL code generation. However, these models often produce generic SQL syntax without being able to fully understand the underlying schema, additionally, they operate as black boxes, offering little transparency into how results are derived. 
+
+**Key Challenges**
+
+- Users receive outputs without understanding the reasoning process, this lack of explainability creates uncertainty, particularly when users need to interpret complex queries across diverse and unfamiliar database schemas.
+- Unlike prior studies where models benefit from exposure to the same schemas during training, our challenge lies in testing whether a system can generalise not only to new SQL queries, but also to unseen database schemas and domains.
+
+To address these challenges, we propose developing an ***Explainable Natural Language Interface for Database Exploration***, providing a user-friendly interface for database access, enabling users to query complex databases using natural language, lowering the barrier for non-technical users and reducing reliance on SQL expertise.
+
+**Key Benefits**
+
+-	Explainable query process and results, the multi-agent system will be able to provide reasoning process, presenting how the queries are formed and how results are retrieved, significantly boosted user’s trust in the system’s output. Users can also refine or guide the system’s output, creating an collaborative data exploration and decision-making process.
+-	Generality to the new database/domain, this setup more realistically reflects real-world scenarios, where systems should handle unfamiliar private database and understand given schema, without prior domain-specific training.
+-	The use of a Multi-Agent System allows for flexibility and scalability, where individual agents can be improved through reinforcement learning / prompt engineering to handle different task and objectives.
+
+
+## <span style="color: lightblue;">Deliverables & Timeline</span>
+
+
+
+This proposal aims to deliver an Intelligent and Explainable Database Exploration Tool that enables users to input natural language queries and receive not only the correct results, but also the underlying reasoning process - including relevant tables with highlighted records, and possibly why the records were selected and presented.
+Unlike traditional systems that simply output the result or generate SQL code, our solution focuses on reasoning, transparency, and generalisability across diverse and unseen database schemas.
+By using a Multi-Agent System (MAS) architecture, the system will be modular, with each agent handling a specific aspect of the task. Expected capabilities include:
+1.	Schema Intelligence: automatically maps database tables and relationship into structured format (E.g., Knowledge graphs) 
+2.	Natural Language Understanding: Accurately process and interpret user queries.
+3.	Database/Table Selection: Select the correct database and tables based on the context of the query.
+4.	SQL Generation: Formulate accurate and executable SQL queries.
+5.	Record Discovery: Find, retrieve and present the relevant records highlighted.
+6.	Result Explanation (optional): accompanied by clear explanation of why each component was selected.
+
+
+
+## <span style="color: lightblue;">METHODS (5 marks)</span>
+
+### <span style="color: lightblue;">Preliminary interrogation of the data</span>
+
+### <span style="color: lightblue;">Choice of different data exploration/analytical techniques to test</span>
+
+### <span style="color: lightblue;">How to make the process understandable and the output usable</span>
+
+### <span style="color: lightblue;">Visualisation to communicate the processes/results</span>
+
+### <span style="color: lightblue;">How to use collaborative tools to ensure data and code version controls</span>
+
+
+

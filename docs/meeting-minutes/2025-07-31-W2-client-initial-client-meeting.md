@@ -121,20 +121,20 @@
 ---
 
 ## Next Steps Needed
-- [X] Send out When2meet link to Teams chat with a reminder on WhatsApp
-- [ ] Confirm team and client availability for meetings. Organise reoccuring meetings for both
-- [X] Await Spider dataset from Sirui  
+1. Send out When2meet link to Teams chat with a reminder on WhatsApp
+2. Confirm team and client availability for meetings. Organise reoccuring meetings for both
+3. Await Spider dataset from Sirui  
     - Paper: https://aclanthology.org/D18-1425.pdf  
     - Dataset: https://yale-lily.github.io/spider
-- [ ] Begin background reading on multi-agent systems: What they are and how they are trained
-- [ ] Familiarise team with relational database concepts and structures
+4. Begin background reading on multi-agent systems: What they are and how they are trained
+5. Familiarise team with relational database concepts and structures
 
 ---
 
 **Next Meeting Name:**  TBC
-- **Date & Time:**  
-- **Location / Platform:**  
-- **Next Meeting's Minutes to be prepared by:**  
+- **Date & Time:**  9:30am Thursdya 7th August
+- **Location / Platform:**  Teams
+- **Next Meeting's Minutes to be prepared by:**  Laine Mulvay
 
 **This Meetings Minutes prepared by:**  Laine Mulvay
 
