@@ -1,0 +1,241 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36" version="28.0.7">
+  <diagram name="Page-1" id="NhlWhy2alqmpDX26EEsN">
+    <mxGraphModel dx="1791" dy="945" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-11" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="fDZ1VC9iwj9QOzhCuXTn-13" target="fDZ1VC9iwj9QOzhCuXTn-17">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-12" value="Tokenize" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="fDZ1VC9iwj9QOzhCuXTn-11">
+          <mxGeometry x="-0.2065" y="-3" relative="1" as="geometry">
+            <mxPoint y="-3" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-13" value="Natural Language Query" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="210" y="320" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-14" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="fDZ1VC9iwj9QOzhCuXTn-17" target="fDZ1VC9iwj9QOzhCuXTn-18">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-15" value="High clarity intruction" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="fDZ1VC9iwj9QOzhCuXTn-14">
+          <mxGeometry x="-0.144" y="-2" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-16" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="fDZ1VC9iwj9QOzhCuXTn-17" target="fDZ1VC9iwj9QOzhCuXTn-19">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-17" value="LLM: Reasoning with RAG&lt;div&gt;Task 1: Understand the NL Query and give intruction for the schema discovery&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="435" y="305" width="150" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="fDZ1VC9iwj9QOzhCuXTn-18" target="fDZ1VC9iwj9QOzhCuXTn-25">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="920" y="490" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="961" y="350" />
+              <mxPoint x="961" y="495" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-28" value="Intruction for SQL Generation" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="fDZ1VC9iwj9QOzhCuXTn-22">
+          <mxGeometry x="-0.1455" y="1" relative="1" as="geometry">
+            <mxPoint x="-12" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-29" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="fDZ1VC9iwj9QOzhCuXTn-18" target="fDZ1VC9iwj9QOzhCuXTn-31">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="660" y="270" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-30" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="fDZ1VC9iwj9QOzhCuXTn-18" target="fDZ1VC9iwj9QOzhCuXTn-20">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-18" value="LLM : Reasoning with RAG&lt;div&gt;Task 2: Generate intruction for SQL generation using Schema knowledge&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="720" y="320" width="195" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-19" value="Improve the reasoning with prompting engineering: Query Intruction&amp;nbsp;&lt;br&gt;Re-work (noncode): Intruction for Reasoning or RAG for hardcode set of intructions for higher clarity intruction&lt;div&gt;Q: GraphDB ? Or JSon ?&amp;nbsp;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;High Freedom or High Flexiblity ?&lt;/span&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="415" y="130" width="190" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-20" value="RAG for Data Base&#39;s Schema Understanding&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Suggestion: GraphDB&lt;/span&gt;&lt;/div&gt;&lt;div&gt;Q: Where can we extract this, should we train the model to scan the SQL db for this db?&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="810" y="130" width="210" height="145" as="geometry" />
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-27" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="fDZ1VC9iwj9QOzhCuXTn-25" target="fDZ1VC9iwj9QOzhCuXTn-26">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-33" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="fDZ1VC9iwj9QOzhCuXTn-25" target="fDZ1VC9iwj9QOzhCuXTn-32">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-36" value="SQL query" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="fDZ1VC9iwj9QOzhCuXTn-33">
+          <mxGeometry x="0.0321" y="-3" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-25" value="LLM:&amp;nbsp;&lt;br&gt;&lt;div&gt;Generate SQL query&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="670" y="460" width="207.5" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-26" value="Should we connect it with RAG DB for SQL functions sets ? Or Should we give it reasoning steps? Or we let it run wild ?&lt;div&gt;Suggestion: It could depend on the models we use - Local LLM (&amp;lt;4B Parameters) or Smal LM : Maybe ?&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="670" y="550" width="208.75" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-31" value="&lt;div&gt;Improve the reasoning with prompting engineering:&lt;/div&gt;RAG For Better Query Intruction&lt;br&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;OR reasoning steps&lt;/span&gt;&lt;/div&gt;&lt;div&gt;Q: High Freedom or High Flexiblity ?&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="640" y="130" width="160" height="145" as="geometry" />
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-35" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="fDZ1VC9iwj9QOzhCuXTn-32" target="fDZ1VC9iwj9QOzhCuXTn-34">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-40" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="fDZ1VC9iwj9QOzhCuXTn-32" target="fDZ1VC9iwj9QOzhCuXTn-39">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-45" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="fDZ1VC9iwj9QOzhCuXTn-32" target="fDZ1VC9iwj9QOzhCuXTn-39">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-47" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="fDZ1VC9iwj9QOzhCuXTn-32" target="fDZ1VC9iwj9QOzhCuXTn-46">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-32" value="LLM: Functions calling&lt;div&gt;Presentated on GUI&lt;/div&gt;&lt;div&gt;Can we and should we present it steps by steps with the ability to change on each of the steps, including the reasoning steps so the supervising processes can be maximized ?&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="410" y="420" width="170" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-34" value="Main SQL Database&lt;div&gt;(Cloudflake as&amp;nbsp; default from the project - free powerful and fully supported&lt;br&gt;&lt;div&gt;Q: Future scope :&lt;br&gt;Should we accept any type of database using APIs connection ?&lt;/div&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="403.75" y="610" width="187.5" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-41" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.75;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="fDZ1VC9iwj9QOzhCuXTn-39" target="fDZ1VC9iwj9QOzhCuXTn-13">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-39" value="User Supervising&lt;div&gt;User Usage&lt;/div&gt;&lt;div&gt;User feedback&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="240" y="420" width="120" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-51" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="fDZ1VC9iwj9QOzhCuXTn-46" target="fDZ1VC9iwj9QOzhCuXTn-50">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-46" value="LLM: Unsupervising Supervising excuting&lt;div&gt;(*The LLM will automatically valuated the results, using a framework of benchmark)&lt;/div&gt;&lt;div&gt;(Later part - Not Core)&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="220" y="580" width="140" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-52" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="fDZ1VC9iwj9QOzhCuXTn-50" target="fDZ1VC9iwj9QOzhCuXTn-39">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-53" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="fDZ1VC9iwj9QOzhCuXTn-50" target="fDZ1VC9iwj9QOzhCuXTn-13">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-56" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="170" y="530" as="sourcePoint" />
+            <mxPoint x="130" y="200" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="130" y="530" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-50" value="AND/OR ?&lt;div&gt;(Later part - Not Core)&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="140" y="500" width="70" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-57" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="fDZ1VC9iwj9QOzhCuXTn-55" target="fDZ1VC9iwj9QOzhCuXTn-19">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="135" y="110" />
+              <mxPoint x="510" y="110" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-58" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="fDZ1VC9iwj9QOzhCuXTn-55" target="fDZ1VC9iwj9QOzhCuXTn-31">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="135" y="110" />
+              <mxPoint x="720" y="110" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-59" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="fDZ1VC9iwj9QOzhCuXTn-55" target="fDZ1VC9iwj9QOzhCuXTn-20">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="135" y="110" />
+              <mxPoint x="915" y="110" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-60" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="fDZ1VC9iwj9QOzhCuXTn-55" target="fDZ1VC9iwj9QOzhCuXTn-26">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="135" y="110" />
+              <mxPoint x="1070" y="110" />
+              <mxPoint x="1070" y="620" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-55" value="Feedback&amp;nbsp;&lt;br&gt;(Reinforcement learning (RL) )&amp;nbsp;&lt;div&gt;Q: Can we ? And should it beautumatically using LLM ?&lt;/div&gt;&lt;div&gt;(Later part - Not Core)&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="130" width="190" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-97" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="fDZ1VC9iwj9QOzhCuXTn-61" target="fDZ1VC9iwj9QOzhCuXTn-62">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-61" value="TECH STACK:&amp;nbsp;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="110" y="1015.5" width="70" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-66" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="fDZ1VC9iwj9QOzhCuXTn-62" target="fDZ1VC9iwj9QOzhCuXTn-65">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="300" y="1071.090909090909" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-62" value="Data, including RAG SnowFlake" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="220" y="1015.5" width="70" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-71" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="fDZ1VC9iwj9QOzhCuXTn-65" target="fDZ1VC9iwj9QOzhCuXTn-70">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-93" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="fDZ1VC9iwj9QOzhCuXTn-65" target="fDZ1VC9iwj9QOzhCuXTn-92">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-98" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="fDZ1VC9iwj9QOzhCuXTn-65" target="fDZ1VC9iwj9QOzhCuXTn-77">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="480" y="1050.7894736842106" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-65" value="Backend: Django&lt;br&gt;CloudFlare hosted &amp;amp; protected" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="317.5" y="1015.5" width="105" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-73" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="fDZ1VC9iwj9QOzhCuXTn-70" target="fDZ1VC9iwj9QOzhCuXTn-72">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-81" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="fDZ1VC9iwj9QOzhCuXTn-70" target="fDZ1VC9iwj9QOzhCuXTn-80">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-83" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="fDZ1VC9iwj9QOzhCuXTn-70" target="fDZ1VC9iwj9QOzhCuXTn-82">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="370" y="1415" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-70" value="LLM" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="335" y="1138.25" width="70" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-88" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="fDZ1VC9iwj9QOzhCuXTn-72" target="fDZ1VC9iwj9QOzhCuXTn-85">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-72" value="Experiment A: Local LLM with Ollama cpp (CPP OR PYTHON ?) (Cpp will do&amp;nbsp;quantization, increase speed but decrease acc" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="457.5" y="1107.5" width="322.5" height="111.5" as="geometry" />
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-77" value="Frontend: React&lt;div&gt;CloudFlare hosted &amp;amp; protected&lt;br&gt;&lt;div&gt;Q: How should we let the cache on the client side be? Heavy for speed with long working season (For RAG bd only)? Or what is the design for this?&lt;br&gt;(Later part - Not Core)&lt;/div&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="457.5" y="1005" width="440" height="91" as="geometry" />
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-86" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="fDZ1VC9iwj9QOzhCuXTn-80" target="fDZ1VC9iwj9QOzhCuXTn-85">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-80" value="Experiment B: Top tier LLM with API&lt;div&gt;like Gemini and ChatGPT&lt;/div&gt;&lt;div&gt;Q: Which one ? How much control we should do ? Should we pursue high perfomance or balance between&amp;nbsp;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;computering&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;resources saving and model result accurancy?&lt;/span&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="457.5" y="1229" width="322.5" height="111.5" as="geometry" />
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-87" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="fDZ1VC9iwj9QOzhCuXTn-82" target="fDZ1VC9iwj9QOzhCuXTn-85">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-82" value="Experiment C: Small LM&lt;br&gt;Will Small LM with high instruction can work on this&amp;nbsp;&lt;br&gt;(High computing resource saving and lowest query runtime)&lt;div&gt;Should we conduct this experiment? If this should be a scientific explanatory work on various combinations and setups, or aiming for the best performance?&amp;nbsp;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="457.5" y="1359" width="322.5" height="111.5" as="geometry" />
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-85" value="Fine turning or not fine turning&amp;nbsp;?&lt;div&gt;(Later part - Not Core)&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="810" y="1249.63" width="120" height="70.25" as="geometry" />
+        </mxCell>
+        <mxCell id="fDZ1VC9iwj9QOzhCuXTn-92" value="Should we use C++ or C# to increase the performance? Should we focus or spend any resources on optimising? (Later part - Not Core)" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="212.5" y="950" width="315" height="50" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
