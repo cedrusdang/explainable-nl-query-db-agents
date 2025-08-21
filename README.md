@@ -59,3 +59,12 @@ Once complete, activate the environment:
 └── LICENSE                         # The project's license file.
 └── README.md                       # The main README file with project information and setup instructions.
 ```
+
+
+## Spider Database Download
+
+**Note:** Each team member must download the Spider database individually and place it in the `data/spider_data` directory on their local machine. The Spider dataset is large (about 1.83 GB) and is not included in the repository—it is ignored by Git via `.gitignore`.
+
+To download the Spider dataset, visit: [https://drive.google.com/file/d/1403EGqzIDoHMdQF4c9Bkyl7dZLZ5Wt6J/view](https://drive.google.com/file/d/1403EGqzIDoHMdQF4c9Bkyl7dZLZ5Wt6J/view)
+
+After downloading, extract or move the dataset into `data/spider_data` so the project can access it locally.
