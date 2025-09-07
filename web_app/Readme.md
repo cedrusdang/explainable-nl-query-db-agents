@@ -1,7 +1,5 @@
 # Installation Instructions
 
-
-
 You will need npm and python installed on your machine
 
 Please run these commands in terminal to set up the project
