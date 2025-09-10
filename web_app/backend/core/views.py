@@ -1,8 +1,8 @@
 from django.shortcuts import render
 from httpcore import Response
-from .serializers import ChatSerializer, FileSerializer
+from .serializers import FileSerializer, SessionSerializer, ChatSerializer, APIKeySerializer
 from rest_framework import viewsets
-from .models import Chat, File
+from .models import File, Session, Chat, APIKey
 from django.conf import settings
 
 MEDIA_ROOT = settings.MEDIA_ROOT
@@ -28,8 +28,14 @@ class FileViewSet(viewsets.ModelViewSet):
             File.objects.create(file=file)
         return Response(status=201)
 
-
+class SessionViewSet(viewsets.ModelViewSet):
+    queryset = Session.objects.all()
+    serializer_class = SessionSerializer
 
 class ChatViewSet(viewsets.ModelViewSet):
     queryset = Chat.objects.all()
     serializer_class = ChatSerializer
+
+class APIKeyViewSet(viewsets.ModelViewSet):
+    queryset = APIKey.objects.all()
+    serializer_class = APIKeySerializer

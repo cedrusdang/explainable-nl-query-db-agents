@@ -1,6 +1,8 @@
 from django.contrib import admin
-from .models import Chat, File, Chat
+from .models import File, Session, Chat, APIKey
 
 # Register your models here.
-admin.site.register(File) # For SQL file upload logging
-admin.site.register(Chat) # For user-agent chat logging
+admin.site.register(File) # For files upload logging
+admin.site.register(Session) # For session logging
+admin.site.register(Chat) # For chat logging
+admin.site.register(APIKey) # For API key management
