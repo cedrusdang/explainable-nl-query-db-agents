@@ -1,17 +1,22 @@
 # load_test_data.py
 
 """
-Load the test data from the Spider dataset and save it to a JSON file.
+This script extracts a simplified version of the Spider training dataset and saves it as a JSON file for testing or downstream tasks.
 
-Run: python3 -m scripts.load_test_data
+Specifically, it reads the original Spider training data (train_spider.json), selects only the relevant fields (db_id, question, query, and query_toks), and writes the result to data/test/spider_query_answers.json in a compact, easy-to-use format.
+
+Usage:
+    python3 -m scripts.load_test_data
+
+This is useful for quickly generating a test set of SQL queries and questions for evaluation or prototyping, without needing to process the full Spider dataset each time.
 """
 
-import os
+import json
 import sys
 from pathlib import Path
 from typing import Union
+
 import pandas as pd
-import json
 
 # Import project config first to get PROJECT_ROOT
 from src.config import PROJECT_ROOT
