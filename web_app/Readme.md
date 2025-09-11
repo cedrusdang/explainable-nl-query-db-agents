@@ -35,8 +35,8 @@ npm install
 
 ```
 cd backend
-python -m venv .venv
-.venv/Scripts/activate
+python -m venv venv
+venv/Scripts/activate
 pip install -r requirements.txt
 ```
 
@@ -63,14 +63,14 @@ npm run dev
 **Linux**
 
 ```
-.venv/bin/activate
+venv/Scripts/activate
 django-admin startproject backend
 cd backend
 ```
 **Windows**
 
 ```
-.venv/Scripts/activate.ps1
+venv/Scripts/activate.ps1
 django-admin startproject backend
 cd backend
 ```

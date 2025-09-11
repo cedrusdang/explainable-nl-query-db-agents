@@ -3,7 +3,7 @@
 start cmd /k "cd frontend && npm run dev -- -p 8000 --turbopack"
 
 :: Run backend Django in port 8001
-start cmd /k "cd backend && call .venv\Scripts\activate && python manage.py runserver 8001"
+start cmd /k "cd backend && call venv\Scripts\activate && python manage.py runserver 8001"
 
 
 :: Open the browser to the frontend
