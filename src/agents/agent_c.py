@@ -11,11 +11,15 @@ USAGE:
     sql = agent_c("How many students?", "college_2", ["student"], mode="light")
 
 MODES:
-    - "light": SQL string only
-    - "medium": Includes query, database, tables, SQL
-    - "heavy": Adds full schema and raw LLM response
+    - "light": SQL string only (no debug output)
+    - "medium": Includes query, database, tables, SQL + prints model inputs/outputs
+    - "heavy": Adds full schema and raw LLM response + prints model inputs/outputs
 
-Depends on processed schemas, test data, OpenAI API, and LangChain.
+Debug Output (medium/heavy modes):
+    - Model Inputs: user query, database name, recommended tables, full schema JSON
+    - Model Outputs: raw LLM response, cleaned SQL
+
+Depends on AI-friendly combined schema, test data, OpenAI API, and LangChain.
 
 Example output:
 {
@@ -33,7 +37,7 @@ from pathlib import Path
 from typing import Dict, Any, List, Union, Optional
 
 # Import project config
-from src.config import PROJECT_ROOT, SCHEMA_PROCESSED_FILE, SQL_TESTING_PATH
+from src.config import PROJECT_ROOT, PROCESSED_SCHEMA_AI_FRIENDLY, SQL_TESTING_PATH
 
 # Add project root to Python path
 sys.path.append(str(PROJECT_ROOT))
@@ -85,7 +89,9 @@ def get_true_query_toks(
                     found = True
                     print("  --> Matched question!")
                     print(f"  guery_toks: {item.get('guery_toks')}")
-                    return item.get("guery_toks")  # Note: keeping original typo from data
+                    return item.get(
+                        "guery_toks"
+                    )  # Note: keeping original typo from data
 
         if not found:
             print(f"Question not found for db_id={db_id}: '{question}'")
@@ -165,6 +171,7 @@ Make sure your SQL is formatted so that it is easily tokenizable:
 - Avoid unnecessary line breaks or indentation
 - Do not include comments or explanations
 - Use proper SQL syntax and table/column names from the schema
+- Be case insensitive as the schema data may have mixed case
 """,
 )
 
@@ -187,7 +194,7 @@ def agent_c(
 
     Raises:
         ValueError: If mode is not one of the supported options
-        FileNotFoundError: If processed schema file doesn't exist
+        FileNotFoundError: If AI-friendly schema file doesn't exist
     """
 
     # Setup LLM
@@ -199,27 +206,37 @@ def agent_c(
     db_chain = generate_sql_prompt | llm
 
     try:
-        # Load schema lines
-        if not SCHEMA_PROCESSED_FILE.exists():
+        # Load AI-friendly combined schema
+        if not PROCESSED_SCHEMA_AI_FRIENDLY.exists():
             raise FileNotFoundError(
-                f"Processed schema file not found: {SCHEMA_PROCESSED_FILE}"
+                f"AI-friendly schema file not found: {PROCESSED_SCHEMA_AI_FRIENDLY}"
             )
 
-        with open(SCHEMA_PROCESSED_FILE, "r", encoding="utf-8") as f:
-            schema_lines = f.readlines()
+        with open(PROCESSED_SCHEMA_AI_FRIENDLY, "r", encoding="utf-8") as f:
+            combined_schema = json.load(f)
 
-        # Parse JSON lines and filter for the selected database
-        full_schema = []
-        for line in schema_lines:
-            try:
-                parsed_line = json.loads(line.strip())
-                if parsed_line.get("database") == db_name:
-                    full_schema.append(parsed_line)
-            except json.JSONDecodeError:
-                continue  # Skip invalid JSON lines
+        # Get the specific database schema using Franco's structure
+        if db_name not in combined_schema.get("schema", {}):
+            return {"error": f"Database '{db_name}' not found in schema"}
+
+        db_schema = combined_schema["schema"][db_name]
+        full_schema = db_schema.get("tables", {})
 
         if not full_schema:
-            return {"error": f"No schema found for database: {db_name}"}
+            return {"error": f"No tables found for database: {db_name}"}
+
+        # Debug printing for model inputs (medium and heavy modes)
+        if mode in ["medium", "heavy"]:
+            print("\n" + "=" * 60)
+            print("MODEL INPUTS DEBUG")
+            print("=" * 60)
+            print(f"User Query: {user_query}")
+            print(f"Database Name: {db_name}")
+            print(f"Recommended Tables: {recommended_tables}")
+            print(f"Available Tables: {list(full_schema.keys())}")
+            print("\nFull Schema JSON:")
+            print(json.dumps(full_schema, indent=2, ensure_ascii=False))
+            print("=" * 60)
 
         # Run LLM
         response = db_chain.invoke(
@@ -244,6 +261,16 @@ def agent_c(
 
         # Clean SQL
         sql = clean_sql(sql)
+
+        # Debug printing for model outputs (medium and heavy modes)
+        if mode in ["medium", "heavy"]:
+            print("\n" + "=" * 60)
+            print("MODEL OUTPUTS DEBUG")
+            print("=" * 60)
+            print("Raw LLM Response:")
+            print(llm_selection_content)
+            print(f"\nCleaned SQL: {sql}")
+            print("=" * 60)
 
         # Return based on mode
         if mode == "light":
@@ -289,13 +316,13 @@ def test_agent_c():
             "query": "How many heads of the departments are older than 56 ?",
             "db_name": "department_management",
             "tables": ["department", "head"],
-            "mode": "medium",
+            "mode": "light",
         },
         {
             "query": "What are the distinct buildings with capacities of greater than 50?",
             "db_name": "college_2",
             "tables": ["student", "course", "takes"],
-            "mode": "light",
+            "mode": "medium",
         },
         {
             "query": "What is the name of the song that was released in the most recent year?",
@@ -348,10 +375,10 @@ def test_agent_c():
 
 # --- 1.6 Main Execution ---
 if __name__ == "__main__":
-    # Check if processed schemas exist
-    if not SCHEMA_PROCESSED_FILE.exists():
-        print("Error: Processed schema file not found!")
-        print("Please run: python3 -m scripts.process_schemas")
+    # Check if AI-friendly schema exists
+    if not PROCESSED_SCHEMA_AI_FRIENDLY.exists():
+        print("Error: AI-friendly schema file not found!")
+        print("Please run: python3 scripts/Schema_Generation.py")
         sys.exit(1)
 
     # Check if test data exists
