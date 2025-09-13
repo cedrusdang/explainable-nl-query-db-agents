@@ -26,6 +26,15 @@ USAGE:
     # Quiet mode (no debug output)
     python3 -m src.agents.agent_c --query "How many students?" --database "college_2" --tables '{"Tables": ["student"], "Columns": ["id", "name"]}' --quiet
 
+PARAMETERS:
+    --test                    Run in test mode (interactive or with --index)
+    --index INDEX            Test case index (0-based) when using --test
+    --query QUERY            User's natural language question
+    --database DATABASE      Database name (from Agent A)
+    --tables TABLES          Tables in JSON format from Agent B or comma-separated list
+    --mode {light,medium,heavy}  Output mode (default: light)
+    --quiet                  Quiet mode - only returns SQL query (no debug output)
+
 MODES:
     - "light": SQL string only (no debug output)
     - "medium": Includes query, database, tables, SQL + prints model inputs/outputs
@@ -342,19 +351,16 @@ def test_agent_c():
             "query": "How many heads of the departments are older than 56 ?",
             "db_name": "department_management",
             "tables": ["department", "head"],
-            "mode": "light",
         },
         {
             "query": "What are the distinct buildings with capacities of greater than 50?",
             "db_name": "college_2",
             "tables": ["student", "course", "takes"],
-            "mode": "medium",
         },
         {
             "query": "What is the name of the song that was released in the most recent year?",
             "db_name": "music_1",
             "tables": ["singer", "concert"],
-            "mode": "heavy",
         },
     ]
 
