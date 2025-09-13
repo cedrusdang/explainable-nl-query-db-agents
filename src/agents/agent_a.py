@@ -6,7 +6,27 @@ This agent selects the most relevant database from the Spider dataset based on a
 It leverages OpenAI embeddings and a FAISS vector store to perform semantic search over processed database schemas.
 
 Usage:
-    python3 -m src.agents.agent_a
+    # Test mode - interactive selection
+    python3 -m src.agents.agent_a --test
+
+    # Test mode - specific index (0-based)
+    python3 -m src.agents.agent_a --test --index 5
+
+    # Test mode with specific output mode and top_k
+    python3 -m src.agents.agent_a --test --index 5 --mode medium --top_k 10
+
+    # Production mode - provide query directly
+    python3 -m src.agents.agent_a --query "your query here"
+
+    # Production mode with specific output mode and top_k
+    python3 -m src.agents.agent_a --query "your query here" --mode heavy --top_k 3
+
+Parameters:
+    --test: Run in test mode (interactive or with --index)
+    --index: Test query index (0-based, only with --test)
+    --query: Custom query to process (production mode)
+    --mode: Output mode - "light" (default), "medium", or "heavy"
+    --top_k: Number of similar schemas to retrieve (default: 5)
 
 Make sure you have already run:
     python3 -m scripts.process_schemas
@@ -15,6 +35,7 @@ Make sure you have already run:
 before using this agent, to ensure the schema embeddings are available.
 """
 
+import argparse
 import json
 import os
 import pprint
@@ -44,21 +65,38 @@ def load_processed_schema(input_file):
     return lines
 
 
-# Use it
-final_schema_result = load_processed_schema(SCHEMA_PROCESSED_FILE)
-print(f"Loaded {len(final_schema_result)} entries from {SCHEMA_PROCESSED_FILE}")
+def check_embeddings_exist():
+    """Check if embeddings already exist."""
+    return EMBEDDINGS_FOLDER.exists() and any(EMBEDDINGS_FOLDER.iterdir())
 
-# Step 1: create embeddings + vectorstore
-embeddings = OpenAIEmbeddings()
-vectorstore = FAISS.from_texts(final_schema_result, embeddings)
 
-# Step 2: save embeddings
-vectorstore.save_local(str(EMBEDDINGS_FOLDER))
-print(f"Saved schema embeddings to {EMBEDDINGS_FOLDER}")
+def create_or_load_embeddings():
+    """Create embeddings only if they don't already exist, otherwise load them."""
+    if check_embeddings_exist():
+        print(f"Embeddings already exist at {EMBEDDINGS_FOLDER}, loading...")
+        embeddings = OpenAIEmbeddings()
+        vectorstore = FAISS.load_local(
+            str(EMBEDDINGS_FOLDER), embeddings, allow_dangerous_deserialization=True
+        )
+        print(f"Loaded existing embeddings from {EMBEDDINGS_FOLDER}")
+        return vectorstore
+    else:
+        print(f"Embeddings not found at {EMBEDDINGS_FOLDER}, creating new ones...")
+        final_schema_result = load_processed_schema(SCHEMA_PROCESSED_FILE)
+        print(f"Loaded {len(final_schema_result)} entries from {SCHEMA_PROCESSED_FILE}")
+
+        # Step 1: create embeddings + vectorstore
+        embeddings = OpenAIEmbeddings()
+        vectorstore = FAISS.from_texts(final_schema_result, embeddings)
+
+        # Step 2: save embeddings
+        vectorstore.save_local(str(EMBEDDINGS_FOLDER))
+        print(f"Saved schema embeddings to {EMBEDDINGS_FOLDER}")
+        return vectorstore
 
 
 # --- 1.2 Database Selection Agent ---
-def create_database_selection_agent(top_k):
+def create_database_selection_agent(top_k, vectorstore):
     """Create the database selection agent using a prebuilt FAISS vectorstore"""
 
     llm = ChatOpenAI(model="gpt-5-mini", temperature=0)
@@ -148,7 +186,7 @@ Example format:
                 "llm_raw": response,
             }
 
-    return database_selection_agent, vectorstore
+    return database_selection_agent
 
 
 test_queries = [
@@ -172,34 +210,145 @@ test_queries = [
 ]
 
 
+def display_test_queries():
+    """Display available test queries with their indices."""
+    print("\nAvailable test queries:")
+    print("=" * 60)
+    for i, query in enumerate(test_queries):
+        print(f"{i:2d}: {query}")
+    print("=" * 60)
+
+
+def get_test_query_index():
+    """Get test query index from user input."""
+    while True:
+        try:
+            index = input(
+                f"\nEnter test query index (0-{len(test_queries) - 1}): "
+            ).strip()
+            if not index:
+                return 0  # Default to first query
+            index = int(index)
+            if 0 <= index < len(test_queries):
+                return index
+            else:
+                print(f"Please enter a number between 0 and {len(test_queries) - 1}")
+        except ValueError:
+            print("Please enter a valid number")
+
+
 # --- 1.3 Test Function ---
-def apply_database_selector(query, mode="medium"):
+def apply_database_selector(query, mode="light", top_k=5):
     """
-    Apply the database selection agent to one or more queries.
+    Apply the database selection agent to a query.
 
     Parameters:
-        query_numbers (list or int, optional):
-            - int: apply to that single test query (1-based index)
-            - list of ints: apply to multiple test queries
-            - None: apply to all test queries
+        query (str): The query to process
         mode (str): "light", "medium", or "heavy" for the agent output
+        top_k (int): Number of similar schemas to retrieve
     """
+    # Load or create embeddings
+    vectorstore = create_or_load_embeddings()
+
     # Create the agent
-    db_agent, vectorstore = create_database_selection_agent(top_k=5)
+    db_agent = create_database_selection_agent(top_k=top_k, vectorstore=vectorstore)
 
     print("=" * 60)
     print("APPLYING DATABASE SELECTION AGENT")
     print("=" * 60)
 
-    # Call the agent with the selected mode
-    result = db_agent(user_query=query, top_k=5, mode=mode)
+    # Get similarity search results first
+    relevant_docs = vectorstore.similarity_search_with_score(query, k=top_k)
+    
+    # Print similarity search results for medium and heavy modes
+    if mode in ["medium", "heavy"]:
+        print("\n" + "=" * 60)
+        print("SIMILARITY SEARCH RESULTS")
+        print("=" * 60)
+        print(f"Retrieved {len(relevant_docs)} similar schemas:")
+        for i, (doc, score) in enumerate(relevant_docs, 1):
+            print(f"\n{i}. Score: {score:.4f}")
+            try:
+                schema_json = json.loads(doc.page_content)
+                print(f"   Database: {schema_json.get('database', 'N/A')}")
+                print(f"   Table: {schema_json.get('table', 'N/A')}")
+                print(f"   Columns: {schema_json.get('columns', [])}")
+            except json.JSONDecodeError:
+                print(f"   Raw content: {doc.page_content}")
 
-    print("Agent A Selection:")
+    # Call the agent with the selected mode
+    result = db_agent(user_query=query, top_k=top_k, mode=mode)
+
+    print("\n" + "=" * 60)
+    print("AGENT A SELECTION")
+    print("=" * 60)
     pprint.pprint(result)
 
     print("\n" + "=" * 60)
 
 
+def main():
+    """Main function to handle command line arguments and execute the agent."""
+    parser = argparse.ArgumentParser(description="Agent A: Database Selector")
+    parser.add_argument("--test", action="store_true", help="Run in test mode")
+    parser.add_argument("--index", type=int, help="Test query index (0-based)")
+    parser.add_argument("--query", type=str, help="Custom query to process")
+    parser.add_argument(
+        "--mode",
+        type=str,
+        choices=["light", "medium", "heavy"],
+        default="light",
+        help="Output mode (default: light)",
+    )
+    parser.add_argument(
+        "--top_k",
+        type=int,
+        default=5,
+        help="Number of similar schemas to retrieve (default: 5)",
+    )
+
+    args = parser.parse_args()
+
+    if args.test:
+        # Test mode
+        if args.index is not None:
+            # Specific index provided
+            if 0 <= args.index < len(test_queries):
+                query = test_queries[args.index]
+                print(f"Running test query {args.index}: {query}")
+                apply_database_selector(query, mode=args.mode, top_k=args.top_k)
+            else:
+                print(
+                    f"Error: Index {args.index} is out of range (0-{len(test_queries) - 1})"
+                )
+                sys.exit(1)
+        else:
+            # Interactive selection
+            display_test_queries()
+            index = get_test_query_index()
+            query = test_queries[index]
+            print(f"\nRunning test query {index}: {query}")
+            apply_database_selector(query, mode=args.mode, top_k=args.top_k)
+
+    elif args.query:
+        # Production mode with custom query
+        print(f"Processing custom query: {args.query}")
+        apply_database_selector(args.query, mode=args.mode, top_k=args.top_k)
+
+    else:
+        # No arguments provided - show help
+        parser.print_help()
+        print("\nExamples:")
+        print("  python3 -m src.agents.agent_a --test")
+        print("  python3 -m src.agents.agent_a --test --index 5")
+        print(
+            "  python3 -m src.agents.agent_a --test --index 5 --mode medium --top_k 10"
+        )
+        print("  python3 -m src.agents.agent_a --query 'Find all students'")
+        print(
+            "  python3 -m src.agents.agent_a --query 'Find all students' --mode medium --top_k 3"
+        )
+
+
 if __name__ == "__main__":
-    # Run a single test
-    apply_database_selector(query=test_queries[2], mode="light")
+    main()
