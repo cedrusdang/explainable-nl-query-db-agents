@@ -21,12 +21,16 @@ Usage:
     # Production mode with specific output mode and top_k
     python3 -m src.agents.agent_a --query "your query here" --mode heavy --top_k 3
 
+    # Quiet mode for multi-agent systems (suppresses all print statements)
+    python3 -m src.agents.agent_a --query "your query here" --quiet
+
 Parameters:
     --test: Run in test mode (interactive or with --index)
     --index: Test query index (0-based, only with --test)
     --query: Custom query to process (production mode)
     --mode: Output mode - "light" (default), "medium", or "heavy"
     --top_k: Number of similar schemas to retrieve (default: 5)
+    --quiet: Suppress all print statements (useful for multi-agent systems)
 
 Make sure you have already run:
     python3 -m scripts.process_schemas
@@ -52,9 +56,11 @@ from langchain.prompts import PromptTemplate
 from langchain_community.vectorstores import FAISS
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 
+# Global variable for quiet mode
+QUIET_MODE = False
+
 # --- 1.1 OpenAI Setup ---
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "not-set")
-print("OpenAI API key used:", OPENAI_API_KEY[:5] + "****")
 
 
 # Load processed schema from JSONL
@@ -73,17 +79,21 @@ def check_embeddings_exist():
 def create_or_load_embeddings():
     """Create embeddings only if they don't already exist, otherwise load them."""
     if check_embeddings_exist():
-        print(f"Embeddings already exist at {EMBEDDINGS_FOLDER}, loading...")
+        if not QUIET_MODE:
+            print(f"Embeddings already exist at {EMBEDDINGS_FOLDER}, loading...")
         embeddings = OpenAIEmbeddings()
         vectorstore = FAISS.load_local(
             str(EMBEDDINGS_FOLDER), embeddings, allow_dangerous_deserialization=True
         )
-        print(f"Loaded existing embeddings from {EMBEDDINGS_FOLDER}")
+        if not QUIET_MODE:
+            print(f"Loaded existing embeddings from {EMBEDDINGS_FOLDER}")
         return vectorstore
     else:
-        print(f"Embeddings not found at {EMBEDDINGS_FOLDER}, creating new ones...")
+        if not QUIET_MODE:
+            print(f"Embeddings not found at {EMBEDDINGS_FOLDER}, creating new ones...")
         final_schema_result = load_processed_schema(SCHEMA_PROCESSED_FILE)
-        print(f"Loaded {len(final_schema_result)} entries from {SCHEMA_PROCESSED_FILE}")
+        if not QUIET_MODE:
+            print(f"Loaded {len(final_schema_result)} entries from {SCHEMA_PROCESSED_FILE}")
 
         # Step 1: create embeddings + vectorstore
         embeddings = OpenAIEmbeddings()
@@ -91,7 +101,8 @@ def create_or_load_embeddings():
 
         # Step 2: save embeddings
         vectorstore.save_local(str(EMBEDDINGS_FOLDER))
-        print(f"Saved schema embeddings to {EMBEDDINGS_FOLDER}")
+        if not QUIET_MODE:
+            print(f"Saved schema embeddings to {EMBEDDINGS_FOLDER}")
         return vectorstore
 
 
@@ -154,7 +165,7 @@ Example format:
                 schema_json = json.loads(doc.page_content)
                 structured_schema.append(
                     {
-                        "score": round(score, 4),
+                        "score": round(float(score), 4),  # Convert to regular float
                         "database": schema_json.get("database"),
                         "table": schema_json.get("table"),
                         "columns": schema_json.get("columns", []),
@@ -162,7 +173,7 @@ Example format:
                 )
             except json.JSONDecodeError:
                 structured_schema.append(
-                    {"score": round(score, 4), "raw_content": doc.page_content}
+                    {"score": round(float(score), 4), "raw_content": doc.page_content}  # Convert to regular float
                 )
 
         # Return based on mode
@@ -177,14 +188,19 @@ Example format:
                 "reasons": parsed.get("reasons", ""),
             }
         else:  # heavy
-            return {
+            result = {
                 "db_name": parsed.get("db_name"),
                 "retrieved_schema": structured_schema,
                 "tables": parsed.get("tables", []),
                 "columns": parsed.get("columns", []),
                 "reasons": parsed.get("reasons", ""),
-                "llm_raw": response,
             }
+            
+            # Only include raw LLM response if not in quiet mode
+            if not QUIET_MODE:
+                result["llm_raw"] = response
+                
+            return result
 
     return database_selection_agent
 
@@ -212,6 +228,8 @@ test_queries = [
 
 def display_test_queries():
     """Display available test queries with their indices."""
+    if QUIET_MODE:
+        return
     print("\nAvailable test queries:")
     print("=" * 60)
     for i, query in enumerate(test_queries):
@@ -253,15 +271,16 @@ def apply_database_selector(query, mode="light", top_k=5):
     # Create the agent
     db_agent = create_database_selection_agent(top_k=top_k, vectorstore=vectorstore)
 
-    print("=" * 60)
-    print("APPLYING DATABASE SELECTION AGENT")
-    print("=" * 60)
+    if not QUIET_MODE:
+        print("=" * 60)
+        print("APPLYING DATABASE SELECTION AGENT")
+        print("=" * 60)
 
     # Get similarity search results first
     relevant_docs = vectorstore.similarity_search_with_score(query, k=top_k)
     
     # Print similarity search results for medium and heavy modes
-    if mode in ["medium", "heavy"]:
+    if mode in ["medium", "heavy"] and not QUIET_MODE:
         print("\n" + "=" * 60)
         print("SIMILARITY SEARCH RESULTS")
         print("=" * 60)
@@ -279,16 +298,20 @@ def apply_database_selector(query, mode="light", top_k=5):
     # Call the agent with the selected mode
     result = db_agent(user_query=query, top_k=top_k, mode=mode)
 
-    print("\n" + "=" * 60)
-    print("AGENT A SELECTION")
-    print("=" * 60)
-    pprint.pprint(result)
-
-    print("\n" + "=" * 60)
+    if not QUIET_MODE:
+        print("\n" + "=" * 60)
+        print("AGENT A SELECTION")
+        print("=" * 60)
+        pprint.pprint(result)
+        print("\n" + "=" * 60)
+    
+    return result
 
 
 def main():
     """Main function to handle command line arguments and execute the agent."""
+    global QUIET_MODE
+    
     parser = argparse.ArgumentParser(description="Agent A: Database Selector")
     parser.add_argument("--test", action="store_true", help="Run in test mode")
     parser.add_argument("--index", type=int, help="Test query index (0-based)")
@@ -306,8 +329,18 @@ def main():
         default=5,
         help="Number of similar schemas to retrieve (default: 5)",
     )
+    parser.add_argument(
+        "--quiet",
+        action="store_true",
+        help="Suppress all print statements (useful for multi-agent systems)",
+    )
 
     args = parser.parse_args()
+    QUIET_MODE = args.quiet
+
+    # Print API key info after setting QUIET_MODE
+    if not QUIET_MODE:
+        print("OpenAI API key used:", OPENAI_API_KEY[:5] + "****")
 
     if args.test:
         # Test mode
@@ -315,25 +348,35 @@ def main():
             # Specific index provided
             if 0 <= args.index < len(test_queries):
                 query = test_queries[args.index]
-                print(f"Running test query {args.index}: {query}")
-                apply_database_selector(query, mode=args.mode, top_k=args.top_k)
+                if not QUIET_MODE:
+                    print(f"Running test query {args.index}: {query}")
+                result = apply_database_selector(query, mode=args.mode, top_k=args.top_k)
+                if QUIET_MODE:
+                    print(json.dumps(result, indent=2))
             else:
-                print(
-                    f"Error: Index {args.index} is out of range (0-{len(test_queries) - 1})"
-                )
+                if not QUIET_MODE:
+                    print(
+                        f"Error: Index {args.index} is out of range (0-{len(test_queries) - 1})"
+                    )
                 sys.exit(1)
         else:
             # Interactive selection
             display_test_queries()
             index = get_test_query_index()
             query = test_queries[index]
-            print(f"\nRunning test query {index}: {query}")
-            apply_database_selector(query, mode=args.mode, top_k=args.top_k)
+            if not QUIET_MODE:
+                print(f"\nRunning test query {index}: {query}")
+            result = apply_database_selector(query, mode=args.mode, top_k=args.top_k)
+            if QUIET_MODE:
+                print(json.dumps(result, indent=2))
 
     elif args.query:
         # Production mode with custom query
-        print(f"Processing custom query: {args.query}")
-        apply_database_selector(args.query, mode=args.mode, top_k=args.top_k)
+        if not QUIET_MODE:
+            print(f"Processing custom query: {args.query}")
+        result = apply_database_selector(args.query, mode=args.mode, top_k=args.top_k)
+        if QUIET_MODE:
+            print(json.dumps(result, indent=2))
 
     else:
         # No arguments provided - show help
@@ -347,6 +390,9 @@ def main():
         print("  python3 -m src.agents.agent_a --query 'Find all students'")
         print(
             "  python3 -m src.agents.agent_a --query 'Find all students' --mode medium --top_k 3"
+        )
+        print(
+            "  python3 -m src.agents.agent_a --query 'Find all students' --quiet"
         )
 
 

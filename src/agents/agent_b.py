@@ -188,15 +188,20 @@ def agent_b(user_query: str, db_name: str, mode: str = "light") -> Dict[str, Any
             }
 
         elif mode == "heavy":
-            return {
+            result = {
                 "User Query": user_query,
                 "Database Name": db_name,
                 "Full Schema": full_schema,
                 "Tables": parsed.get("relevant_tables", []),
                 "Columns": parsed.get("relevant_columns", []),
                 "Reasons": parsed.get("reasons", ""),
-                "Raw LLM Response": response,
             }
+            
+            # Only include raw LLM response if not in quiet mode
+            if not QUIET_MODE:
+                result["Raw LLM Response"] = response
+                
+            return result
 
         else:
             raise ValueError(
