@@ -5,10 +5,26 @@ Agent C: SQL Generator
 Generates SQL from a user query, database name, and recommended tables (from Agents A & B).
 
 USAGE:
-    python3 -m src.agents.agent_c
-    # or
-    from src.agents.agent_c import agent_c
-    sql = agent_c("How many students?", "college_2", ["student"], mode="light")
+    # Test mode - interactive selection
+    python3 -m src.agents.agent_c --test
+
+    # Test mode - specific index (0-based)
+    python3 -m src.agents.agent_c --test --index 1
+
+    # Test mode with specific output mode
+    python3 -m src.agents.agent_c --test --index 1 --mode medium
+
+    # Production mode with resasoning - provide query, database, and tables directly
+    python3 -m src.agents.agent_c --query "How many students?" --database "college_2" --tables '{"Tables": ["student"], "Columns": ["id", "name"]}' --mode light
+
+    # Quiet mode (no debug output)
+    python3 -m src.agents.agent_c --query "How many students?" --database "college_2" --tables '{"Tables": ["student"], "Columns": ["id", "name"]}' --mode light --quiet
+
+    # Production mode with resasoning - provide query, database, and tables directly
+    python3 -m src.agents.agent_c --query "How many students?" --database "college_2" --tables '{"Tables": ["student"], "Columns": ["id", "name"]}' --mode medium
+
+    # Quiet mode (no debug output)
+    python3 -m src.agents.agent_c --query "How many students?" --database "college_2" --tables '{"Tables": ["student"], "Columns": ["id", "name"]}' --quiet
 
 MODES:
     - "light": SQL string only (no debug output)
@@ -33,6 +49,7 @@ Example output:
 import json
 import re
 import sys
+import argparse
 from pathlib import Path
 from typing import Dict, Any, List, Union, Optional
 
@@ -46,6 +63,9 @@ sys.path.append(str(PROJECT_ROOT))
 from langchain_openai import ChatOpenAI
 from langchain.prompts import PromptTemplate
 
+# Global quiet mode flag
+QUIET_MODE = False
+
 
 # --- 1.1 Setup ---
 def setup_llm():
@@ -54,7 +74,8 @@ def setup_llm():
         llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
         return llm
     except Exception as e:
-        print(f"Error setting up LLM: {e}")
+        if not QUIET_MODE:
+            print(f"Error setting up LLM: {e}")
         return None
 
 
@@ -81,23 +102,26 @@ def get_true_query_toks(
             data = json.load(f)
 
         # Print all questions for the db_id to help debug
-        print(f"Testing: All questions for db_id={db_id}:")
+        if not QUIET_MODE:
+            print(f"Testing: All questions for db_id={db_id}:")
         found = False
         for item in data:
             if item.get("db_id") == db_id:
                 if item.get("question") == question:
                     found = True
-                    print("  --> Matched question!")
-                    print(f"  guery_toks: {item.get('guery_toks')}")
+                    if not QUIET_MODE:
+                        print("  --> Matched question!")
+                        print(f"  guery_toks: {item.get('guery_toks')}")
                     return item.get(
                         "guery_toks"
                     )  # Note: keeping original typo from data
 
-        if not found:
+        if not found and not QUIET_MODE:
             print(f"Question not found for db_id={db_id}: '{question}'")
         return None
     except Exception as e:
-        print(f"Error loading test data: {e}")
+        if not QUIET_MODE:
+            print(f"Error loading test data: {e}")
         return None
 
 
@@ -124,7 +148,8 @@ def compare_sql_to_ground_truth(
     """
     gt_tokens = get_true_query_toks(db_id, question, data_file)
     if gt_tokens is None:
-        print(f"No ground truth found for db_id={db_id}, question={question}")
+        if not QUIET_MODE:
+            print(f"No ground truth found for db_id={db_id}, question={question}")
         return False
 
     sql_tokens = tokenize_sql(sql_query)
@@ -225,10 +250,10 @@ def agent_c(
         if not full_schema:
             return {"error": f"No tables found for database: {db_name}"}
 
-        # Debug printing for model inputs (medium and heavy modes)
-        if mode in ["medium", "heavy"]:
+        # Debug printing for model inputs (medium and heavy modes, not in quiet mode)
+        if mode in ["medium", "heavy"] and not QUIET_MODE:
             print("\n" + "=" * 60)
-            print("MODEL INPUTS DEBUG")
+            print("MODEL INPUTS ")
             print("=" * 60)
             print(f"User Query: {user_query}")
             print(f"Database Name: {db_name}")
@@ -262,10 +287,10 @@ def agent_c(
         # Clean SQL
         sql = clean_sql(sql)
 
-        # Debug printing for model outputs (medium and heavy modes)
-        if mode in ["medium", "heavy"]:
+        # Debug printing for model outputs (medium and heavy modes, not in quiet mode)
+        if mode in ["medium", "heavy"] and not QUIET_MODE:
             print("\n" + "=" * 60)
-            print("MODEL OUTPUTS DEBUG")
+            print("MODEL OUTPUTS ")
             print("=" * 60)
             print("Raw LLM Response:")
             print(llm_selection_content)
@@ -273,7 +298,7 @@ def agent_c(
             print("=" * 60)
 
         # Return based on mode
-        if mode == "light":
+        if mode == "light" or QUIET_MODE:
             return sql  # just the SQL string
 
         elif mode == "medium":
@@ -306,11 +331,12 @@ def agent_c(
 # --- 1.5 Test Function ---
 def test_agent_c():
     """Test Agent C with sample queries"""
-    print("=" * 60)
-    print("TESTING AGENT C: SQL GENERATOR")
-    print("=" * 60)
+    if not QUIET_MODE:
+        print("=" * 60)
+        print("TESTING AGENT C: SQL GENERATOR")
+        print("=" * 60)
 
-    # Test cases with different databases and tables
+    # Test cases with different databases and tables (using JSON structure format)
     test_cases = [
         {
             "query": "How many heads of the departments are older than 56 ?",
@@ -333,11 +359,12 @@ def test_agent_c():
     ]
 
     for i, test_case in enumerate(test_cases, 1):
-        print(f"\nTest {i}: {test_case['query']}")
-        print(f"Database: {test_case['db_name']}")
-        print(f"Tables: {test_case['tables']}")
-        print(f"Mode: {test_case['mode']}")
-        print("-" * 50)
+        if not QUIET_MODE:
+            print(f"\nTest {i}: {test_case['query']}")
+            print(f"Database: {test_case['db_name']}")
+            print(f"Tables: {test_case['tables']}")
+            print(f"Mode: {test_case['mode']}")
+            print("-" * 50)
 
         result = agent_c(
             test_case["query"],
@@ -347,21 +374,30 @@ def test_agent_c():
         )
 
         if "error" in result:
-            print(f"Error: {result['error']}")
+            if not QUIET_MODE:
+                print(f"Error: {result['error']}")
         else:
-            if test_case["mode"] == "light":
-                print(f"Generated SQL: {result}")
+            if test_case["mode"] == "light" or QUIET_MODE:
+                if not QUIET_MODE:
+                    print(f"Generated SQL: {result}")
+                else:
+                    print(result)
             else:
-                # Pretty print the result
-                for key, value in result.items():
-                    if isinstance(value, (dict, list)):
-                        pretty_value = json.dumps(value, indent=2, ensure_ascii=False)
-                        print(f"{key}: {pretty_value}")
-                    else:
-                        print(f"{key}: {value}")
+                if not QUIET_MODE:
+                    # Pretty print the result
+                    for key, value in result.items():
+                        if isinstance(value, (dict, list)):
+                            pretty_value = json.dumps(
+                                value, indent=2, ensure_ascii=False
+                            )
+                            print(f"{key}: {pretty_value}")
+                        else:
+                            print(f"{key}: {value}")
+                else:
+                    print(result)
 
         # Test ground truth comparison if test data is available
-        if SQL_TESTING_PATH.exists():
+        if SQL_TESTING_PATH.exists() and not QUIET_MODE:
             print("\nTesting against ground truth...")
             is_correct = compare_sql_to_ground_truth(
                 result if isinstance(result, str) else result.get("SQL", ""),
@@ -370,11 +406,47 @@ def test_agent_c():
             )
             print(f"Matches ground truth: {is_correct}")
 
-        print("\n" + "=" * 60)
+        if not QUIET_MODE:
+            print("\n" + "=" * 60)
 
 
-# --- 1.6 Main Execution ---
-if __name__ == "__main__":
+# --- 1.6 Command Line Interface ---
+def main():
+    """Main function for command line interface"""
+    global QUIET_MODE
+
+    parser = argparse.ArgumentParser(description="Agent C: SQL Generator")
+
+    # Test mode arguments
+    parser.add_argument("--test", action="store_true", help="Run in test mode")
+    parser.add_argument("--index", type=int, help="Test case index (0-based)")
+
+    # Production mode arguments
+    parser.add_argument("--query", type=str, help="User query")
+    parser.add_argument("--database", type=str, help="Database name")
+    parser.add_argument(
+        "--tables",
+        type=str,
+        help='Comma-separated list of tables OR JSON string from Agent B (e.g., \'{"Tables": ["student"], "Columns": ["id", "name"]}\')',
+    )
+
+    # General arguments
+    parser.add_argument(
+        "--mode",
+        type=str,
+        default="light",
+        choices=["light", "medium", "heavy"],
+        help="Output mode",
+    )
+    parser.add_argument(
+        "--quiet", action="store_true", help="Quiet mode (no debug output)"
+    )
+
+    args = parser.parse_args()
+
+    # Set quiet mode
+    QUIET_MODE = args.quiet
+
     # Check if AI-friendly schema exists
     if not PROCESSED_SCHEMA_AI_FRIENDLY.exists():
         print("Error: AI-friendly schema file not found!")
@@ -383,9 +455,81 @@ if __name__ == "__main__":
 
     # Check if test data exists
     if not SQL_TESTING_PATH.exists():
-        print("Warning: Test data file not found!")
-        print("Please run: python3 -m scripts.load_test_data")
-        print("Continuing without ground truth comparison...")
+        if not QUIET_MODE:
+            print("Warning: Test data file not found!")
+            print("Please run: python3 -m scripts.load_test_data")
+            print("Continuing without ground truth comparison...")
 
-    # Run tests
-    test_agent_c()
+    if args.test:
+        # Test mode
+        if args.index is not None:
+            # Run specific test case
+            test_cases = [
+                {
+                    "query": "How many heads of the departments are older than 56 ?",
+                    "db_name": "department_management",
+                    "tables": ["department", "head"],
+                    "mode": args.mode,
+                },
+                {
+                    "query": "What are the distinct buildings with capacities of greater than 50?",
+                    "db_name": "college_2",
+                    "tables": ["student", "course", "takes"],
+                    "mode": args.mode,
+                },
+                {
+                    "query": "What is the name of the song that was released in the most recent year?",
+                    "db_name": "music_1",
+                    "tables": ["singer", "concert"],
+                    "mode": args.mode,
+                },
+            ]
+
+            if 0 <= args.index < len(test_cases):
+                test_case = test_cases[args.index]
+                result = agent_c(
+                    test_case["query"],
+                    test_case["db_name"],
+                    test_case["tables"],
+                    test_case["mode"],
+                )
+                print(result)
+            else:
+                print(
+                    f"Error: Test index {args.index} out of range. Available: 0-{len(test_cases) - 1}"
+                )
+                sys.exit(1)
+        else:
+            # Run all test cases
+            test_agent_c()
+    else:
+        # Production mode
+        if not args.query or not args.database or not args.tables:
+            print("Error: Production mode requires --query, --database, and --tables")
+            print("Use --test for test mode or provide all required arguments")
+            sys.exit(1)
+
+        # Parse tables - handle both JSON from Agent B and comma-separated lists
+        try:
+            # Try to parse as JSON first (from Agent B output)
+            tables_data = json.loads(args.tables)
+            if isinstance(tables_data, dict) and "Tables" in tables_data:
+                tables = tables_data["Tables"]
+                if not QUIET_MODE:
+                    print(
+                        f"Parsed Agent B output: Tables={tables}, Columns={tables_data.get('Columns', [])}"
+                    )
+            else:
+                tables = tables_data if isinstance(tables_data, list) else [tables_data]
+        except json.JSONDecodeError:
+            # Fallback to comma-separated string
+            tables = [t.strip() for t in args.tables.split(",")]
+
+        # Run agent
+        result = agent_c(args.query, args.database, tables, args.mode)
+        print(result)
+
+
+# --- 1.7 Main Execution ---
+if __name__ == "__main__":
+    main()
