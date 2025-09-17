@@ -1,10 +1,11 @@
 import re
+import os, zipfile
+from django.core.files import File
+from django.conf import settings
+from django.utils.text import get_valid_filename
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from django.core.files import File
-from django.conf import settings
-import os, zipfile
 
 from .models import Files, Sessions, Chats, APIKeys
 from .serializers import (
@@ -14,97 +15,126 @@ from .serializers import (
     APIKeysSerializer,
 )
 
-# Base ViewSet with authentication + error handling for create
+# Utility list for sqlite extensions (to ver6, currently ver 3, 2025)
+SQLITE_EXTENSIONS = [f".sqlite{i}" for i in range(7)]
+
+
+## Helpers ##
+
+def is_valid_sqlite(name: str) -> bool:
+    # Check extension is .sqlite, .sqlite0 ... .sqlite6
+    return any(name.endswith(ext) for ext in SQLITE_EXTENSIONS)
+
+
+def sanitize_and_replace(file_name: str) -> str:
+    # Sanitize file name and remove existing file if duplicate
+    safe_name = get_valid_filename(os.path.basename(file_name))
+    full_path = os.path.join(settings.MEDIA_ROOT, safe_name)
+    if os.path.exists(full_path):
+        os.remove(full_path)  # replace old file
+    return safe_name
+
+
+def save_to_model(user, django_file, safe_name):
+    # Create model entry and save file to storage
+    obj = Files(user=user)
+    obj.save()
+    obj.file.save(safe_name, django_file, save=True)
+    return FilesSerializer(obj).data
+
+
+# Base OAuth ViewSet #
 class OAuthRestrictedModelViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if not serializer.is_valid():
-            return Response(
-                {"error": serializer.errors},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            return Response({"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
         try:
             self.perform_create(serializer)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-# ViewSets for each models
 
-# File upload with zip extraction
+# File upload with zip extraction #
 class FilesViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     queryset = Files.objects.all()
     serializer_class = FilesSerializer
 
-    # Handle multiple file uploads and zip extraction
     def create(self, request, *args, **kwargs):
         files = request.FILES.getlist("file")
         if not files:
-            return Response(
-                {"error": "No files uploaded."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            return Response({"error": "No files uploaded."}, status=status.HTTP_400_BAD_REQUEST)
 
         saved = []
-        # Utility list for sqlite extensions (to ver6, currently ver 3, 2025)
-        sqlite_extensions = [f".sqlite{i}" for i in range(7)]
+
         try:
             for file in files:
-                # If zip, extract and save each file inside
-                if file.name.endswith(".zip"):
-                    # Notice: Stream-based extraction and saving for RAM efficiency
+                name = file.name
+
+                # Reject RAR
+                if name.endswith(".rar"):
+                    return Response(
+                        {"error": "RAR files are not supported. Please upload ZIP or SQLite files."},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+
+                # Case 1: ZIP archive
+                if name.endswith(".zip"):
                     with zipfile.ZipFile(file, "r") as zip_ref:
                         for extracted_file in zip_ref.namelist():
-                            # Accept only .sqlite* files
-                            # (! IMPORTANT SETTING)
-                            if not any(extracted_file.endswith(ext) for ext in sqlite_extensions):
+                            if not is_valid_sqlite(extracted_file):
                                 continue
 
-                            # Prevent directory traversal attack (Cybersecurity measure)
+                            # Cybersecurity: prevent traversal attack
                             target_path = os.path.normpath(os.path.join(settings.MEDIA_ROOT, extracted_file))
                             if not target_path.startswith(os.path.abspath(settings.MEDIA_ROOT)):
                                 return Response({"error": "Illegal path in zip."}, status=status.HTTP_400_BAD_REQUEST)
 
-                            # Prevent corrupted names in zip files (Cybersecurity measure)
-                            if extracted_file.startswith("/") or extracted_file.startswith("\\"):
-                                # If not ASCII
-                                if not all(ord(c) < 128 for c in extracted_file):
-                                    return Response(
-                                        {"error": "Corrupted file name detected in zip file. Avoid / or \\ at the start of filenames."},
-                                        status=status.HTTP_400_BAD_REQUEST,
-                                    )
+                            # Corrupted/ASCII check
+                            if extracted_file.startswith(("/", "\\")) and not extracted_file.isascii():
+                                return Response(
+                                    {"error": "Corrupted file name in zip."},
+                                    status=status.HTTP_400_BAD_REQUEST,
+                                )
 
+                            # Extract to MEDIA_ROOT, overwriting if needed
                             file_path = zip_ref.extract(extracted_file, settings.MEDIA_ROOT)
+                            safe_name = sanitize_and_replace(file_path)
+
                             if os.path.isfile(file_path):
                                 with open(file_path, "rb") as f:
-                                    # Save to Django model
-                                    django_file = File(f, name=os.path.basename(file_path))
-                                    obj = Files(user=request.user)
-                                    obj.save()
-                                    obj.file.save(os.path.basename(file_path), django_file, save=True)
-                                    saved.append(FilesSerializer(obj).data)
+                                    django_file = File(f, name=safe_name)
+                                    saved.append(save_to_model(request.user, django_file, safe_name))
+
+                # Case 2: Normal file
                 else:
-                    obj = Files.objects.create(user=request.user, file=file)
-                    saved.append(FilesSerializer(obj).data)
+                    if not is_valid_sqlite(name):
+                        return Response(
+                            {"error": f"Invalid file type `{name}`. Only SQLite files allowed."},
+                            status=status.HTTP_400_BAD_REQUEST,
+                        )
+
+                    # Cybersecurity: traversal + hidden file + ASCII
+                    if re.search(r"[\\/]", name) or name.startswith(".") or not name.isascii():
+                        return Response({"error": f"Invalid file name `{name}`."}, status=status.HTTP_400_BAD_REQUEST)
+
+                    safe_name = sanitize_and_replace(name)
+                    saved.append(save_to_model(request.user, file, safe_name))
 
             if not saved:
-                return Response(
-                    {"error": "No files were saved."},
-                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                )
+                return Response({"error": "No files were saved."}, status=status.HTTP_400_BAD_REQUEST)
 
             return Response(saved, status=status.HTTP_201_CREATED)
 
         except Exception as e:
-            return Response(
-                {"error": str(e)},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-# ViewSets for Sessions, Chats, APIKeys
+
+# Other viewsets #
 class SessionsViewSet(OAuthRestrictedModelViewSet):
     queryset = Sessions.objects.all()
     serializer_class = SessionsSerializer
