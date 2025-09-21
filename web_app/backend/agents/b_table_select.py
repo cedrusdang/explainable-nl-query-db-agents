@@ -26,10 +26,9 @@
 #     return json.loads(llm_output)
 
 
-# Agent B specific logic here
+# Logic above this line
 import time
 def run(api_key, payload, media_path):
-    time.sleep(3)
     return {
         "content": "Executed successfully.",
         "previous": payload

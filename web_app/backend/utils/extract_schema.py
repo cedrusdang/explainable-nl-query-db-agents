@@ -2,7 +2,7 @@ import os
 import json
 import sys
 from django.conf import settings
-from .sql_connector import SQLite_connector
+from .sql_connector import SQLiteConnector
 
 MEDIA_ROOT = settings.MEDIA_ROOT
 SCHEMA_DIR = settings.SCHEMA_DIR

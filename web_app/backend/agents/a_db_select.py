@@ -32,10 +32,9 @@
 #     llm_output = response.content if hasattr(response, "content") else str(response)
 #     return json.loads(llm_output)
 
-# Agent A specific logic here
+# Logic above this line
 import time
 def run(api_key, payload, media_path):
-    time.sleep(3)
     return {
         "content": "Executed successfully.",
         "previous": payload
