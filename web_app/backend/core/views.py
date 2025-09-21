@@ -29,7 +29,7 @@ def is_valid_sqlite(name: str) -> bool:
 def sanitize_and_replace(file_name: str) -> str:
     # Sanitize file name and remove existing file if duplicate
     safe_name = get_valid_filename(os.path.basename(file_name))
-    full_path = os.path.join(settings.MEDIA_ROOT, safe_name)
+    full_path = os.path.join(settings.DATA_DIR, safe_name)
     if os.path.exists(full_path):
         os.remove(full_path)  # replace old file
     return safe_name
@@ -90,8 +90,8 @@ class FilesViewSet(viewsets.ModelViewSet):
                                 continue
 
                             # Cybersecurity: prevent traversal attack
-                            target_path = os.path.normpath(os.path.join(settings.MEDIA_ROOT, extracted_file))
-                            if not target_path.startswith(os.path.abspath(settings.MEDIA_ROOT)):
+                            target_path = os.path.normpath(os.path.join(settings.DATA_DIR, extracted_file))
+                            if not target_path.startswith(os.path.abspath(settings.DATA_DIR)):
                                 return Response({"error": "Illegal path in zip."}, status=status.HTTP_400_BAD_REQUEST)
 
                             # Corrupted/ASCII check
@@ -101,8 +101,8 @@ class FilesViewSet(viewsets.ModelViewSet):
                                     status=status.HTTP_400_BAD_REQUEST,
                                 )
 
-                            # Extract to MEDIA_ROOT, overwriting if needed
-                            file_path = zip_ref.extract(extracted_file, settings.MEDIA_ROOT)
+                            # Extract to DATA_DIR, overwriting if needed
+                            file_path = zip_ref.extract(extracted_file, settings.DATA_DIR)
                             safe_name = sanitize_and_replace(file_path)
 
                             if os.path.isfile(file_path):

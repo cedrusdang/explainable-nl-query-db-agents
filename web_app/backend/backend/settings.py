@@ -21,6 +21,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # For the stored uploaded files
 MEDIA_ROOT = BASE_DIR / 'media'
 MEDIA_URL = '/media/'
+DATA_DIR = MEDIA_ROOT / 'data'
+UTILS_DIR = MEDIA_ROOT / 'utils'
+SCHEMA_DIR = MEDIA_ROOT / 'schema'
 
 # Initialize the API key for model access
 API_KEY = None
@@ -68,7 +71,7 @@ ROOT_URLCONF = 'backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        "DIRS": [BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

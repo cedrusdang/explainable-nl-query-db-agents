@@ -1,8 +1,11 @@
 import os
 import json
 import sys
-from SQL_connector import SQLite_connector
-from backend.pipelines.utils.extract_paths import extract_sql_file_paths
+from django.conf import settings
+from .sql_connector import SQLite_connector
+
+MEDIA_ROOT = settings.MEDIA_ROOT
+SCHEMA_DIR = settings.SCHEMA_DIR
 
 # Function to extract schema from SQLite files
 def schema_extractor(sql_file_paths: str, db_name: str, save_json: bool = False):
@@ -111,19 +114,47 @@ def create_names_json_test(combined_schema: str, save_json: bool = False):
     return json.dumps(result, indent=4, ensure_ascii=False)
 
 
-# Main
-if __name__ == "__main__":
+if not os.path.exists(SCHEMA_DIR):
+    os.makedirs(SCHEMA_DIR)
+def extract_schema(json_data: str, db_name: str, save_json: bool = False):
+    json_data = json.loads(json_data)
+    schema = json_data.get(db_name)
+    if save_json:
+        with open(os.path.join(SCHEMA_DIR, f"schema_{db_name}.json"), "w") as f:
+            json.dump(schema, f, indent=4, ensure_ascii=False)
+    return json.dumps(schema, indent=4, ensure_ascii=False)
 
-    # Create path JSON
-    # TODO: Provide Django Media folder path here
-    sql_file_paths = "extract_sql_file_paths(save_json=True)"
-    print("SQL file paths extracted and saved as 'sql_file_paths.json'.")
 
-    # Create database name JSON
-    create_names_json(sql_file_paths, save_json=True)
-
-    # Create the combined schema
-    combined_schema = create_combined_schema(sql_file_paths, save_json=True)
-
-    # Create the schema with tables and columns (TESTING)
-    create_names_json_test(combined_schema, save_json=True)
+def run(request, media_path: str):
+    """
+    Django endpoint function for schema extraction
+    Expected request data format:
+    {
+        "json_data": "JSON string containing schema data",
+        "db_name": "database name to extract schema for"
+    }
+    """
+    try:
+        # Get data from request
+        data = request.data
+        
+        # Extract required parameters
+        json_data = data.get('json_data', '{}')
+        db_name = data.get('db_name', '')
+        
+        # Validate parameters
+        if not db_name:
+            return {"error": "db_name is required"}
+        
+        # Extract schema
+        result = extract_schema(json_data, db_name)
+        
+        # Parse the result to return as dict instead of JSON string
+        try:
+            parsed_result = json.loads(result)
+            return {"success": True, "result": parsed_result}
+        except json.JSONDecodeError:
+            return {"success": True, "result": result}
+            
+    except Exception as e:
+        return {"error": f"Schema extraction failed: {str(e)}"}

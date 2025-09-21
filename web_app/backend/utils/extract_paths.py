@@ -1,14 +1,12 @@
 import os, sys, json
-
 from django.conf import settings
 from pathlib import Path
 
-project_root = settings.BASE_DIR
-data_dir = project_root / "data" / "processed"
-print(data_dir)
+DATA_DIR = settings.MEDIA_ROOT / "data"
+SCHEMA_DIR = settings.MEDIA_ROOT / "schema"
 
 # Function to extract SQL file paths from the data folder
-def extract_sql_file_paths(path: str, indent: int = 4, save_json: bool = False):
+def extract_paths(path: str, indent: int = 4, save_json: bool = False):
     # Extract media folder path
     path_folder = path
     if path_folder is None or path_folder == "":
@@ -29,8 +27,38 @@ def extract_sql_file_paths(path: str, indent: int = 4, save_json: bool = False):
 
     if sql_file_paths == {}:
         sys.exit("Error: No SQL files found in the data folder.")
-    if save_json:
-        with open(os.path.join(SCHEMA_DIR, "sql_file_paths.json"), "w") as f:
-            f.write(json.dumps(sql_file_paths, indent=indent, ensure_ascii=False))
 
-    return json.dumps(sql_file_paths, indent=indent, ensure_ascii=False)
+    # Save to MEDIA_ROOT/schema
+    with open(os.path.join(SCHEMA_DIR, "sql_file_paths.json"), "w") as f:
+        f.write(json.dumps(sql_file_paths, indent=indent, ensure_ascii=False))
+
+    return {"status": 200, "data": sql_file_paths}
+
+
+def run(request, media_path: str):
+    """
+    Django endpoint function for path extraction
+    Expected request data format:
+    {
+        "path": "path to data folder" (optional, uses media_path if not provided)
+    }
+    """
+    try:
+        # Get data from request
+        data = request.data
+
+        # Extract path parameter, default to media_path
+        path = data.get('path', media_path)
+
+        # Extract paths
+        result = extract_paths(path)
+
+        # Parse the result to return as dict instead of JSON string
+        try:
+            parsed_result = json.loads(result)
+            return {"success": True, "result": parsed_result}
+        except json.JSONDecodeError:
+            return {"success": True, "result": result}
+
+    except Exception as e:
+        return {"error": f"Path extraction failed: {str(e)}"}

@@ -5,14 +5,13 @@ from solo.models import SingletonModel
 
 # Create your models here.
 
-def user_directory_path(instance, filename):
-    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
-    return f'user_{instance.user.id}/{filename}'
+DATA_DIR = settings.DATA_DIR
+
 class Files(models.Model):
     # SQL DB logging to store uploaded SQL files
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     # File send to /backend/media/sql_files/
-    file = models.FileField(upload_to=user_directory_path)
+    file = models.FileField(upload_to=DATA_DIR)
     time = models.DateTimeField(auto_now_add=True)
 
 class Sessions(models.Model):

@@ -1,10 +1,3 @@
-'''
-This script connect with the SQL file base on the extracted paths
-Currently only work with SQLite, future plan to support other SQL databases
-return a connection object that can be used to interact with the database
-It also containt protocol for SQL query, the path is depend of what is the OS that are used
-'''
-
 import sqlite3
 import os
 import json
@@ -67,3 +60,57 @@ class SQLite_connector:
         if self.conn:
             self.conn.close()
             self.conn = None
+
+def sql_connect(
+        path_json: str, db_name: str,
+        queries: list, indent: int = 4,
+        verbose: bool = False
+    ):
+
+    connector = SQLite_connector(path_json)
+    conn = connector.connect(db_name, verbose=verbose)
+    if conn is None:
+        return json.dumps({"error": "Failed to connect to database."})
+    result = connector.execute_queries(queries, indent=indent)
+    connector.close()
+    return result
+
+
+def run(request, media_path: str):
+    """
+    Django endpoint function for SQL connector
+    Expected request data format:
+    {
+        "path_json": "JSON string containing database paths",
+        "db_name": "database name to connect to", 
+        "queries": ["SELECT * FROM table", "SELECT count(*) FROM table2"]
+    }
+    """
+    try:
+        # Get data from request
+        data = request.data
+
+        # Extract required parameters
+        path_json = data.get('path_json', '{}')
+        db_name = data.get('db_name', '')
+        queries = data.get('queries', [])
+
+        # Validate parameters
+        if not db_name:
+            return {"error": "db_name is required"}
+
+        if not queries:
+            return {"error": "queries list is required"}
+        if not isinstance(queries, list):
+            return {"error": "queries must be a list"}
+        # Execute SQL queries
+        result = sql_connect(path_json, db_name, queries)
+        # Parse the result to return as dict instead of JSON string
+        try:
+            parsed_result = json.loads(result)
+            return {"success": True, "result": parsed_result}
+        except json.JSONDecodeError:
+            return {"success": True, "result": result}
+
+    except Exception as e:
+        return {"error": f"SQL connector failed: {str(e)}"}
