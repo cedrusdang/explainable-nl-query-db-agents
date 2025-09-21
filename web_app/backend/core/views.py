@@ -35,10 +35,10 @@ def sanitize_and_replace(file_name: str) -> str:
         os.remove(full_path)  # replace old file
     return safe_name
 
-
 def save_to_model(user, django_file, safe_name):
     obj = Files(user=user)
-    obj.database = safe_name
+    # Set database name without extension
+    obj.database = os.path.splitext(safe_name)[0]
     obj.save()
     obj.file.save(safe_name, django_file, save=True)
     return FilesSerializer(obj).data
