@@ -7,12 +7,12 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
-from .models import Files, Sessions, Chats, APIKeys
+from .models import Files, Sessions, Chats, APIKey
 from .serializers import (
     FilesSerializer,
     SessionsSerializer,
     ChatsSerializer,
-    APIKeysSerializer,
+    APIKeySerializer,
 )
 
 # Utility list for sqlite extensions (to ver6, currently ver 3, 2025)
@@ -144,7 +144,9 @@ class ChatsViewSet(OAuthRestrictedModelViewSet):
     queryset = Chats.objects.all()
     serializer_class = ChatsSerializer
 
+class APIKeyViewSet(viewsets.ModelViewSet):
+    serializer_class = APIKeySerializer
+    queryset = APIKey.objects.none() 
 
-class APIKeysViewSet(OAuthRestrictedModelViewSet):
-    queryset = APIKeys.objects.all()
-    serializer_class = APIKeysSerializer
+    def get_object(self):
+        return APIKey.get_solo()

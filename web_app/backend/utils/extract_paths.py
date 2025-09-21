@@ -7,8 +7,6 @@ project_root = settings.BASE_DIR
 data_dir = project_root / "data" / "processed"
 print(data_dir)
 
-
-
 # Function to extract SQL file paths from the data folder
 def extract_sql_file_paths(path: str, indent: int = 4, save_json: bool = False):
     # Extract media folder path

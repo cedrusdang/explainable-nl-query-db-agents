@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Files, Sessions, Chats, APIKeys
+from .models import APIKey, Files, Sessions, Chats, APIKey
 
 class FilesSerializer(serializers.ModelSerializer):
     class Meta:
@@ -16,8 +16,7 @@ class ChatsSerializer(serializers.ModelSerializer):
         model = Chats
         fields = ['id', 'time', 'user', 'agent', 'prompt', 'response']
 
-
-class APIKeysSerializer(serializers.ModelSerializer):
+class APIKeySerializer(serializers.ModelSerializer):
     class Meta:
-        model = APIKeys
-        fields = ['id', 'user', 'api_key']
+        model = APIKey
+        fields = ['api_key']

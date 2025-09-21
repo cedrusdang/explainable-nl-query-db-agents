@@ -27,6 +27,7 @@ urlpatterns = [
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),  # JSON schema
     path("api/schema/swagger-ui/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
     path("api/schema/redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
+    path("api/agents/", include("agents.urls")),  # Include URLs from the agents app
 ]
 
 # Upload will use Django's static file serving in both development and production
