@@ -36,9 +36,8 @@ def sanitize_and_replace(file_name: str) -> str:
         os.remove(full_path)  # replace old file
     return safe_name
 
-def save_to_model(user, django_file, safe_name):
-    obj = Files(user=user)
-    # Set database name without extension
+def save_to_model(django_file, safe_name):
+    obj = Files()
     obj.database = os.path.splitext(safe_name)[0]
     obj.save()
     obj.file.save(safe_name, django_file, save=True)
@@ -102,7 +101,7 @@ class FilesViewSet(viewsets.ModelViewSet):
                             safe_name = sanitize_and_replace(base_name)
                             with zip_ref.open(extracted_file) as f:
                                 django_file = File(f, name=safe_name)
-                                saved.append(save_to_model(request.user, django_file, safe_name))
+                                saved.append(save_to_model(django_file, safe_name))
 
                 # Case 2: SQLite file
                 else:
@@ -116,7 +115,7 @@ class FilesViewSet(viewsets.ModelViewSet):
                         return Response({"error": f"Invalid file name `{name}`."}, status=status.HTTP_400_BAD_REQUEST)
 
                     safe_name = sanitize_and_replace(name)
-                    saved.append(save_to_model(request.user, file, safe_name))
+                    saved.append(save_to_model(file, safe_name))
 
             if not saved:
                 return Response({"error": "No valid SQLite files found."}, status=status.HTTP_400_BAD_REQUEST)
@@ -180,10 +179,38 @@ class ChatsViewSet(OAuthRestrictedModelViewSet):
     queryset = Chats.objects.all()
     serializer_class = ChatsSerializer
 
-
-class APIKeyViewSet(viewsets.ModelViewSet):
+class APIKeyViewSet(OAuthRestrictedModelViewSet):
     serializer_class = APIKeySerializer
-    queryset = APIKey.objects.none()
 
     def get_object(self):
         return APIKey.get_solo()
+
+    def list(self, request):
+        obj = self.get_object()
+        return Response(APIKeySerializer(obj).data)
+
+    def retrieve(self, request, pk=None):
+        obj = self.get_object()
+        return Response(APIKeySerializer(obj).data)
+
+    def create(self, request):
+        obj = self.get_object()
+        serializer = APIKeySerializer(obj, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def update(self, request, pk=None):
+        obj = self.get_object()
+        serializer = APIKeySerializer(obj, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+    def partial_update(self, request, pk=None):
+        return self.update(request, pk)
+
+    def destroy(self, request, pk=None):
+        obj = self.get_object()
+        obj.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

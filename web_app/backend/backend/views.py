@@ -5,7 +5,8 @@ from rest_framework.reverse import reverse
 @api_view(["GET"])
 def api_root(request, format=None):
     return Response({
-        "core": reverse("files-list", request=request, format=format),
+        "files-list": reverse("files-list", request=request, format=format),
+        "apikey": reverse("apikey-list", request=request, format=format),
         "agents": reverse("agents-list", request=request, format=format),
         "schema": reverse("schema", request=request, format=format),
     })

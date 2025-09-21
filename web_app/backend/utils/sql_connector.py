@@ -81,3 +81,28 @@ def run(api_key, payload: dict):
 
     except Exception as e:
         return {"error": f"SQL connector failed: {str(e)}"}
+    
+def run_sql(api_key, payload: dict):
+    """
+    Agent endpoint.
+    Expected payload:
+    {
+        "database": "database name",
+        "query": "SELECT ..."
+    }
+    """
+
+    try:
+        db_name = payload.get("database")
+        query = payload.get("SQL")
+
+        if not db_name:
+            return {"error": "database name is required"}
+        if not query:
+            return {"error": "query is required"}
+
+        connector = SQLiteConnector()
+        return connector.execute(db_name, query)
+
+    except Exception as e:
+        return {"error": f"SQL connector failed: {str(e)}"}
