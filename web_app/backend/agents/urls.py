@@ -1,6 +1,7 @@
-from django.urls import path
-from .views import api_key_view
+from rest_framework.routers import DefaultRouter
+from .views import AgentViewSet
 
-urlpatterns = [
-    path("api-key/", api_key_view, name="api-key"),
-]
+router = DefaultRouter()
+router.register(r"", AgentViewSet, basename="agents")
+
+urlpatterns = router.urls

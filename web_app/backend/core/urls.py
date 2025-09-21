@@ -11,7 +11,4 @@ router.register(r'sessions', SessionsViewSet, basename='sessions')
 router.register(r'chats', ChatsViewSet, basename='chats')
 router.register(r'apikey', APIKeyViewSet, basename='apikey')
 
-# Define the URL patterns for the core app
-urlpatterns = [
-    path('', include(router.urls)),
-]
+urlpatterns = router.urls
