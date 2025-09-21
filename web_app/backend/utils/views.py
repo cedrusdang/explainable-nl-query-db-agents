@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.decorators import action
 from django.conf import settings
+from rest_framework.permissions import IsAuthenticated
 
 from . import (
     extract_paths,
@@ -24,7 +25,22 @@ UTILITIES = {
     "get-keys": "utils-get-keys",
 }
 
-class UtilsViewSet(viewsets.ViewSet):
+# Base OAuth ViewSet #
+class OAuthRestrictedModelViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if not serializer.is_valid():
+            return Response({"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            self.perform_create(serializer)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class UtilsViewSet(OAuthRestrictedModelViewSet):
     def list(self, request, format=None):
         # Return links to each utility action
         return Response({
