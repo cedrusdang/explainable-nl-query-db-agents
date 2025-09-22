@@ -7,9 +7,8 @@ interface ChatBoxProps {
   onDelete: (id: string) => void;
   onResend: (id: string) => void;
   username?: string | null;
-  onPause?: () => void;
 }
-const ChatBox: React.FC<ChatBoxProps> = ({ messages, loadingBot, onEdit, onDelete, onResend, username, onPause }) => {
+const ChatBox: React.FC<ChatBoxProps> = ({ messages, loadingBot, onEdit, onDelete, onResend, username }) => {
   const [editId, setEditId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
   const [dots, setDots] = useState("");
@@ -72,7 +71,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ messages, loadingBot, onEdit, onDelet
                     />
                     <div className="flex gap-2 justify-end">
                       <button onClick={cancelEdit} className="px-2 py-1 text-xs rounded border border-gray-600 bg-gray-800">Cancel</button>
-                      <button onClick={saveEdit} className="px-2 py-1 text-xs rounded bg-violet-600 text-white border border-violet-700">Save</button>
+                      <button onClick={saveEdit} className="px-2 py-1 text-xs rounded bg-blue-600 text-white border border-blue-700">Save</button>
                     </div>
                   </div>
                 ) : (
@@ -80,25 +79,31 @@ const ChatBox: React.FC<ChatBoxProps> = ({ messages, loadingBot, onEdit, onDelet
                     {msg.sender === 'bot' ? (
                       <div className="space-y-3">
                         {msg.text
-                          ? msg.text.split(/\n\n-+\n\n/g).map((part, idx) => {
-                              const isError = part.trim() === 'Error, please try again';
-                              return (
-                                <React.Fragment key={idx}>
-                                  {idx > 0 && <div className="h-px bg-gray-500/60" role="separator" />}
-                                  <div className={`whitespace-pre-wrap break-words [overflow-wrap:anywhere] ${isError ? 'text-red-400 font-medium' : ''}`}>{part}</div>
-                                </React.Fragment>
-                              );
-                            })
+                          ? msg.text.split(/\n\n-+\n\n/g).map((part, idx) => (
+                              <React.Fragment key={idx}>
+                                {idx > 0 && <div className="h-px bg-gray-500/60" role="separator" />}
+                                <div className="whitespace-pre-wrap break-words [overflow-wrap:anywhere]">{part}</div>
+                              </React.Fragment>
+                            ))
                           : <div className="whitespace-pre-wrap break-words [overflow-wrap:anywhere]" />}
                       </div>
                     ) : (
                       <div className="whitespace-pre-wrap break-words [overflow-wrap:anywhere]">{msg.text}</div>
                     )}
-                    {msg.sender === 'user' && (
+                    {msg.sender === 'user' && !loadingBot && (
                       <div className="flex gap-1 mt-2 flex-wrap opacity-90">
-                        <button className="px-2 py-1 text-xs rounded border border-gray-600 bg-gray-800" onClick={() => startEdit(msg.id, msg.text)}>Edit</button>
-                        <button className="px-2 py-1 text-xs rounded border border-gray-600 bg-gray-800" onClick={() => onResend(msg.id)}>Resend</button>
-                        <button className="px-2 py-1 text-xs rounded border border-gray-600 bg-gray-800" onClick={() => onDelete(msg.id)}>Delete</button>
+                        <button
+                          className="px-2 py-1 text-xs rounded border border-gray-600 bg-gray-800"
+                          onClick={() => startEdit(msg.id, msg.text)}
+                        >Edit</button>
+                        <button
+                          className="px-2 py-1 text-xs rounded border border-gray-600 bg-gray-800"
+                          onClick={() => onResend(msg.id)}
+                        >Resend</button>
+                        <button
+                          className="px-2 py-1 text-xs rounded border border-gray-600 bg-gray-800"
+                          onClick={() => onDelete(msg.id)}
+                        >Delete</button>
                       </div>
                     )}
                   </>
@@ -108,29 +113,16 @@ const ChatBox: React.FC<ChatBoxProps> = ({ messages, loadingBot, onEdit, onDelet
           );
         })}
         {loadingBot && (
-          <div className="flex items-start gap-2">
+          <div className="flex items-start gap-0">
             <div className="max-w-[80%] rounded-2xl px-4 py-2 text-sm shadow-sm bg-gray-700 text-gray-100">
               <span>
-                <span className="inline-block w-3 h-3 rounded-full bg-green-500 animate-pulse mr-2" />
-                thinking{dots}
+                <span
+                  className="inline-block w-3 h-3 rounded-full mr-2 animate-blink-green"
+                  style={{ background: 'linear-gradient(90deg,#22c55e 60%,#16a34a 100%)' }}
+                />
+                Thinking{dots}
               </span>
             </div>
-            {onPause && (
-              <button
-                type="button"
-                onClick={onPause}
-                className="relative inline-flex items-center justify-center px-3 py-2 rounded-md overflow-hidden text-white text-xs font-medium"
-                aria-label="Pause streaming"
-                title="Pause streaming"
-              >
-                <span className="absolute inset-0 rounded-md [background:conic-gradient(from_var(--angle),#22c55e_0deg,#8b5cf6_120deg,#ec4899_240deg,#22c55e_360deg)] animate-[spin_2.4s_linear_infinite] opacity-80"></span>
-                <span className="absolute inset-[2px] rounded-[6px] bg-gray-800 border border-gray-700" />
-                <span className="relative z-10 flex items-center gap-1">
-                  <span className="inline-block w-2.5 h-2.5 bg-white/70 animate-pulse rounded-sm" />
-                  Pause
-                </span>
-              </button>
-            )}
           </div>
         )}
         <div ref={messagesEndRef} />

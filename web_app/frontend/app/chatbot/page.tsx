@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useCallback, useEffect, useRef } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { performLogout } from "./logout";
 import Menu from "./menu";
@@ -24,7 +24,6 @@ export default function ChatbotPage() {
 	const [entering, setEntering] = useState(true);
 	const [username, setUsername] = useState<string | null>(null);
 	const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
-    const streamCancelRef = useRef<null | (() => void)>(null);
 
 	useEffect(() => {
 		// entrance overlay
@@ -49,14 +48,6 @@ export default function ChatbotPage() {
 
 	// Generate id helper
 	const genId = () => crypto.randomUUID();
-
-	const handlePause = useCallback(() => {
-		if (streamCancelRef.current) {
-			streamCancelRef.current();
-			streamCancelRef.current = null;
-			setLoadingBot(false);
-		}
-	}, []);
 
 	const sendUserMessage = useCallback((text: string) => {
 		if (!text.trim()) return;
@@ -95,15 +86,13 @@ export default function ChatbotPage() {
 							}));
 						}
 					},
-				onError: () => {
-					setMessages(prev => prev.map(m => m.id === botId ? { ...m, text: (m.text ? m.text + "\n" : "") + 'error, please try again' } : m));
+				onError: (err) => {
+					setMessages(prev => prev.map(m => m.id === botId ? { ...m, text: (m.text ? m.text + "\n" : "") + `\n[Stream error] ${err.message}` } : m));
 				},
 				onDone: () => {
 					setLoadingBot(false);
-					streamCancelRef.current = null;
 				},
 			});
-			streamCancelRef.current = s.cancel;
 	}, []);
 
 		const editMessage = useCallback((id: string, newText: string) => {
@@ -133,7 +122,7 @@ export default function ChatbotPage() {
 				});
 						let lastAgent: string | null = null;
 						const SEP = "\n\n------------------------\n\n";
-						const s2 = streamAgents({ query: newText }, {
+						streamAgents({ query: newText }, {
 							onEvent: (evt) => {
 								const isContent = !!(evt && (evt.output || evt.error));
 								let sepNow = false;
@@ -156,12 +145,11 @@ export default function ChatbotPage() {
 									}));
 								}
 							},
-					onError: () => {
-						setMessages(prev => prev.map(m => m.id === botId ? { ...m, text: (m.text ? m.text + "\n" : "") + 'error, please try again' } : m));
+					onError: (err) => {
+						setMessages(prev => prev.map(m => m.id === botId ? { ...m, text: (m.text ? m.text + "\n" : "") + `\n[Stream error] ${err.message}` } : m));
 					},
-					onDone: () => { setLoadingBot(false); streamCancelRef.current = null; },
+					onDone: () => setLoadingBot(false),
 				});
-					streamCancelRef.current = s2.cancel;
 			}, 0);
 		}, [messages]);
 
@@ -199,7 +187,7 @@ export default function ChatbotPage() {
 			});
 				let lastAgent: string | null = null;
 				const SEP = "\n\n------------------------\n\n";
-				const s3 = streamAgents({ query: msg.text }, {
+				streamAgents({ query: msg.text }, {
 					onEvent: (evt) => {
 						const isContent = !!(evt && (evt.output || evt.error));
 						let sepNow = false;
@@ -222,12 +210,11 @@ export default function ChatbotPage() {
 							}));
 						}
 					},
-				onError: () => {
-					setMessages(prev => prev.map(m => m.id === botId ? { ...m, text: (m.text ? m.text + "\n" : "") + 'error, please try again' } : m));
+				onError: (err) => {
+					setMessages(prev => prev.map(m => m.id === botId ? { ...m, text: (m.text ? m.text + "\n" : "") + `\n[Stream error] ${err.message}` } : m));
 				},
-				onDone: () => { setLoadingBot(false); streamCancelRef.current = null; },
+				onDone: () => setLoadingBot(false),
 			});
-				streamCancelRef.current = s3.cancel;
 		}, [messages]);
 
 	return (
@@ -262,9 +249,8 @@ export default function ChatbotPage() {
 						onDelete={deleteMessage}
 						onResend={resendUserMessage}
 						username={username}
-						onPause={handlePause}
 					/>
-					<InsertBox onSend={sendUserMessage} sending={loadingBot} onPause={handlePause} />
+					<InsertBox onSend={sendUserMessage} sending={loadingBot} />
 				</div>
 			</main>
 			{menuMinimized && (
