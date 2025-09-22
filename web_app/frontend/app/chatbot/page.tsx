@@ -1,6 +1,8 @@
 "use client"
 
 import React, { useState, useCallback, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
+import { performLogout } from "./logout";
 import Menu from "./menu";
 import ChatBox from "./chatbox";
 import InsertBox from "./insert_box";
@@ -14,10 +16,13 @@ export interface ChatMessage {
 }
 
 export default function ChatbotPage() {
+	const router = useRouter();
 	const [menuMinimized, setMenuMinimized] = useState(false);
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
 	const [loadingBot, setLoadingBot] = useState(false);
 	const [entering, setEntering] = useState(true);
+	const [username, setUsername] = useState<string | null>(null);
+	const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 	// Floating button state (only visible when minimized)
 	const [btnPos, setBtnPos] = useState<{ x: number; y: number }>({ x: 16, y: 16 });
 	const draggingRef = useRef(false);
@@ -31,6 +36,19 @@ export default function ChatbotPage() {
 		const t = setTimeout(() => setEntering(false), 600);
 		return () => clearTimeout(t);
 	}, []);
+
+	// Auth guard: if no access token, bounce to login
+	useEffect(() => {
+		if (typeof window === "undefined") return;
+		const token = localStorage.getItem("access_token");
+		const u = localStorage.getItem("username");
+		if (!token) {
+			// Hard redirect ensures clean state
+			router.replace("/");
+			return;
+		}
+		setUsername(u);
+	}, [router]);
 
 	// Helpers to clamp within viewport
 	const clamp = (val: number, min: number, max: number) => Math.max(min, Math.min(max, val));
@@ -155,13 +173,14 @@ export default function ChatbotPage() {
 
 	return (
 		<div className={`min-h-screen w-full flex bg-gray-900 text-gray-100 relative`}> 
-			{/* Desktop sidebar with smooth slide */}
+			{/* Desktop sidebar with smooth slide */
+			}
 			<aside
 				className={`hidden md:flex md:fixed md:inset-y-0 md:left-0 w-72 border-r border-gray-700 bg-gray-900/80 backdrop-blur-sm transition-transform duration-300 ease-in-out will-change-transform z-30 ${menuMinimized ? "-translate-x-full" : "translate-x-0"}`}
 				aria-hidden={menuMinimized}
 			>
 				<div className="w-72">
-					<Menu minimized={menuMinimized} setMinimized={setMenuMinimized} />
+					<Menu minimized={menuMinimized} setMinimized={setMenuMinimized} username={username} onRequestLogout={() => setShowLogoutConfirm(true)} />
 				</div>
 			</aside>
 
@@ -170,12 +189,31 @@ export default function ChatbotPage() {
 				<div className="md:hidden">
 					<div className="fixed inset-0 z-40 bg-black/50" onClick={() => setMenuMinimized(true)} />
 					<div className="fixed left-0 top-0 bottom-0 z-50 w-72 max-w-[80vw] bg-gray-900 border-r border-gray-700 p-4 shadow-xl">
-						<Menu minimized={menuMinimized} setMinimized={setMenuMinimized} />
+						<Menu minimized={menuMinimized} setMinimized={setMenuMinimized} username={username} onRequestLogout={() => setShowLogoutConfirm(true)} />
 					</div>
 				</div>
 			)}
 
 			<main className={`flex flex-col h-screen w-full relative transition-all duration-300 ease-in-out ${menuMinimized ? "md:pl-0" : "md:pl-72"}`}>
+				{/* Top bar with username and logout */}
+				<div className="flex items-center justify-end px-4 pt-3">
+					{username && (
+						<div className="flex items-center gap-3">
+							<div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-800/60 border border-white/10 text-sm">
+								<div className="w-6 h-6 rounded-full bg-violet-600 text-white grid place-items-center text-xs">
+									{username.charAt(0).toUpperCase()}
+								</div>
+								<span className="text-gray-200 max-w-[14ch] truncate" title={username}>{username}</span>
+							</div>
+							<button
+								className="text-xs px-3 py-1.5 rounded-full bg-gray-800/70 hover:bg-gray-800/90 border border-white/10"
+								onClick={() => setShowLogoutConfirm(true)}
+							>
+								Logout
+							</button>
+						</div>
+					)}
+				</div>
 				<div className="flex flex-col flex-1 max-w-4xl w-full mx-auto px-4 py-6 gap-4">
 					<ChatBox
 						messages={messages}
@@ -221,6 +259,31 @@ export default function ChatbotPage() {
 					<div className="flex items-center gap-3 text-gray-200">
 						<span role="img" aria-label="cat" className="text-2xl animate-bounce">🐱</span>
 						<span>Loading chat…</span>
+					</div>
+				</div>
+			)}
+
+			{/* Logout confirm modal */}
+			{showLogoutConfirm && (
+				<div className="fixed inset-0 z-50 flex items-center justify-center">
+					<div className="absolute inset-0 bg-black/50" onClick={() => setShowLogoutConfirm(false)} />
+					<div className="relative z-10 w-[92vw] max-w-sm rounded-xl border border-gray-700 bg-gray-900 p-5 shadow-2xl">
+						<h2 className="text-lg font-semibold mb-2">Log out?</h2>
+						<p className="text-sm text-gray-300 mb-4">You will need to sign in again to continue.</p>
+						<div className="flex justify-end gap-2">
+							<button
+								className="px-3 py-1.5 rounded-lg border border-gray-700 bg-gray-800 hover:bg-gray-700 text-gray-100 text-sm"
+								onClick={() => setShowLogoutConfirm(false)}
+							>
+								Cancel
+							</button>
+							<button
+								className="px-3 py-1.5 rounded-lg bg-violet-600 hover:bg-violet-700 text-white text-sm"
+								onClick={() => performLogout("/")}
+							>
+								Yes, log out
+							</button>
+						</div>
 					</div>
 				</div>
 			)}

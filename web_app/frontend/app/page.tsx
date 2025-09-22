@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 
 export default function Home() {
@@ -9,6 +9,15 @@ export default function Home() {
   const [message, setMessage] = useState("")
   const [processing, setProcessing] = useState(false)
   const router = useRouter()
+
+  // If already logged in, go straight to chatbot
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    const token = localStorage.getItem("access_token")
+    if (token) {
+      router.replace("/chatbot")
+    }
+  }, [router])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -28,6 +37,7 @@ export default function Home() {
       // Expecting Django simplejwt: { access, refresh }
       if (data?.access) localStorage.setItem("access_token", data.access)
       if (data?.refresh) localStorage.setItem("refresh_token", data.refresh)
+  if (username) localStorage.setItem("username", username)
 
       setMessage("✅ Logged in successfully! Redirecting…")
 
