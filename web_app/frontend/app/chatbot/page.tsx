@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useCallback, useEffect, useRef } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { performLogout } from "./logout";
 import Menu from "./menu";
@@ -23,13 +23,6 @@ export default function ChatbotPage() {
 	const [entering, setEntering] = useState(true);
 	const [username, setUsername] = useState<string | null>(null);
 	const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
-	// Floating button state (only visible when minimized)
-	const [btnPos, setBtnPos] = useState<{ x: number; y: number }>({ x: 16, y: 16 });
-	const draggingRef = useRef(false);
-	const startOffsetRef = useRef<{ dx: number; dy: number }>({ dx: 0, dy: 0 });
-	const btnSizeRef = useRef<{ w: number; h: number }>({ w: 48, h: 48 });
-	const btnRef = useRef<HTMLButtonElement | null>(null);
-	const movedRef = useRef(false);
 
 	useEffect(() => {
 		// entrance overlay
@@ -50,69 +43,7 @@ export default function ChatbotPage() {
 		setUsername(u);
 	}, [router]);
 
-	// Helpers to clamp within viewport
-	const clamp = (val: number, min: number, max: number) => Math.max(min, Math.min(max, val));
-
-	const beginDragAt = (clientX: number, clientY: number) => {
-		draggingRef.current = true;
-		movedRef.current = false;
-		// Measure button size (if ref available)
-		if (btnRef.current) {
-			const rect = btnRef.current.getBoundingClientRect();
-			btnSizeRef.current = { w: rect.width, h: rect.height };
-		}
-		startOffsetRef.current = { dx: clientX - btnPos.x, dy: clientY - btnPos.y };
-	};
-
-	const onDragMove = (clientX: number, clientY: number) => {
-		if (!draggingRef.current) return;
-		movedRef.current = true;
-		const margin = 8;
-		const { w, h } = btnSizeRef.current;
-		const vw = typeof window !== "undefined" ? window.innerWidth : 0;
-		const vh = typeof window !== "undefined" ? window.innerHeight : 0;
-		const x = clamp(clientX - startOffsetRef.current.dx, margin, Math.max(margin, vw - w - margin));
-		const y = clamp(clientY - startOffsetRef.current.dy, margin, Math.max(margin, vh - h - margin));
-		setBtnPos({ x, y });
-	};
-
-	const endDrag = () => {
-		draggingRef.current = false;
-		startOffsetRef.current = { dx: 0, dy: 0 };
-	};
-
-	// Mouse handlers
-	const handleMouseDown: React.MouseEventHandler<HTMLButtonElement> = (e) => {
-		e.preventDefault();
-		beginDragAt(e.clientX, e.clientY);
-		const onMove = (evt: MouseEvent) => onDragMove(evt.clientX, evt.clientY);
-		const onUp = () => {
-			window.removeEventListener("mousemove", onMove);
-			window.removeEventListener("mouseup", onUp);
-			endDrag();
-		};
-		window.addEventListener("mousemove", onMove);
-		window.addEventListener("mouseup", onUp);
-	};
-
-	// Touch handlers
-	const handleTouchStart: React.TouchEventHandler<HTMLButtonElement> = (e) => {
-		const t = e.touches[0];
-		beginDragAt(t.clientX, t.clientY);
-		const onMove = (evt: TouchEvent) => {
-			if (evt.touches.length > 0) {
-				const tt = evt.touches[0];
-				onDragMove(tt.clientX, tt.clientY);
-			}
-		};
-		const onEnd = () => {
-			window.removeEventListener("touchmove", onMove);
-			window.removeEventListener("touchend", onEnd);
-			endDrag();
-		};
-		window.addEventListener("touchmove", onMove, { passive: false });
-		window.addEventListener("touchend", onEnd);
-	};
+	// Dragging disabled per request
 
 	// Generate id helper
 	const genId = () => crypto.randomUUID();
@@ -195,25 +126,6 @@ export default function ChatbotPage() {
 			)}
 
 			<main className={`flex flex-col h-screen w-full relative transition-all duration-300 ease-in-out ${menuMinimized ? "md:pl-0" : "md:pl-72"}`}>
-				{/* Top bar with username and logout */}
-				<div className="flex items-center justify-end px-4 pt-3">
-					{username && (
-						<div className="flex items-center gap-3">
-							<div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-800/60 border border-white/10 text-sm">
-								<div className="w-6 h-6 rounded-full bg-violet-600 text-white grid place-items-center text-xs">
-									{username.charAt(0).toUpperCase()}
-								</div>
-								<span className="text-gray-200 max-w-[14ch] truncate" title={username}>{username}</span>
-							</div>
-							<button
-								className="text-xs px-3 py-1.5 rounded-full bg-gray-800/70 hover:bg-gray-800/90 border border-white/10"
-								onClick={() => setShowLogoutConfirm(true)}
-							>
-								Logout
-							</button>
-						</div>
-					)}
-				</div>
 				<div className="flex flex-col flex-1 max-w-4xl w-full mx-auto px-4 py-6 gap-4">
 					<ChatBox
 						messages={messages}
@@ -227,19 +139,8 @@ export default function ChatbotPage() {
 			</main>
 			{menuMinimized && (
 				<button
-					ref={btnRef}
-					className="fixed z-50 select-none cursor-grab active:cursor-grabbing rounded-full h-10 md:h-11 px-3 md:px-4 flex items-center gap-2 text-gray-100 bg-gray-800/70 hover:bg-gray-800/90 border border-white/10 shadow-lg backdrop-blur-md transition-colors"
-					style={{ left: btnPos.x, top: btnPos.y }}
-					onMouseDown={handleMouseDown}
-					onTouchStart={handleTouchStart}
-					onClick={(e) => {
-						// Suppress click if the button was dragged
-						if (movedRef.current) {
-							e.preventDefault();
-							return;
-						}
-						setMenuMinimized(false);
-					}}
+					className="fixed left-3 top-3 z-50 select-none rounded-full h-10 md:h-11 px-3 md:px-4 flex items-center gap-2 text-gray-100 bg-gray-800/70 hover:bg-gray-800/90 border border-white/10 shadow-lg backdrop-blur-md transition-colors"
+					onClick={() => setMenuMinimized(false)}
 					title="Open menu"
 					aria-label="Open menu"
 				>

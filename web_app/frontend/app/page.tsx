@@ -90,6 +90,18 @@ export default function Home() {
           {processing ? (<><span role="img" aria-label="cat" className="animate-bounce">🐱</span> Processing…</>) : 'Sign In'}
         </button>
 
+        {/* Admin page link */}
+        <div className="mt-3 text-center text-xs">
+          <a
+            href={`${process.env.NEXT_PUBLIC_API_URL}/admin/`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-violet-400 hover:text-violet-300 underline underline-offset-2"
+          >
+            Open Admin
+          </a>
+        </div>
+
         {processing && (
           <div className="mt-3 text-center text-xs text-gray-300">
             <div className="relative h-2 w-full overflow-hidden rounded bg-gray-700">
