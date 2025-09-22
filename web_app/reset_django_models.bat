@@ -1,6 +1,5 @@
 @echo off
 echo Running Django resetting...
-
 cd backend
 
 :: Activate virtualenv (CMD version)
