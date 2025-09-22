@@ -1,3 +1,4 @@
+// import React from "react"; // removed duplicate
 import React from "react";
 
 interface MenuProps {
@@ -47,7 +48,15 @@ const Menu: React.FC<MenuProps> = ({ minimized, setMinimized, username, onReques
           </button>
         </div>
       </div>
-      {/* Additional menu items can be added here */}
+      <button
+        className="w-full px-3 py-2 mt-2 rounded bg-red-600 text-white text-xs font-medium hover:bg-red-700"
+        onClick={() => {
+          if (typeof window !== "undefined") {
+            localStorage.removeItem("chatbot_messages");
+          }
+          window.location.reload();
+        }}
+      >Clear chat session</button>
     </div>
   );
 };

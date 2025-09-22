@@ -72,7 +72,7 @@ export default function ChatbotPage() {
 						<MobileMenu minimized={menuMinimized} setMinimized={setMenuMinimized} username={username} onRequestLogout={() => setShowLogoutConfirm(true)} />
 
 			<main className={`flex flex-col h-screen w-full relative transition-all duration-300 ease-in-out ${menuMinimized ? "md:pl-0" : "md:pl-72"}`}>
-				<div className="flex flex-col flex-1 max-w-4xl w-full mx-auto px-4 py-6 gap-4">
+		<div className="flex flex-col flex-1 h-full min-h-0 px-2 md:px-8 py-6 gap-4">
 					<ChatBox
 						messages={messages}
 						loadingBot={loadingBot}

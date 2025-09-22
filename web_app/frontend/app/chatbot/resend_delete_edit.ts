@@ -1,5 +1,6 @@
 import { ChatMessage } from "./page";
 import { streamAgents, deleteAgentsCache } from "../services/api";
+const SEP = "\n\n---\n\n";
 
 export function useResendDeleteEdit(messages: ChatMessage[], setMessages: (fn: (prev: ChatMessage[]) => ChatMessage[]) => void, setLoadingBot: (v: boolean) => void) {
   const genId = () => crypto.randomUUID();

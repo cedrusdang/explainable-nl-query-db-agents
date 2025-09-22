@@ -19,6 +19,14 @@ const ChatBox: React.FC<ChatBoxProps> = ({ messages, loadingBot, onEdit, onDelet
   const [editValue, setEditValue] = useState("");
   const [dots, setDots] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  // Chat cache state
+  const [cachedMessages, setCachedMessages] = useState<{ id: string; sender: "user" | "bot"; text: string }[]>(() => {
+    if (typeof window !== "undefined") {
+      const cache = localStorage.getItem("chatbot_messages");
+      if (cache) return JSON.parse(cache);
+    }
+    return [];
+  });
 
   // Modal for 401 stream error
   const [show401Modal, setShow401Modal] = useState(false);
@@ -26,7 +34,15 @@ const ChatBox: React.FC<ChatBoxProps> = ({ messages, loadingBot, onEdit, onDelet
   // Example: auto scroll
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, loadingBot]);
+  }, [messages, loadingBot, cachedMessages]);
+
+  // Persist messages to cache
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("chatbot_messages", JSON.stringify(messages));
+    }
+    setCachedMessages(messages);
+  }, [messages]);
 
   // Example: loading dots
   useEffect(() => {
@@ -76,7 +92,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ messages, loadingBot, onEdit, onDelet
     }, [messages, router]);
 
   return (
-  <div className={`flex-1 overflow-hidden rounded-xl border border-gray-700 bg-gray-800 shadow-sm`}> 
+  <div className="flex-1 h-full min-h-0 overflow-hidden rounded-xl bg-gray-900 shadow-sm"> 
       {/* 401 Stream Error Modal */}
       {show401Modal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
@@ -97,7 +113,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ messages, loadingBot, onEdit, onDelet
           </div>
         </div>
       )}
-    <div className="h-full overflow-y-auto p-4 space-y-3" role="log" aria-live="polite" aria-relevant="additions" aria-label="Chat messages">
+  <div className="h-full overflow-y-auto p-4 space-y-3 scrollbar-none" role="log" aria-live="polite" aria-relevant="additions" aria-label="Chat messages">
         {messages.length === 0 && !loadingBot && (
           <div className="flex items-start gap-0">
             <div className="max-w-[80%] rounded-2xl px-4 py-3 text-sm shadow-sm bg-gray-700 text-gray-100 break-words [overflow-wrap:anywhere]">
@@ -153,41 +169,141 @@ function BotJsonRender({ data }: { data: any }) {
   return (
     <div className="space-y-2">
       {data.query && <div><span className="font-bold">Query:</span> <span className="bg-gray-900 px-2 py-1 rounded text-sm">{data.query}</span></div>}
-      {data.database && <div><span className="font-bold">Database:</span> {data.database}</div>}
-      {data.tables && <div><span className="font-bold">Tables:</span> {Array.isArray(data.tables) ? data.tables.join(", ") : data.tables}</div>}
-      {data.columns && <div><span className="font-bold">Columns:</span> {Array.isArray(data.columns) ? data.columns.join(", ") : data.columns}</div>}
+      {data.database && <div><span className="font-bold">Database:</span> {Array.isArray(data.database)
+        ? data.database.map((db: string, i: number) => <span key={i} className="bg-gray-900 px-2 py-1 rounded text-sm mx-1">{db}</span>)
+        : <span className="bg-gray-900 px-2 py-1 rounded text-sm">{data.database}</span>}
+      </div>}
+      {data.tables && <div><span className="font-bold">Tables:</span> {Array.isArray(data.tables)
+        ? data.tables.map((t: string, i: number) => <span key={i} className="bg-gray-900 px-2 py-1 rounded text-sm mx-1">{t}</span>)
+        : <span className="bg-gray-900 px-2 py-1 rounded text-sm">{data.tables}</span>}
+      </div>}
+      {data.columns && <div><span className="font-bold">Columns:</span> {Array.isArray(data.columns)
+        ? data.columns.map((c: string, i: number) => <span key={i} className="bg-gray-900 px-2 py-1 rounded text-sm mx-1">{c}</span>)
+        : <span className="bg-gray-900 px-2 py-1 rounded text-sm">{data.columns}</span>}
+      </div>}
       {data.SQL && (
-        <div>
-          <span className="font-bold">SQL:</span>
-          <SyntaxHighlighter language="sql" style={oneDark} customStyle={{ borderRadius: "0.5rem", fontSize: "0.95em", marginTop: "0.25rem" }}>
-            {data.SQL}
-          </SyntaxHighlighter>
+        <div className="flex flex-col items-start">
+          <span className="font-bold mb-1">SQL:</span>
+          <div
+            className="chatbot-sql-block"
+            style={{
+              width: '100%',
+              maxWidth: '100%',
+              overflowX: 'auto',
+              border: '1px solid #333',
+              borderRadius: '0.5rem',
+              background: '#18181b',
+              padding: '0.5em',
+              wordBreak: 'break-word',
+              whiteSpace: 'pre-wrap',
+            }}
+          >
+            <SyntaxHighlighter
+              language="sql"
+              style={oneDark}
+              customStyle={{
+                background: "transparent",
+                margin: 0,
+                padding: 0,
+                fontSize: "0.95em",
+                borderRadius: "0.5rem",
+                whiteSpace: "pre-wrap",
+                wordBreak: "break-word",
+              }}
+              wrapLongLines={true}
+            >
+              {data.SQL}
+            </SyntaxHighlighter>
+          </div>
         </div>
       )}
-      {data.reasons && <div className="italic text-gray-400">{data.reasons}</div>}
-      {data.result && Array.isArray(data.result) && data.result.length > 0 && (
-        <div>
-          <span className="font-bold">Result:</span>
-          <table className="min-w-[200px] border mt-2 text-sm">
-            <thead>
-              <tr>
-                {Object.keys(data.result[0]).map((h) => (
-                  <th key={h} className="border px-2 py-1 bg-gray-800 text-gray-100">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {data.result.map((row: any, i: number) => (
-                <tr key={i}>
-                  {Object.keys(row).map((h) => (
-                    <td key={h} className="border px-2 py-1">{row[h]}</td>
+  {data.reasons && <div className="italic text-gray-400">My reason is: {data.reasons}</div>}
+      {data.result && Array.isArray(data.result) && data.result.length > 0 && (() => {
+        // Responsive columns/rows
+        let colCount = 2, rowCount = 5;
+        if (typeof window !== "undefined") {
+          if (window.matchMedia("(min-width: 2560px)").matches) {
+            colCount = 10; rowCount = 15;
+          } else if (window.matchMedia("(min-width: 1440px)").matches) {
+            colCount = 8; rowCount = 15;
+          } else if (window.matchMedia("(min-width: 1200px)").matches) {
+            colCount = 3; rowCount = 15;
+          } else if (window.matchMedia("(min-width: 800px)").matches) {
+            colCount = 3; rowCount = 10;
+          }
+        }
+        const allHeaders = Object.keys(data.result[0]);
+        const showHeaders = allHeaders.slice(0, colCount);
+        const hasMoreCols = allHeaders.length > colCount;
+        const showRows = data.result.slice(0, rowCount);
+        const hasMoreRows = data.result.length > rowCount;
+        return (
+          <div>
+            <span className="font-bold">Result:</span>
+            <div className="flex gap-2 mb-2">
+              <button
+                className="px-3 py-1 rounded bg-blue-600 text-white text-xs font-medium hover:bg-blue-700"
+                onClick={() => {
+                  const win = window.open("", "_blank");
+                  if (win) {
+                    win.document.write(`<html><head><title>Full SQL Result</title><style>body{background:#18181b;color:#eee;font-family:sans-serif;}table{border-collapse:collapse;width:100%;margin-top:1em;}th,td{border:1px solid #333;padding:6px;}th{background:#222;}td{background:#18181b;}tr:nth-child(even){background:#222;} .scrollable{max-height:80vh;overflow:auto;}</style></head><body><h2>Full SQL Result</h2><div class='scrollable'>`);
+                    win.document.write('<table>');
+                    win.document.write('<thead><tr>' + allHeaders.map(h => `<th>${h}</th>`).join('') + '</tr></thead>');
+                    win.document.write('<tbody>');
+                    data.result.forEach((row) => {
+                      win.document.write('<tr>' + allHeaders.map(h => `<td>${row[h]}</td>`).join('') + '</tr>');
+                    });
+                    win.document.write('</tbody></table></div>');
+                    win.document.write('</body></html>');
+                    win.document.close();
+                  }
+                }}
+              >View all columns & rows</button>
+              <button
+                className="px-3 py-1 rounded bg-green-600 text-white text-xs font-medium hover:bg-green-700"
+                onClick={() => {
+                  // CSV generator
+                  function toCSV(headers, rows) {
+                    const esc = v => '"' + String(v).replace(/"/g, '""') + '"';
+                    return [headers.join(',') , ...rows.map(r => headers.map(h => esc(r[h])).join(','))].join('\r\n');
+                  }
+                  const csvData = toCSV(allHeaders, data.result);
+                  const blob = new Blob([csvData], { type: 'text/csv' });
+                  const a = document.createElement('a');
+                  a.href = URL.createObjectURL(blob);
+                  a.download = 'result.csv';
+                  a.click();
+                }}
+              >Download CSV</button>
+            </div>
+            <table className="min-w-[200px] border mt-2 text-sm">
+              <thead>
+                <tr>
+                  {showHeaders.map((h) => (
+                    <th key={h} className="border px-2 py-1 bg-gray-800 text-gray-100">{h}</th>
                   ))}
+                  {hasMoreCols && <th className="border px-2 py-1 bg-gray-800 text-gray-100">...</th>}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+              </thead>
+              <tbody>
+                {showRows.map((row: any, i: number) => (
+                  <tr key={i}>
+                    {showHeaders.map((h) => (
+                      <td key={h} className="border px-2 py-1">{row[h]}</td>
+                    ))}
+                    {hasMoreCols && <td className="border px-2 py-1 text-center">...</td>}
+                  </tr>
+                ))}
+                {hasMoreRows && (
+                  <tr>
+                    <td colSpan={showHeaders.length + (hasMoreCols ? 1 : 0)} className="border px-2 py-1 text-center text-xs text-gray-400">...and {data.result.length - rowCount} more rows</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        );
+      })()}
       {/* Fallback: show full JSON if no known keys */}
       {!data.query && !data.database && !data.tables && !data.columns && !data.SQL && !data.reasons && !data.result && (
         <pre className="bg-gray-900 rounded p-2 text-xs overflow-x-auto">{JSON.stringify(data, null, 2)}</pre>
