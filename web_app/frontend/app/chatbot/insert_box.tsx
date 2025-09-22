@@ -1,13 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
-import "./insert_box.css";
 
 interface InsertBoxProps {
-  theme: "light" | "dark";
   onSend: (text: string) => void;
   sending: boolean;
 }
 
-const InsertBox: React.FC<InsertBoxProps> = ({ theme, onSend, sending }) => {
+const InsertBox: React.FC<InsertBoxProps> = ({ onSend, sending }) => {
   const [input, setInput] = useState("");
   const [runAnim, setRunAnim] = useState(false);
   const textRef = useRef<HTMLTextAreaElement | null>(null);
@@ -38,11 +36,11 @@ const InsertBox: React.FC<InsertBoxProps> = ({ theme, onSend, sending }) => {
   };
 
   return (
-  <div className="chatbot-input-row">
+  <div className="flex items-end gap-2 border-t border-gray-700 pt-3">
       <textarea
         ref={textRef}
         value={input}
-        className="chatbot-textarea"
+        className="flex-1 min-h-9 max-h-64 border border-gray-600 rounded-md bg-gray-800 p-2 text-sm text-gray-100 focus:outline-none focus:ring-2 focus:ring-violet-500"
         onChange={e => setInput(e.target.value)}
         onKeyDown={e => {
           if (e.key === "Enter" && !e.shiftKey) {
@@ -58,7 +56,7 @@ const InsertBox: React.FC<InsertBoxProps> = ({ theme, onSend, sending }) => {
       />
       <button
         onClick={handleSend}
-        className={`chatbot-send-btn${runAnim ? " run" : ""}`}
+  className={`inline-flex items-center justify-center rounded-md px-3 py-2 bg-violet-600 text-white hover:bg-violet-700 transition border border-violet-700 ${runAnim ? 'scale-95' : ''}`}
         disabled={sending || !input.trim()}
         title="Send"
     aria-label="Send message"

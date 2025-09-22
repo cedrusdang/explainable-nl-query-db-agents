@@ -1,55 +1,29 @@
 import React from "react";
-import "./menu.css";
 
 interface MenuProps {
-  theme: "light" | "dark";
-  setTheme: (t: "light" | "dark") => void;
   minimized: boolean;
   setMinimized: (m: boolean) => void;
 }
 
-const Menu: React.FC<MenuProps> = ({ theme, setTheme, minimized, setMinimized }) => {
-  if (minimized) {
-    return (
-      <div className={`chatbot-menu-panel minimized${theme === "dark" ? " chatbot-dark" : ""}`}> 
-        <div className="chatbot-menu-bubble" onClick={() => setMinimized(false)} title="Open menu">
-          <span>≡</span>
-        </div>
-      </div>
-    );
-  }
+const Menu: React.FC<MenuProps> = ({ minimized, setMinimized }) => {
+  if (minimized) return null;
   return (
-    <aside className={`chatbot-menu-panel${theme === "dark" ? " chatbot-dark" : ""}`}> 
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h1 className="chatbot-menu-title">Settings</h1>
-        <button onClick={() => setMinimized(true)} style={{ background: "none", border: "none", fontSize: 24, cursor: "pointer" }} title="Minimize menu">–</button>
-      </div>
-      <div className="chatbot-menu-row" style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-        <h2 className="chatbot-menu-label" style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.5, textTransform: "uppercase", opacity: .75 }}>Theme</h2>
-        <select
-          className="chatbot-menu-select"
-          value={theme}
-          aria-label="Theme selection"
-          onChange={e => setTheme(e.target.value as "light" | "dark")}
-          style={{
-            background: "var(--ai-bg-inset)",
-            border: "1px solid var(--ai-border)",
-            color: "var(--ai-text)",
-            padding: "0.55rem 0.65rem",
-            borderRadius: "var(--ai-radius-md)",
-            fontSize: 14,
-            cursor: "pointer",
-            boxShadow: "var(--ai-shadow-sm)",
-            transition: "var(--ai-transition)",
-            outline: "none"
-          }}
-          onFocus={e => (e.currentTarget.style.boxShadow = "0 0 0 3px rgba(var(--ai-accent-rgb),0.35)")}
-          onBlur={e => (e.currentTarget.style.boxShadow = "var(--ai-shadow-sm)")}
+    <aside className={`w-72 flex-shrink-0 h-screen p-4 border-r border-gray-700 bg-gray-900`}> 
+      <div className="flex items-center justify-between">
+        <h1 className="text-lg font-semibold">NL to SQL chatbot</h1>
+        <button
+          onClick={() => setMinimized(true)}
+          className="inline-flex items-center gap-1 rounded-full h-8 px-3 text-xs font-medium text-gray-100 bg-gray-800/70 hover:bg-gray-800/90 border border-white/10 shadow-sm backdrop-blur-md transition-colors"
+          title="Minimize menu"
+          aria-label="Minimize menu"
         >
-          <option value="light">Light</option>
-          <option value="dark">Dark</option>
-        </select>
+          <svg className="w-3.5 h-3.5 text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+          <span>Hide</span>
+        </button>
       </div>
+      {/* Theme removed: single dark theme */}
     </aside>
   );
 };

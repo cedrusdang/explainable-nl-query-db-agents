@@ -1,0 +1,8 @@
+@import "tailwindcss";
+
+/* Optional global theme */
+body {
+  /* Fallback text color */
+  color: #111827; /* gray-900 */
+  background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%); /* slate-50 -> slate-100 */
+}

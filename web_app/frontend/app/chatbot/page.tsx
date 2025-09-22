@@ -1,7 +1,6 @@
 "use client"
 
-import React, { useState, useCallback } from "react";
-import "./page.css";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import Menu from "./menu";
 import ChatBox from "./chatbox";
 import InsertBox from "./insert_box";
@@ -15,10 +14,87 @@ export interface ChatMessage {
 }
 
 export default function ChatbotPage() {
-	const [theme, setTheme] = useState<"light" | "dark">("light");
 	const [menuMinimized, setMenuMinimized] = useState(false);
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
 	const [loadingBot, setLoadingBot] = useState(false);
+	const [entering, setEntering] = useState(true);
+	// Floating button state (only visible when minimized)
+	const [btnPos, setBtnPos] = useState<{ x: number; y: number }>({ x: 16, y: 16 });
+	const draggingRef = useRef(false);
+	const startOffsetRef = useRef<{ dx: number; dy: number }>({ dx: 0, dy: 0 });
+	const btnSizeRef = useRef<{ w: number; h: number }>({ w: 48, h: 48 });
+	const btnRef = useRef<HTMLButtonElement | null>(null);
+	const movedRef = useRef(false);
+
+	useEffect(() => {
+		// entrance overlay
+		const t = setTimeout(() => setEntering(false), 600);
+		return () => clearTimeout(t);
+	}, []);
+
+	// Helpers to clamp within viewport
+	const clamp = (val: number, min: number, max: number) => Math.max(min, Math.min(max, val));
+
+	const beginDragAt = (clientX: number, clientY: number) => {
+		draggingRef.current = true;
+		movedRef.current = false;
+		// Measure button size (if ref available)
+		if (btnRef.current) {
+			const rect = btnRef.current.getBoundingClientRect();
+			btnSizeRef.current = { w: rect.width, h: rect.height };
+		}
+		startOffsetRef.current = { dx: clientX - btnPos.x, dy: clientY - btnPos.y };
+	};
+
+	const onDragMove = (clientX: number, clientY: number) => {
+		if (!draggingRef.current) return;
+		movedRef.current = true;
+		const margin = 8;
+		const { w, h } = btnSizeRef.current;
+		const vw = typeof window !== "undefined" ? window.innerWidth : 0;
+		const vh = typeof window !== "undefined" ? window.innerHeight : 0;
+		const x = clamp(clientX - startOffsetRef.current.dx, margin, Math.max(margin, vw - w - margin));
+		const y = clamp(clientY - startOffsetRef.current.dy, margin, Math.max(margin, vh - h - margin));
+		setBtnPos({ x, y });
+	};
+
+	const endDrag = () => {
+		draggingRef.current = false;
+		startOffsetRef.current = { dx: 0, dy: 0 };
+	};
+
+	// Mouse handlers
+	const handleMouseDown: React.MouseEventHandler<HTMLButtonElement> = (e) => {
+		e.preventDefault();
+		beginDragAt(e.clientX, e.clientY);
+		const onMove = (evt: MouseEvent) => onDragMove(evt.clientX, evt.clientY);
+		const onUp = () => {
+			window.removeEventListener("mousemove", onMove);
+			window.removeEventListener("mouseup", onUp);
+			endDrag();
+		};
+		window.addEventListener("mousemove", onMove);
+		window.addEventListener("mouseup", onUp);
+	};
+
+	// Touch handlers
+	const handleTouchStart: React.TouchEventHandler<HTMLButtonElement> = (e) => {
+		const t = e.touches[0];
+		beginDragAt(t.clientX, t.clientY);
+		const onMove = (evt: TouchEvent) => {
+			if (evt.touches.length > 0) {
+				const tt = evt.touches[0];
+				onDragMove(tt.clientX, tt.clientY);
+			}
+		};
+		const onEnd = () => {
+			window.removeEventListener("touchmove", onMove);
+			window.removeEventListener("touchend", onEnd);
+			endDrag();
+		};
+		window.addEventListener("touchmove", onMove, { passive: false });
+		window.addEventListener("touchend", onEnd);
+	};
 
 	// Generate id helper
 	const genId = () => crypto.randomUUID();
@@ -78,45 +154,75 @@ export default function ChatbotPage() {
 	}, []);
 
 	return (
-		<div className={`chatbot-root-full${theme === "dark" ? " dark" : ""}${menuMinimized ? " menu-hidden" : ""}`}> 
+		<div className={`min-h-screen w-full flex bg-gray-900 text-gray-100 relative`}> 
+			{/* Desktop sidebar with smooth slide */}
+			<aside
+				className={`hidden md:flex md:fixed md:inset-y-0 md:left-0 w-72 border-r border-gray-700 bg-gray-900/80 backdrop-blur-sm transition-transform duration-300 ease-in-out will-change-transform z-30 ${menuMinimized ? "-translate-x-full" : "translate-x-0"}`}
+				aria-hidden={menuMinimized}
+			>
+				<div className="w-72">
+					<Menu minimized={menuMinimized} setMinimized={setMenuMinimized} />
+				</div>
+			</aside>
+
+			{/* Mobile overlay menu */}
 			{!menuMinimized && (
-				<Menu theme={theme} setTheme={setTheme} minimized={menuMinimized} setMinimized={setMenuMinimized} />
+				<div className="md:hidden">
+					<div className="fixed inset-0 z-40 bg-black/50" onClick={() => setMenuMinimized(true)} />
+					<div className="fixed left-0 top-0 bottom-0 z-50 w-72 max-w-[80vw] bg-gray-900 border-r border-gray-700 p-4 shadow-xl">
+						<Menu minimized={menuMinimized} setMinimized={setMenuMinimized} />
+					</div>
+				</div>
 			)}
-			<main style={{ display: "flex", flexDirection: "column", height: "100vh", width: "100%", position: "relative" }}>
-				<div className="chatbot-center-wrap">
+
+			<main className={`flex flex-col h-screen w-full relative transition-all duration-300 ease-in-out ${menuMinimized ? "md:pl-0" : "md:pl-72"}`}>
+				<div className="flex flex-col flex-1 max-w-4xl w-full mx-auto px-4 py-6 gap-4">
 					<ChatBox
-						theme={theme}
 						messages={messages}
 						loadingBot={loadingBot}
 						onEdit={editMessage}
 						onDelete={deleteMessage}
 						onResend={resendUserMessage}
 					/>
-					<InsertBox theme={theme} onSend={sendUserMessage} sending={loadingBot} />
+					<InsertBox onSend={sendUserMessage} sending={loadingBot} />
 				</div>
 			</main>
 			{menuMinimized && (
 				<button
-					style={{
-						position: "fixed",
-						left: 18,
-						bottom: 24,
-						background: "var(--ai-accent-gradient)",
-						border: "1px solid rgba(var(--ai-accent-rgb),0.5)",
-						color: "#fff",
-						borderRadius: 20,
-						padding: "0.85rem 1.1rem 0.8rem",
-						fontWeight: 600,
-						cursor: "pointer",
-						boxShadow: "0 8px 30px -12px rgba(var(--ai-accent-rgb),0.65),0 0 0 1px rgba(var(--ai-accent-rgb),0.4)",
-						letterSpacing: 0.5,
-						fontSize: 14,
+					ref={btnRef}
+					className="fixed z-50 select-none cursor-grab active:cursor-grabbing rounded-full h-10 md:h-11 px-3 md:px-4 flex items-center gap-2 text-gray-100 bg-gray-800/70 hover:bg-gray-800/90 border border-white/10 shadow-lg backdrop-blur-md transition-colors"
+					style={{ left: btnPos.x, top: btnPos.y }}
+					onMouseDown={handleMouseDown}
+					onTouchStart={handleTouchStart}
+					onClick={(e) => {
+						// Suppress click if the button was dragged
+						if (movedRef.current) {
+							e.preventDefault();
+							return;
+						}
+						setMenuMinimized(false);
 					}}
-					onClick={() => setMenuMinimized(false)}
 					title="Open menu"
+					aria-label="Open menu"
 				>
-					≡ Menu
+					{/* Icon + label */}
+					<svg className="w-4 h-4 text-violet-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+						<line x1="3" y1="7" x2="21" y2="7" />
+						<line x1="3" y1="12" x2="21" y2="12" />
+						<line x1="3" y1="17" x2="16" y2="17" />
+					</svg>
+					<span className="text-xs md:text-sm font-medium">Menu</span>
 				</button>
+			)}
+
+			{/* Entering overlay */}
+			{entering && (
+				<div className="absolute inset-0 grid place-items-center bg-gray-900/70 backdrop-blur-sm">
+					<div className="flex items-center gap-3 text-gray-200">
+						<span role="img" aria-label="cat" className="text-2xl animate-bounce">🐱</span>
+						<span>Loading chat…</span>
+					</div>
+				</div>
 			)}
 		</div>
 	);
