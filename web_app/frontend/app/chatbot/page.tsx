@@ -110,7 +110,7 @@ export default function ChatbotPage() {
 				className={`hidden md:flex md:fixed md:inset-y-0 md:left-0 w-72 border-r border-gray-700 bg-gray-900/80 backdrop-blur-sm transition-transform duration-300 ease-in-out will-change-transform z-30 ${menuMinimized ? "-translate-x-full" : "translate-x-0"}`}
 				aria-hidden={menuMinimized}
 			>
-				<div className="w-72">
+				<div className="w-72 h-full p-4">
 					<Menu minimized={menuMinimized} setMinimized={setMenuMinimized} username={username} onRequestLogout={() => setShowLogoutConfirm(true)} />
 				</div>
 			</aside>

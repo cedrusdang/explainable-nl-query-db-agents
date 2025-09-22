@@ -10,7 +10,7 @@ interface MenuProps {
 const Menu: React.FC<MenuProps> = ({ minimized, setMinimized, username, onRequestLogout }) => {
   if (minimized) return null;
   return (
-    <aside className={`w-72 flex-shrink-0 h-screen p-4 border-r border-gray-700 bg-gray-900`}> 
+    <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 min-w-0">
           <div className="w-7 h-7 rounded-full bg-violet-600 text-white grid place-items-center text-xs">
@@ -18,7 +18,6 @@ const Menu: React.FC<MenuProps> = ({ minimized, setMinimized, username, onReques
           </div>
           <div className="truncate">
             <div className="text-sm font-medium truncate" title={username || undefined}>{username || "User"}</div>
-            {/* Optional subline could go here */}
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -48,8 +47,8 @@ const Menu: React.FC<MenuProps> = ({ minimized, setMinimized, username, onReques
           </button>
         </div>
       </div>
-      {/* Theme removed: single dark theme */}
-    </aside>
+      {/* Additional menu items can be added here */}
+    </div>
   );
 };
 
