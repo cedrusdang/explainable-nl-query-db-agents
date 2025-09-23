@@ -1,13 +1,16 @@
-from django.urls import path, include
+from django.urls import path
 from rest_framework.routers import DefaultRouter
-from .views import FilesViewSet, ChatsViewSet, APIKeysViewSet
+from .views import FilesViewSet, APIKeysViewSet, UsageView, download_chat_markdown
 
 # Register viewsets with the router
 router = DefaultRouter()
-
-# TODO: Add more viewsets as needed
 router.register(r'files', FilesViewSet, basename='files')
-router.register(r'chats', ChatsViewSet, basename='chats')
 router.register(r'apikeys', APIKeysViewSet, basename='apikeys')
 
-urlpatterns = router.urls
+urlpatterns = [
+	path('usage/', UsageView.as_view(), name='usage'),
+	path('download-chat-md/', download_chat_markdown, name='download-chat-md'),
+]
+
+# include router URLs after custom ones
+urlpatterns += router.urls

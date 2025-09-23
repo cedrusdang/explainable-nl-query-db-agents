@@ -1,18 +1,28 @@
 import json
 import re
 import os, zipfile
+
 from django.core.files import File
 from django.utils.text import get_valid_filename
 from django.conf import settings
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.decorators import action
+from rest_framework.decorators import api_view, permission_classes, action
 from django.http import FileResponse
+
 from utils import schema_builder
 
-from .models import Files, Chats, APIKeys
-from .serializers import FilesSerializer, ChatsSerializer, APIKeysSerializer
+from django.utils import timezone
+from datetime import date
+
+from .models import Files, APIKeys, DailyUsage, UserLimits
+from .limit_rate import GBLimitMixin
+from .serializers import FilesSerializer, APIKeysSerializer
+from rest_framework.views import APIView
+from django.db.models import Sum
+from rest_framework.permissions import IsAuthenticated
+from django.utils import timezone
 
 SQLITE_EXTENSIONS = [f".sqlite{i}" for i in range(7)] + [".sqlite"]
 
@@ -46,7 +56,7 @@ class OAuthRestrictedModelViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-class FilesViewSet(viewsets.ModelViewSet):
+class FilesViewSet(GBLimitMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     queryset = Files.objects.all()
     serializer_class = FilesSerializer
@@ -152,11 +162,42 @@ class FilesViewSet(viewsets.ModelViewSet):
             filename=os.path.basename(file_obj.file.name)
         )
 
-class ChatsViewSet(OAuthRestrictedModelViewSet):
-    serializer_class = ChatsSerializer
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def download_chat_markdown(request):
+    """
+    Accepts JSON POST { messages: [{id, sender, text, createdAt}, ...], filename?: str }
+    Returns a markdown attachment representing the chat history.
+    """
+    try:
+        data = request.data
+        messages = data.get("messages", [])
+        filename = data.get("filename") or "chat_history.md"
+        # build markdown
+        lines = ["# Chat history\n"]
+        for m in messages:
+            ts = m.get("createdAt")
+            sender = m.get("sender", "user")
+            text = m.get("text", "")
+            # simple timestamp formatting if numeric
+            if isinstance(ts, (int, float)):
+                try:
+                    import datetime
+                    ts_str = datetime.datetime.fromtimestamp(ts/1000).isoformat()
+                except Exception:
+                    ts_str = str(ts)
+            else:
+                ts_str = str(ts)
+            lines.append(f"**{sender}** - {ts_str}\n\n")
+            lines.append(text + "\n\n---\n\n")
 
-    def get_queryset(self):
-        return Chats.objects.filter(user=self.request.user)
+        content = "".join(lines)
+        from django.http import HttpResponse
+        resp = HttpResponse(content, content_type="text/markdown")
+        resp["Content-Disposition"] = f'attachment; filename="{filename}"'
+        return resp
+    except Exception as e:
+        return Response({"error": str(e)}, status=500)
 
 class APIKeysViewSet(viewsets.ViewSet):
     permission_classes = [IsAuthenticated]
@@ -178,4 +219,49 @@ class APIKeysViewSet(viewsets.ViewSet):
         return Response(
             {"message": "API key updated", "api_key": obj.api_key},
             status=status.HTTP_200_OK,
+        )
+
+
+class UsageView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+
+        # max values from settings
+        try:
+            limits = user.userlimits
+            max_chats = limits.max_chats
+            max_gb = limits.max_gb_db
+        except UserLimits.DoesNotExist:
+            max_chats = 0
+            max_gb = 0
+
+        # today's chats used
+        today = timezone.now().date()
+        usage = DailyUsage.objects.filter(user=user, date=today).first()
+        chats_used = usage.chats_used if usage else 0
+
+        # used bytes on server
+        agg = Files.objects.filter(user=user).aggregate(total=Sum('size'))
+        used_bytes = int(agg.get('total') or 0)
+
+        GB = 1024 ** 3
+        # compute next reset at next midnight (server tz)
+        now = timezone.now()
+        # start of next day
+        next_day = (now + timezone.timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+        seconds_until_reset = int((next_day - now).total_seconds())
+
+        return Response(
+            {
+                "max_chats": max_chats,
+                "max_gb": max_gb,
+                "chats_used_today": chats_used,
+                "used_bytes": used_bytes,
+                "max_bytes": int(max_gb) * GB,
+                "server_time": now,
+                "reset_time": next_day,
+                "seconds_until_reset": seconds_until_reset,
+            }
         )

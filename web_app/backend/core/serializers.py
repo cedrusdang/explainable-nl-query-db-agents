@@ -1,15 +1,12 @@
 from rest_framework import serializers
-from .models import Files, Chats, APIKeys
+from .models import Files, APIKeys
 
 class FilesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Files
         fields = ['id', 'user', 'file', 'database', 'time']
 
-class ChatsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Chats
-        fields = ['id', 'user', 'chats', 'time']
+# Chats model removed; frontend stores chat session in localStorage and can POST to download endpoint
 
 class APIKeysSerializer(serializers.ModelSerializer):
     class Meta:

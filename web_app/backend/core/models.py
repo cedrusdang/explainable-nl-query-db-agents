@@ -9,17 +9,15 @@ class Files(models.Model):
     database = models.CharField(max_length=255)
     file = models.FileField(upload_to=user_data_path, blank=True, null=True)
     time = models.DateTimeField(auto_now_add=True)
+    size = models.BigIntegerField(default=0)
 
     def __str__(self):
         return f"{self.database} ({self.user})"
 
 class Chats(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     chats = models.TextField()
     time = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        unique_together = ('user',)  # giữ lại nếu bạn muốn mỗi user chỉ có 1 bản ghi
 
     def __str__(self):
         return f"Chats of {self.user}"
@@ -30,3 +28,19 @@ class APIKeys(models.Model):
 
     def __str__(self):
         return f"API key for {self.user}"
+
+class UserLimits(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    max_chats = models.IntegerField(default=999)
+    max_gb_db = models.IntegerField(default=999)
+
+    def __str__(self):
+        return f"Limits for {self.user}"
+
+class DailyUsage(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    date = models.DateField(auto_now_add=True)
+    chats_used = models.IntegerField(default=0)
+
+    class Meta:
+        unique_together = ("user", "date")
