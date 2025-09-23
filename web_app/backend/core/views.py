@@ -187,38 +187,20 @@ class ChatsViewSet(OAuthRestrictedModelViewSet):
     queryset = Chats.objects.all()
     serializer_class = ChatsSerializer
 
-class APIKeyViewSet(OAuthRestrictedModelViewSet):
-    serializer_class = APIKeySerializer
+class APIKeyViewSet(viewsets.ViewSet):
+    permission_classes = [IsAuthenticated]
 
     def get_object(self):
-        return APIKey.get_solo()
-
-    def list(self, request):
-        obj = self.get_object()
-        return Response(APIKeySerializer(obj).data)
-
-    def retrieve(self, request, pk=None):
-        obj = self.get_object()
-        return Response(APIKeySerializer(obj).data)
-
+        return APIKey.get_solo()  
     def create(self, request):
         obj = self.get_object()
-        serializer = APIKeySerializer(obj, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def update(self, request, pk=None):
-        obj = self.get_object()
-        serializer = APIKeySerializer(obj, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
+        # Only one record allowed
+        new_value = request.data.get("key", "")
+        obj.api_key = new_value
+        obj.save(update_fields=["api_key"])
 
-    def partial_update(self, request, pk=None):
-        return self.update(request, pk)
-
-    def destroy(self, request, pk=None):
-        obj = self.get_object()
-        obj.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(
+            {"message": "API key updated"},
+            status=status.HTTP_200_OK,
+        )
