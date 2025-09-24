@@ -9,7 +9,22 @@ from datetime import datetime
 
 from core.models import APIKeys
 from utils import sql_connector
+from django.http import StreamingHttpResponse
+from rest_framework import viewsets, status
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+import json
+from django.core.cache import cache
+from datetime import datetime
+
+from core.models import APIKeys
+from utils import sql_connector
 from . import a_db_select, b_table_select, c_sql_generate
+from utils.schema_builder import get_schema_dir
+import os
+import threading
+import time
 
 # Pipeline agents
 AGENTS = [
@@ -46,7 +61,13 @@ class AgentViewSet(viewsets.ViewSet):
 
             # Ensure API key exists before running any agent that calls LLMs
             if not api_key:
-                yield f"data: {json.dumps({'status': 'error', 'agent': 'bootstrap', 'error': 'Missing API key. Please set your API key in profile settings.', 'time': now_str()}, ensure_ascii=False)}\n\n"
+                payload = {
+                    "status": "error",
+                    "agent": "bootstrap",
+                    "error": "Missing API key. Please set your API key in profile settings.",
+                    "time": now_str(),
+                }
+                yield f"data: {json.dumps(payload, ensure_ascii=False)}\n\n"
                 yield f"data: {json.dumps({'status': 'finished', 'time': now_str()}, ensure_ascii=False)}\n\n"
                 cache.set(f"{CACHE_KEY_PREFIX}:{request.user.id}", {"error": "Missing API key"}, None)
                 return
@@ -54,23 +75,45 @@ class AgentViewSet(viewsets.ViewSet):
             for name, func in AGENTS:
                 # Announce agent start
                 yield f"data: {json.dumps({'status': 'running', 'agent': name, 'time': now_str()}, ensure_ascii=False)}\n\n"
-                try:
-                    start_time = now_str()
-                    # Agent A needs user_id to access per-user schema/embeddings
-                    if func is a_db_select.run:
-                        result = func(api_key, result, request.user.id)
-                    else:
-                        result = func(api_key, result)
-                    end_time = now_str()
-                    yield f"data: {json.dumps({'agent': name, 'output': result, 'started_at': start_time, 'finished_at': end_time}, ensure_ascii=False)}\n\n"
 
-                    # If any agent returns an error, stop the pipeline early to avoid cascading errors
-                    if isinstance(result, dict) and result.get("error"):
-                        yield f"data: {json.dumps({'status': 'error', 'agent': name, 'time': now_str()}, ensure_ascii=False)}\n\n"
-                        break
-                except Exception as e:
-                    # Stop pipeline on unexpected exception as well
-                    yield f"data: {json.dumps({'agent': name, 'error': str(e), 'time': now_str()}, ensure_ascii=False)}\n\n"
+                # Run agent in background thread so we can emit heartbeats while it works
+                start_time = now_str()
+                result_container = {}
+
+                def target():
+                    try:
+                        result_container['result'] = func(api_key, result, request.user.id)
+                    except Exception as e:
+                        result_container['result'] = {'error': str(e)}
+
+                t = threading.Thread(target=target, daemon=True)
+                t.start()
+
+                # While the agent thread is running, emit lightweight comments as keepalive
+                # (colon-prefixed lines are SSE comments and act as heartbeats)
+                while t.is_alive():
+                    try:
+                        yield ":\n\n"
+                        time.sleep(0.8)
+                    except GeneratorExit:
+                        # client disconnected
+                        return
+
+                # Agent finished
+                end_time = now_str()
+                result = result_container.get('result')
+
+                payload = {
+                    "agent": name,
+                    "output": result,
+                    "started_at": start_time,
+                    "finished_at": end_time,
+                }
+                yield f"data: {json.dumps(payload, ensure_ascii=False)}\n\n"
+
+                # Stop pipeline if error returned
+                if isinstance(result, dict) and result.get("error"):
+                    yield f"data: {json.dumps({'status': 'error', 'agent': name, 'time': now_str()}, ensure_ascii=False)}\n\n"
                     break
 
             # Pipeline finished
@@ -81,6 +124,7 @@ class AgentViewSet(viewsets.ViewSet):
 
         response = StreamingHttpResponse(event_stream(), content_type="text/event-stream")
         response["Cache-Control"] = "no-cache"
+        response["X-Accel-Buffering"] = "no"  # disable proxy buffering (important for SSE)
         return response
 
     def list(self, request):
@@ -94,4 +138,5 @@ class AgentViewSet(viewsets.ViewSet):
     def clear_cache(self, request):
         """Clear last cached agent result for this user."""
         cache.delete(f"{CACHE_KEY_PREFIX}:{request.user.id}")
+        return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(status=status.HTTP_204_NO_CONTENT)
