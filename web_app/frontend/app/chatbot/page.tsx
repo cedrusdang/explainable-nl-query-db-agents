@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { performLogout } from "./logout";
+import { performLogout } from "../services/logout";
 import Menu from "./menu";
 import MobileMenu from "./mobile_menu";
 import { useStreamingLogic } from "./streaming_logic";
@@ -22,11 +22,27 @@ export interface ChatMessage {
 export default function ChatbotPage() {
 	const router = useRouter();
 	const [menuMinimized, setMenuMinimized] = useState(false);
-	const [messages, setMessages] = useState<ChatMessage[]>([]);
+	const [messages, setMessages] = useState<ChatMessage[]>(() => {
+		// Lazy initializer reads cached messages from localStorage on first client render.
+		// This prevents a render/race where children persist an empty array before
+		// the cache is restored (which caused chat to be lost on F5).
+		if (typeof window === "undefined") return [];
+		try {
+			const cache = localStorage.getItem("chatbot_messages");
+			if (cache) {
+				const parsed = JSON.parse(cache);
+				if (Array.isArray(parsed)) return parsed;
+			}
+		} catch (e) {
+			console.warn("Failed to read chat cache during init", e);
+		}
+		return [];
+	});
 	const [loadingBot, setLoadingBot] = useState(false);
 	const [entering, setEntering] = useState(true);
 	const [username, setUsername] = useState<string | null>(null);
 	const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+	const [logoutLoading, setLogoutLoading] = useState(false);
 	// const { sendUserMessage } = useStreaming(setMessages, setLoadingBot);
 
 	useEffect(() => {
@@ -47,6 +63,10 @@ export default function ChatbotPage() {
 		}
 		setUsername(u);
 	}, [router]);
+
+	// Messages are initialized from localStorage via the lazy state initializer above
+	// so no separate restore effect is needed. This avoids an intermediate render
+	// where children might overwrite the stored cache with an empty array.
 
 		// Use logic hooks
 		const { sendUserMessage } = useStreamingLogic(setMessages, setLoadingBot);
@@ -98,16 +118,6 @@ export default function ChatbotPage() {
 				</button>
 			)}
 
-			{/* Entering overlay */}
-			{entering && (
-				<div className="absolute inset-0 grid place-items-center bg-gray-900/70 backdrop-blur-sm">
-					<div className="flex items-center gap-3 text-gray-200">
-						<span role="img" aria-label="cat" className="text-2xl animate-bounce">🐱</span>
-						<span>Loading chat…</span>
-					</div>
-				</div>
-			)}
-
 			{/* Logout confirm modal */}
 			{showLogoutConfirm && (
 				<div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -123,10 +133,18 @@ export default function ChatbotPage() {
 								Cancel
 							</button>
 							<button
-								className="px-3 py-1.5 rounded-lg bg-violet-600 hover:bg-violet-700 text-white text-sm"
-								onClick={() => performLogout("/")}
+								className={`px-3 py-1.5 rounded-lg text-white text-sm ${logoutLoading ? 'bg-gray-600 cursor-not-allowed opacity-70' : 'bg-violet-600 hover:bg-violet-700'}`}
+								onClick={async () => {
+									setLogoutLoading(true);
+									try {
+										performLogout("/");
+									} finally {
+										setLogoutLoading(false);
+									}
+								}}
+								disabled={logoutLoading}
 							>
-								Yes, log out
+								{logoutLoading ? 'Logging out…' : 'Yes, log out'}
 							</button>
 						</div>
 					</div>

@@ -4,6 +4,7 @@ import { marked } from "marked";
 import { renderStreamData } from "./streaming_logic";
 import React, { useRef, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { performLogout } from "../services/logout";
 
 interface ChatBoxProps {
   messages: { id: string; sender: "user" | "bot"; text: string }[];
@@ -27,9 +28,10 @@ const ChatBox: React.FC<ChatBoxProps> = ({ messages, loadingBot, onEdit, onDelet
     }
     return [];
   });
+  // Track whether we've synced the initial cache to avoid overwriting it with an empty array
+  const restoredRef = useRef<boolean>(cachedMessages.length > 0);
 
-  // Modal for 401 stream error
-  const [show401Modal, setShow401Modal] = useState(false);
+  // 401 handling is centralized via performLogout; no separate modal is needed
 
   // Example: auto scroll
   useEffect(() => {
@@ -39,9 +41,20 @@ const ChatBox: React.FC<ChatBoxProps> = ({ messages, loadingBot, onEdit, onDelet
   // Persist messages to cache
   useEffect(() => {
     if (typeof window !== "undefined") {
-      localStorage.setItem("chatbot_messages", JSON.stringify(messages));
+      // Only write to cache if we have messages, or if we've previously restored
+      // a non-empty cache (so clearing is still possible). This prevents a
+      // fresh mount with empty messages from erasing stored chat before the
+      // page-level initializer runs.
+      if (messages.length > 0 || restoredRef.current) {
+        try {
+          localStorage.setItem("chatbot_messages", JSON.stringify(messages));
+        } catch (e) {
+          // ignore storage errors
+        }
+      }
     }
     setCachedMessages(messages);
+    if (messages.length > 0) restoredRef.current = true;
   }, [messages]);
 
   // Example: loading dots
@@ -67,52 +80,14 @@ const ChatBox: React.FC<ChatBoxProps> = ({ messages, loadingBot, onEdit, onDelet
 
   // You can lift state up and pass setMessages, setLoading, etc. as props if needed
 
-    // OAuth 401 handler: logout and redirect to login
-    useEffect(() => {
-      // Check if any bot message contains 401 OAuth failure
-      const has401 = messages.some(
-        (msg) => msg.sender === "bot" && /401.*Oau.*thất bại/i.test(msg.text)
-      );
-      if (has401) {
-        // Clear local/session storage if needed
-        if (typeof window !== "undefined") {
-          localStorage.clear();
-          sessionStorage.clear();
-        }
-        // Redirect to login page
-  window.location.href = "/";
-      }
-        // Check for [Stream error] HTTP 401
-        const hasStream401 = messages.some(
-          (msg) => /\[Stream error\]\s*HTTP 401/i.test(msg.text)
-        );
-        if (hasStream401) {
-          setShow401Modal(true);
-        }
-    }, [messages, router]);
+    // NOTE: removed content-inspection-based logout. Authentication
+    // handling is centralized in `apiFetch` / streamAgents which will
+    // attempt a token refresh before forcing a logout. Leaving
+    // message-content-based logout in place caused premature logouts.
 
   return (
   <div className="flex-1 h-full min-h-0 overflow-hidden rounded-xl bg-gray-900 shadow-sm"> 
-      {/* 401 Stream Error Modal */}
-      {show401Modal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 min-w-[300px] text-center">
-            <div className="text-lg font-semibold mb-2 text-red-600 dark:text-red-400">[Stream error] HTTP 401</div>
-            <div className="mb-4 text-gray-700 dark:text-gray-200">Your login session has expired or is invalid. Please log in again.</div>
-            <button
-              className="px-4 py-2 rounded bg-blue-600 text-white font-medium hover:bg-blue-700"
-              onClick={() => {
-                setShow401Modal(false);
-                if (typeof window !== "undefined") {
-                  localStorage.clear();
-                  sessionStorage.clear();
-                }
-                window.location.href = "/";
-              }}
-            >Continue</button>
-          </div>
-        </div>
-      )}
+      {/* 401 Stream Error handled via performLogout (single OK alert). */}
   <div className="h-full overflow-y-auto p-4 space-y-3 scrollbar-none" role="log" aria-live="polite" aria-relevant="additions" aria-label="Chat messages">
         {messages.length === 0 && !loadingBot && (
           <div className="flex items-start gap-0">
@@ -250,7 +225,7 @@ function BotJsonRender({ data }: { data: any }) {
                     win.document.write('<table>');
                     win.document.write('<thead><tr>' + allHeaders.map(h => `<th>${h}</th>`).join('') + '</tr></thead>');
                     win.document.write('<tbody>');
-                    data.result.forEach((row) => {
+                    data.result.forEach((row: Record<string, any>) => {
                       win.document.write('<tr>' + allHeaders.map(h => `<td>${row[h]}</td>`).join('') + '</tr>');
                     });
                     win.document.write('</tbody></table></div>');
@@ -263,9 +238,9 @@ function BotJsonRender({ data }: { data: any }) {
                 className="px-3 py-1 rounded bg-green-600 text-white text-xs font-medium hover:bg-green-700"
                 onClick={() => {
                   // CSV generator
-                  function toCSV(headers, rows) {
-                    const esc = v => '"' + String(v).replace(/"/g, '""') + '"';
-                    return [headers.join(',') , ...rows.map(r => headers.map(h => esc(r[h])).join(','))].join('\r\n');
+                  function toCSV(headers: string[], rows: Array<Record<string, any>>) {
+                    const esc = (v: any) => '"' + String(v).replace(/"/g, '""') + '"';
+                    return [headers.join(',') , ...rows.map((r: Record<string, any>) => headers.map((h: string) => esc(r[h])).join(','))].join('\r\n');
                   }
                   const csvData = toCSV(allHeaders, data.result);
                   const blob = new Blob([csvData], { type: 'text/csv' });
@@ -324,19 +299,25 @@ function BotJsonRender({ data }: { data: any }) {
                     ) : (
                       <div className="whitespace-pre-wrap break-words [overflow-wrap:anywhere]">{msg.text}</div>
                     )}
-                    {msg.sender === 'user' && !loadingBot && (
+                    {msg.sender === 'user' && (
                       <div className="flex gap-1 mt-2 flex-wrap opacity-90">
                         <button
-                          className="px-2 py-1 text-xs rounded border border-gray-600 bg-gray-800"
+                          className={`px-2 py-1 text-xs rounded border border-gray-600 ${loadingBot ? 'bg-gray-600 text-gray-300 cursor-not-allowed opacity-70' : 'bg-gray-800'}`}
                           onClick={() => startEdit(msg.id, msg.text)}
+                          disabled={loadingBot}
+                          title={loadingBot ? 'Please wait for the bot to finish' : 'Edit message'}
                         >Edit</button>
                         <button
-                          className="px-2 py-1 text-xs rounded border border-gray-600 bg-gray-800"
+                          className={`px-2 py-1 text-xs rounded border border-gray-600 ${loadingBot ? 'bg-gray-600 text-gray-300 cursor-not-allowed opacity-70' : 'bg-gray-800'}`}
                           onClick={() => onResend(msg.id)}
+                          disabled={loadingBot}
+                          title={loadingBot ? 'Please wait for the bot to finish' : 'Resend message'}
                         >Resend</button>
                         <button
-                          className="px-2 py-1 text-xs rounded border border-gray-600 bg-gray-800"
+                          className={`px-2 py-1 text-xs rounded border border-gray-600 ${loadingBot ? 'bg-gray-600 text-gray-300 cursor-not-allowed opacity-70' : 'bg-gray-800'}`}
                           onClick={() => onDelete(msg.id)}
+                          disabled={loadingBot}
+                          title={loadingBot ? 'Please wait for the bot to finish' : 'Delete message'}
                         >Delete</button>
                       </div>
                     )}

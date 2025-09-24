@@ -47,9 +47,11 @@ export default function Home() {
         throw new Error(detail || "Login failed")
       }
 
-      const data = await res.json()
-      if (data?.access) localStorage.setItem("access_token", data.access)
-      if (data?.refresh) localStorage.setItem("refresh_token", data.refresh)
+  const data = await res.json()
+  if (data?.access) localStorage.setItem("access_token", data.access)
+  if (data?.refresh) localStorage.setItem("refresh_token", data.refresh)
+  // record login timestamp (ms) for client-side 7-day countdown
+  localStorage.setItem("login_time", String(Date.now()))
       if (username) localStorage.setItem("username", username)
 
       setMessage("✅ Logged in successfully! Redirecting…")

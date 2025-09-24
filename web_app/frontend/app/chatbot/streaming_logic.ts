@@ -98,8 +98,30 @@ export function useStreamingLogic(setMessages: (fn: (prev: ChatMessage[]) => Cha
       onError: (err) => {
         setMessages((prev) => prev.map(m => m.id === botId ? { ...m, text: (m.text ? m.text + "\n" : "") + `\n[Stream error] ${err.message}` } : m));
       },
-      onDone: () => {
+      onDone: async () => {
+        // Chat finished streaming
         setLoadingBot(false);
+        try {
+          const token = localStorage.getItem("access_token");
+          if (!token) return;
+          const usageApi = `${process.env.NEXT_PUBLIC_API_URL}/api/core/usage/`;
+          const res = await fetch(usageApi, { headers: { Authorization: `Bearer ${token}` } });
+          if (!res.ok) return; // keep previous usage cache if fetch fails
+          const data = await res.json();
+          try {
+            localStorage.setItem("usage_cache", JSON.stringify(data));
+          } catch (e) {
+            // ignore localStorage set errors
+          }
+          // notify listeners (Menu) that usage has been updated
+          try {
+            window.dispatchEvent(new CustomEvent("usage_updated", { detail: data }));
+          } catch (e) {
+            // ignore
+          }
+        } catch (e) {
+          // network or other failure; do nothing so UI keeps cached usage
+        }
       },
     });
   };
