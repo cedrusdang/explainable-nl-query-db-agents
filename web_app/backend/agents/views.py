@@ -119,40 +119,8 @@ class AgentViewSet(viewsets.ViewSet):
                     break
 
             # Pipeline finished
-            # Before signaling finished, emit a 'usage' event with the current usage payload
-            try:
-                if not (isinstance(result, dict) and result.get('error')):
-                    today = timezone.now().date()
-                    du, _ = DailyUsage.objects.get_or_create(user=request.user, date=today, defaults={'chats_used': 0})
-                    # compute used_bytes
-                    from core.models import Files, UserLimits
-                    from django.db.models import Sum
-                    agg = Files.objects.filter(user=request.user).aggregate(total=Sum('size'))
-                    used_bytes = int(agg.get('total') or 0)
-                    limits, _ = UserLimits.objects.get_or_create(user=request.user)
-                    GB = 1024 ** 3
-                    now = timezone.now()
-                    next_day = (now + timezone.timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
-                    seconds_until_reset = int((next_day - now).total_seconds())
-                    usage_payload = {
-                        'max_chats': limits.max_chats,
-                        'max_gb': limits.max_gb_db,
-                        'chats_used_today': du.chats_used,
-                        'used_bytes': used_bytes,
-                        'max_bytes': int(limits.max_gb_db) * GB,
-                        'seconds_until_reset': seconds_until_reset,
-                    }
-                    yield f"data: {json.dumps({'usage': usage_payload}, ensure_ascii=False)}\n\n"
-            except Exception:
-                # don't break stream
-                pass
-
-            yield f"data: {json.dumps({'status': 'finished', 'time': now_str()}, ensure_ascii=False)}\n\n"
-
-            # Save last result to per-user cache
-            cache.set(f"{CACHE_KEY_PREFIX}:{request.user.id}", result, None)
-
             # Update usage: count as a chat only if pipeline finished and returned no error
+            final_usage_payload = None
             try:
                 if not (isinstance(result, dict) and result.get('error')):
                     today = timezone.now().date()
@@ -168,24 +136,48 @@ class AgentViewSet(viewsets.ViewSet):
                         DailyUsage.objects.filter(pk=du.pk).update(chats_used=du.chats_used + 1)
                         du.refresh_from_db()
 
-                    # Also update cache of usage to keep frontend in sync. Include a few fields used by frontend.
-                    try:
-                        cache_key = f"usage_cache:{request.user.id}"
-                        # minimal payload to avoid serializing Django objects
-                        cache_payload = {
-                            'chats_used_today': du.chats_used,
-                            'max_chats': getattr(du.user.userlimits, 'max_chats', None),
-                            'max_gb': getattr(du.user.userlimits, 'max_gb_db', None),
-                            'seconds_until_reset': None,
-                            'used_bytes': None,
-                            'max_bytes': None,
-                        }
-                        cache.set(cache_key, cache_payload, 60)
-                    except Exception:
-                        pass
+                    # compute used_bytes and limits for final payload
+                    from core.models import Files, UserLimits
+                    from django.db.models import Sum
+                    agg = Files.objects.filter(user=request.user).aggregate(total=Sum('size'))
+                    used_bytes = int(agg.get('total') or 0)
+                    limits, _ = UserLimits.objects.get_or_create(user=request.user)
+                    GB = 1024 ** 3
+                    now = timezone.now()
+                    next_day = (now + timezone.timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+                    seconds_until_reset = int((next_day - now).total_seconds())
+                    final_usage_payload = {
+                        'max_chats': limits.max_chats,
+                        'max_gb': limits.max_gb_db,
+                        'chats_used_today': du.chats_used,
+                        'used_bytes': used_bytes,
+                        'max_bytes': int(limits.max_gb_db) * GB,
+                        'seconds_until_reset': seconds_until_reset,
+                        'server_time': now.isoformat(),
+                        'reset_time': next_day.isoformat(),
+                    }
             except Exception:
                 # avoid crashing the stream on usage tracking errors
+                final_usage_payload = None
+
+            # Emit final usage payload (if available) so clients can update UI immediately
+            try:
+                if final_usage_payload:
+                    yield f"data: {json.dumps({'usage': final_usage_payload}, ensure_ascii=False)}\n\n"
+            except Exception:
                 pass
+
+            yield f"data: {json.dumps({'status': 'finished', 'time': now_str()}, ensure_ascii=False)}\n\n"
+
+            # Save last result to per-user cache including usage so GET /api/agents/ returns both
+            try:
+                cache_value = {'result': result, 'usage': final_usage_payload}
+                cache.set(f"{CACHE_KEY_PREFIX}:{request.user.id}", cache_value, None)
+            except Exception:
+                try:
+                    cache.set(f"{CACHE_KEY_PREFIX}:{request.user.id}", result, None)
+                except Exception:
+                    pass
 
         response = StreamingHttpResponse(event_stream(), content_type="text/event-stream")
         response["Cache-Control"] = "no-cache"

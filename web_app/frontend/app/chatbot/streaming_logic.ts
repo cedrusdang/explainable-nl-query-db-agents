@@ -75,6 +75,15 @@ export function useStreamingLogic(setMessages: (fn: (prev: ChatMessage[]) => Cha
     streamAgents({ query: userMsg.text }, {
       onEvent: (evt) => {
         const isContent = !!(evt && (evt.output || evt.error));
+          // If server sends usage payload mid-stream, update local cache and notify listeners
+          if (evt && evt.usage) {
+            try {
+              localStorage.setItem("usage_cache", JSON.stringify(evt.usage));
+            } catch (e) {}
+            try {
+              window.dispatchEvent(new CustomEvent("usage_updated", { detail: evt.usage }));
+            } catch (e) {}
+          }
         let sepNow = false;
         if (isContent && evt?.agent) {
           if (lastAgent && evt.agent !== lastAgent) sepNow = true;

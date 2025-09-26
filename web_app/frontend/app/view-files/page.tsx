@@ -53,6 +53,12 @@ const ViewFilesPage: React.FC = () => {
   const [files, setFiles] = useState<FileItem[]>([]);
   const [selected, setSelected] = useState<number[]>([]);
   const [loading, setLoading] = useState(false);
+  // usage state (storage usage)
+  const [usage, setUsage] = useState<{
+    used_bytes: number;
+    max_gb?: number;
+    max_bytes?: number;
+  } | null>(null);
   const [sortOrder, setSortOrder] = useState<'desc' | 'asc'>('desc');
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [refreshLoading, setRefreshLoading] = useState(false);
@@ -74,6 +80,16 @@ const ViewFilesPage: React.FC = () => {
         : [];
       setFiles(sorted);
       setSelected([]); // Clear selection whenever files are refreshed
+      // fetch usage info after files are loaded so the Storage display is current
+      try {
+        const u = await apiFetch('/api/core/usage/');
+        if (typeof u !== 'undefined' && u) {
+          setUsage(u as any);
+          try { localStorage.setItem('usage_cache', JSON.stringify(u)); } catch {}
+        }
+      } catch (e) {
+        console.warn('fetchFiles: failed to fetch usage', e);
+      }
     } catch (e: any) {
       console.error("fetchFiles: error", e);
       const msg = e.message || JSON.stringify(e);
@@ -127,6 +143,14 @@ const ViewFilesPage: React.FC = () => {
   return (
     <div className="max-w-2xl mx-auto py-8 px-4">
       <h1 className="text-2xl font-bold mb-6">Database Files</h1>
+      {/* Storage usage (authoritative from server) */}
+      <div className="text-sm text-gray-400 mb-4">
+        {usage ? (
+          <div>Storage: <span className="font-semibold">{(usage.used_bytes / (1024 ** 3)).toFixed(2)} GB</span> / <span className="text-gray-300">{usage.max_gb ?? (usage.max_bytes ? (usage.max_bytes / (1024 ** 3)).toFixed(0) : '—')} GB</span></div>
+        ) : (
+          <div>Storage: <span className="text-gray-400">Loading...</span></div>
+        )}
+      </div>
       {/* Order control moved to top as requested */}
       <div className="flex items-center gap-3 mb-4">
         <label className="text-sm font-medium">Order:</label>

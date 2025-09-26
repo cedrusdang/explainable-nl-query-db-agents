@@ -14,7 +14,9 @@ const Menu: React.FC<MenuProps> = ({ minimized, setMinimized, username, onReques
   if (minimized) return null;
 
   const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/core/apikeys/`;
+  // single source of truth: usage comes from agents API cache or SSE usage events
   const usageApi = `${process.env.NEXT_PUBLIC_API_URL}/api/core/usage/`;
+  const agentsApi = `${process.env.NEXT_PUBLIC_API_URL}/api/agents/`;
   const getToken = () => localStorage.getItem("access_token");
 
   const [usage, setUsage] = React.useState<{
@@ -26,94 +28,111 @@ const Menu: React.FC<MenuProps> = ({ minimized, setMinimized, username, onReques
     seconds_until_reset: number;
   } | null>(null);
 
-  // 7-day countdown from login_time stored at login
-  const [countdown, setCountdown] = React.useState<string>("-");
+  // countdown to usage reset (server-provided). We'll store seconds_until_reset and optionally server_time
+  const [countdown, setCountdown] = React.useState<string>('-');
+  // internal state to keep remaining seconds (derived from server seconds_until_reset)
+  const [remainingSeconds, setRemainingSeconds] = React.useState<number | null>(null);
+
   React.useEffect(() => {
+    // live tick: decrement remainingSeconds if present
     const tick = () => {
-      const lt = localStorage.getItem("login_time");
-      if (!lt) {
-        setCountdown("-");
-        return;
-      }
-      const start = Number(lt);
-      const now = Date.now();
-      const end = start + 7 * 24 * 3600 * 1000;
-      const rem = Math.max(0, end - now);
-      const days = Math.floor(rem / (24 * 3600 * 1000));
-      const hrs = Math.floor((rem % (24 * 3600 * 1000)) / (3600 * 1000));
-      const mins = Math.floor((rem % (3600 * 1000)) / (60 * 1000));
-      const secs = Math.floor((rem % (60 * 1000)) / 1000);
-      setCountdown(`${days}d ${hrs}h ${mins}m ${secs}s`);
+      setRemainingSeconds((s) => {
+        if (s == null) return s;
+        const ns = Math.max(0, s - 1);
+        return ns;
+      });
     };
-    tick();
     const iv = setInterval(tick, 1000);
     return () => clearInterval(iv);
   }, []);
+
+  // format remainingSeconds into readable countdown
+  React.useEffect(() => {
+    if (remainingSeconds == null) {
+      setCountdown('-');
+      return;
+    }
+    const sec = Math.max(0, Math.floor(remainingSeconds || 0));
+    const days = Math.floor(sec / (24 * 3600));
+    const hrs = Math.floor((sec % (24 * 3600)) / 3600);
+    const mins = Math.floor((sec % 3600) / 60);
+    const secs = sec % 60;
+    setCountdown(`${days}d ${hrs}h ${mins}m ${secs}s`);
+  }, [remainingSeconds]);
 
   React.useEffect(() => {
     const token = getToken();
     if (!token) return;
     let mounted = true;
-    // Try to initialize from local cache so UI doesn't flicker to "Loading" after login
+    // Initialize from local cache first
     try {
       const cached = localStorage.getItem("usage_cache");
       if (cached) {
         const parsed = JSON.parse(cached);
-        if (parsed && mounted) setUsage(parsed);
+        if (parsed && mounted) {
+          setUsage(parsed);
+          if (typeof parsed.seconds_until_reset === 'number') setRemainingSeconds(Math.max(0, Math.floor(parsed.seconds_until_reset)));
+        }
       }
     } catch (e) {
-      // ignore parse errors and proceed to fetch
+      // ignore parse errors
     }
 
-    const fetchUsage = async () => {
+    // Try to fetch recent cached agents result which may include usage in the same response
+    const fetchFromAgentsCache = async () => {
       try {
-        const res = await fetch(usageApi, { headers: { Authorization: `Bearer ${token}` } });
-        if (!res.ok) return;
+        const res = await fetch(agentsApi, { headers: { Authorization: `Bearer ${token}` } });
+        if (!res.ok) {
+          // fallback to dedicated usage endpoint
+          const ures = await fetch(usageApi, { headers: { Authorization: `Bearer ${token}` } });
+          if (!ures.ok) return;
+          const udata = await ures.json();
+          if (!mounted) return;
+          setUsage(udata);
+          try { localStorage.setItem("usage_cache", JSON.stringify(udata)); } catch {}
+          if (typeof udata.seconds_until_reset === 'number') setRemainingSeconds(Math.max(0, Math.floor(udata.seconds_until_reset)));
+          return;
+        }
         const data = await res.json();
-        if (!mounted) return;
-        setUsage(data);
-        try {
-          localStorage.setItem("usage_cache", JSON.stringify(data));
-        } catch (e) {
-          // ignore localStorage failures
+        // agents GET returns { result, usage } since backend now caches usage
+        const u = data?.usage || data;
+        if (u && mounted) {
+          setUsage(u);
+          try { localStorage.setItem("usage_cache", JSON.stringify(u)); } catch {}
+          if (typeof u.seconds_until_reset === 'number') setRemainingSeconds(Math.max(0, Math.floor(u.seconds_until_reset)));
         }
       } catch (e) {
-        console.warn('Failed to fetch usage', e);
+        // network failure: fallback to usage endpoint
+        try {
+          const ures = await fetch(usageApi, { headers: { Authorization: `Bearer ${token}` } });
+          if (!ures.ok) return;
+          const udata = await ures.json();
+          if (!mounted) return;
+          setUsage(udata);
+          try { localStorage.setItem("usage_cache", JSON.stringify(udata)); } catch {}
+          if (typeof udata.seconds_until_reset === 'number') setRemainingSeconds(Math.max(0, Math.floor(udata.seconds_until_reset)));
+        } catch (_) {}
       }
     };
 
-    // initial fetch
-    fetchUsage();
+    // initial fetch attempt
+    fetchFromAgentsCache();
 
-    // listen for usage updates dispatched elsewhere (e.g. after a chat completes)
+    // listen for usage updates dispatched elsewhere (e.g. SSE stream or agents cache update)
     const onUsageUpdated = (e: any) => {
       try {
         const d = e?.detail;
         if (d) {
           setUsage(d);
-          try {
-            localStorage.setItem("usage_cache", JSON.stringify(d));
-          } catch (err) {
-            // ignore
-          }
+          try { localStorage.setItem("usage_cache", JSON.stringify(d)); } catch {}
+          if (typeof d.seconds_until_reset === 'number') setRemainingSeconds(Math.max(0, Math.floor(d.seconds_until_reset)));
         }
       } catch (_) {}
     };
     window.addEventListener("usage_updated", onUsageUpdated as EventListener);
 
-    // keep a live countdown and refetch when it reaches zero
-    const interval = setInterval(() => {
-      setUsage((prev) => {
-        if (!prev) return prev;
-        const s = Math.max(0, Math.floor(prev.seconds_until_reset || 0));
-        if (s <= 1) {
-          // re-sync from server when countdown expires (or about to)
-          fetchUsage();
-          return { ...prev, seconds_until_reset: 0 };
-        }
-        return { ...prev, seconds_until_reset: s - 1 };
-      });
-    }, 1000);
+    // no need to poll here — countdown handled by remainingSeconds and SSE events.
+    const interval = setInterval(() => {}, 1000);
 
     return () => {
       mounted = false;
@@ -297,7 +316,6 @@ const Menu: React.FC<MenuProps> = ({ minimized, setMinimized, username, onReques
           {usage ? (
             <div className="grid grid-cols-1 gap-1">
               <div>Chats: <span className="font-semibold">{usage.chats_used_today}</span> / <span className="text-gray-300">{usage.max_chats}</span></div>
-              <div>Storage: <span className="font-semibold">{(usage.used_bytes / (1024 ** 3)).toFixed(2)} GB</span> / <span className="text-gray-300">{usage.max_gb} GB</span></div>
               <div>Count down to reset Usage: <span className="font-semibold">{countdown}</span></div>
             </div>
           ) : (
