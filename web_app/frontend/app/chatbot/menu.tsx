@@ -79,40 +79,66 @@ const Menu: React.FC<MenuProps> = ({ minimized, setMinimized, username, onReques
       // ignore parse errors
     }
 
-    // Try to fetch recent cached agents result which may include usage in the same response
+    // Try to fetch recent cached agents result which may include usage in the same response.
+    // Behavior: Do a single GET attempt. If it returns 404 (no cache), start a one-time POST
+    // to /api/agents/ to trigger the pipeline, but don't retry on failure or disconnect.
     const fetchFromAgentsCache = async () => {
       try {
-        const res = await fetch(agentsApi, { headers: { Authorization: `Bearer ${token}` } });
-        if (!res.ok) {
-          // fallback to dedicated usage endpoint
-          const ures = await fetch(usageApi, { headers: { Authorization: `Bearer ${token}` } });
-          if (!ures.ok) return;
-          const udata = await ures.json();
+        const tokenNow = getToken();
+        // use full URL so we can inspect status codes directly
+        const res = await fetch(agentsApi, {
+          method: "GET",
+          headers: {
+            ...(tokenNow ? { Authorization: `Bearer ${tokenNow}` } : {}),
+          },
+        });
+
+        if (!mounted) return;
+
+        if (res.status === 200) {
+          const agentsData = await res.json().catch(() => null);
           if (!mounted) return;
-          setUsage(udata);
-          try { localStorage.setItem("usage_cache", JSON.stringify(udata)); } catch {}
-          if (typeof udata.seconds_until_reset === 'number') setRemainingSeconds(Math.max(0, Math.floor(udata.seconds_until_reset)));
-          return;
+          const u = agentsData?.usage || agentsData;
+          if (u) {
+            setUsage(u);
+            try { localStorage.setItem('usage_cache', JSON.stringify(u)); } catch {}
+            if (typeof u.seconds_until_reset === 'number') setRemainingSeconds(Math.max(0, Math.floor(u.seconds_until_reset)));
+            return;
+          }
         }
-        const data = await res.json();
-        // agents GET returns { result, usage } since backend now caches usage
-        const u = data?.usage || data;
-        if (u && mounted) {
-          setUsage(u);
-          try { localStorage.setItem("usage_cache", JSON.stringify(u)); } catch {}
-          if (typeof u.seconds_until_reset === 'number') setRemainingSeconds(Math.max(0, Math.floor(u.seconds_until_reset)));
+
+        // If 404 => no cached result: start a one-time pipeline run (POST) but don't await the full stream
+        if (res.status === 404) {
+          try {
+            // fire-and-forget start: backend will stream SSE; we intentionally don't keep the connection
+            // open here (if client disconnects it's fine per requirement). We still include auth.
+            fetch(agentsApi, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                ...(tokenNow ? { Authorization: `Bearer ${tokenNow}` } : {}),
+              },
+              body: JSON.stringify({}),
+            }).catch(() => {});
+          } catch (_) {
+            // ignore any start errors; we'll fallback to usage endpoint below
+          }
+        }
+
+        // Fallback: request the usage endpoint (always safe)
+        try {
+          const udata = await apiFetch('/api/core/usage/');
+          if (!mounted) return;
+          if (udata) {
+            setUsage(udata);
+            try { localStorage.setItem('usage_cache', JSON.stringify(udata)); } catch {}
+            if (typeof udata.seconds_until_reset === 'number') setRemainingSeconds(Math.max(0, Math.floor(udata.seconds_until_reset)));
+          }
+        } catch (e) {
+          // ignore errors; rely on cached usage
         }
       } catch (e) {
-        // network failure: fallback to usage endpoint
-        try {
-          const ures = await fetch(usageApi, { headers: { Authorization: `Bearer ${token}` } });
-          if (!ures.ok) return;
-          const udata = await ures.json();
-          if (!mounted) return;
-          setUsage(udata);
-          try { localStorage.setItem("usage_cache", JSON.stringify(udata)); } catch {}
-          if (typeof udata.seconds_until_reset === 'number') setRemainingSeconds(Math.max(0, Math.floor(udata.seconds_until_reset)));
-        } catch (_) {}
+        // ignore errors; rely on cached usage
       }
     };
 
@@ -141,6 +167,20 @@ const Menu: React.FC<MenuProps> = ({ minimized, setMinimized, username, onReques
       window.removeEventListener("usage_updated", onUsageUpdated as EventListener);
     };
   }, []);
+
+  // Local UI loading flags
+  const [apiKeyLoading, setApiKeyLoading] = React.useState(false);
+  const [downloadLoading, setDownloadLoading] = React.useState(false);
+  // whether server reports a key exists (we never store the raw key in the client)
+  const [hasApiKey, setHasApiKey] = React.useState<boolean | null>(null);
+
+  const fmtHMS = (s: number) => {
+    const sec = Math.max(0, Math.floor(s || 0));
+    const h = Math.floor(sec / 3600);
+    const m = Math.floor((sec % 3600) / 60);
+    const ss = sec % 60;
+    return `${h}h ${m}m ${ss}s`;
+  };
 
   const updateApiKey = async (value: string) => {
     setApiKeyLoading(true);
@@ -176,7 +216,9 @@ const Menu: React.FC<MenuProps> = ({ minimized, setMinimized, username, onReques
       const result = await res.json().catch(() => ({}));
       console.log("API key update response:", result);
 
+      // backend returns only { id, user, has_key } — never the raw key
       if (res.ok) {
+        setHasApiKey(Boolean(result?.has_key));
         alert(value ? "API key updated successfully." : "API key cleared successfully.");
       } else {
         alert("Failed to update API key.");
@@ -200,18 +242,6 @@ const Menu: React.FC<MenuProps> = ({ minimized, setMinimized, username, onReques
     if (window.confirm("Are you sure you want to clear the chatGPT API key?")) {
       await updateApiKey("");
     }
-  };
-
-  // Local UI loading flags
-  const [apiKeyLoading, setApiKeyLoading] = React.useState(false);
-  const [downloadLoading, setDownloadLoading] = React.useState(false);
-
-  const fmtHMS = (s: number) => {
-    const sec = Math.max(0, Math.floor(s || 0));
-    const h = Math.floor(sec / 3600);
-    const m = Math.floor((sec % 3600) / 60);
-    const ss = sec % 60;
-    return `${h}h ${m}m ${ss}s`;
   };
 
   return (
@@ -291,6 +321,7 @@ const Menu: React.FC<MenuProps> = ({ minimized, setMinimized, username, onReques
 
       {/* API actions */}
       <div className="flex flex-col gap-2 mt-2">
+        <div className="text-xs text-gray-300">API key: {hasApiKey == null ? 'unknown' : hasApiKey ? 'set' : 'not set'}</div>
         <button
           className="w-full px-3 py-2 rounded bg-green-600 text-white text-xs font-medium hover:bg-green-700 disabled:opacity-70"
           onClick={addOrReplaceKey}
