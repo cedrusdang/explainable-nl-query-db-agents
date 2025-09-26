@@ -62,6 +62,45 @@ export default function ChatbotPage() {
 		setUsername(u);
 	}, [router]);
 
+	// On mount (and after login/F5) fetch saved chats and chat-usage so page is populated
+	useEffect(() => {
+		if (typeof window === 'undefined') return;
+		const token = localStorage.getItem('access_token');
+		if (!token) return;
+		let mounted = true;
+		(async () => {
+			try {
+				// fetch saved chats
+				const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/core/chats/`, { headers: { Authorization: `Bearer ${token}` } });
+				if (res.ok) {
+					const data = await res.json();
+					const msgs = data?.messages || [];
+					if (mounted) {
+						setMessages(Array.isArray(msgs) ? msgs : []);
+						try { localStorage.setItem('chatbot_messages', JSON.stringify(msgs)); } catch {}
+					}
+				}
+			} catch (e) {
+				console.warn('Failed to fetch saved chats', e);
+			}
+			try {
+				// fetch chat usage (slim response) so Menu can show counts
+				const ures = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/core/usage/`, { headers: { Authorization: `Bearer ${token}` } });
+				if (ures.ok) {
+					const udata = await ures.json();
+					if (mounted) {
+						try { localStorage.setItem('usage_cache', JSON.stringify(udata)); } catch {}
+						// Menu will read usage_cache on its own; also setRemainingSeconds if included
+						window.dispatchEvent(new CustomEvent('usage_updated', { detail: udata }));
+					}
+				}
+			} catch (e) {
+				console.warn('Failed to fetch usage', e);
+			}
+		})();
+		return () => { mounted = false; };
+	}, []);
+
 	// Messages are initialized from localStorage via the lazy state initializer above
 	// so no separate restore effect is needed. This avoids an intermediate render
 	// where children might overwrite the stored cache with an empty array.

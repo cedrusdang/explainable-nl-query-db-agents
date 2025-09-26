@@ -19,13 +19,14 @@ const Menu: React.FC<MenuProps> = ({ minimized, setMinimized, username, onReques
   const agentsApi = `${process.env.NEXT_PUBLIC_API_URL}/api/agents/`;
   const getToken = () => localStorage.getItem("access_token");
 
+  // backend now may return a slim usage object; make fields optional
   const [usage, setUsage] = React.useState<{
-    max_chats: number;
-    max_gb: number;
-    chats_used_today: number;
-    used_bytes: number;
-    max_bytes: number;
-    seconds_until_reset: number;
+    max_chats?: number;
+    max_gb?: number;
+    chats_used_today?: number;
+    used_bytes?: number;
+    max_bytes?: number;
+    seconds_until_reset?: number;
   } | null>(null);
 
   // countdown to usage reset (server-provided). We'll store seconds_until_reset and optionally server_time
@@ -315,8 +316,8 @@ const Menu: React.FC<MenuProps> = ({ minimized, setMinimized, username, onReques
           <div className="font-medium mb-1">Usage</div>
           {usage ? (
             <div className="grid grid-cols-1 gap-1">
-              <div>Chats: <span className="font-semibold">{usage.chats_used_today}</span> / <span className="text-gray-300">{usage.max_chats}</span></div>
-              <div>Count down to reset Usage: <span className="font-semibold">{countdown}</span></div>
+              <div>Chats: <span className="font-semibold">{usage.chats_used_today ?? 0}</span> / <span className="text-gray-300">{usage.max_chats ?? '-'}</span></div>
+              <div>Reset at: <span className="font-semibold">{countdown}</span></div>
             </div>
           ) : (
             <div className="text-gray-400">Loading usage...</div>

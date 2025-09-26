@@ -64,15 +64,11 @@ class UsageView(APIView):
         next_day = (now + timezone.timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
         seconds_until_reset = int((next_day - now).total_seconds())
 
+        # Return a minimal response containing only chat-usage related fields.
         return Response(
             {
                 "max_chats": max_chats,
-                "max_gb": max_gb,
                 "chats_used_today": chats_used,
-                "used_bytes": used_bytes,
-                "max_bytes": int(max_gb) * GB,
-                "server_time": now,
-                "reset_time": next_day,
                 "seconds_until_reset": seconds_until_reset,
             }
         )

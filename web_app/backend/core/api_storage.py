@@ -134,7 +134,7 @@ class FilesViewSet(GBLimitMixin, viewsets.ModelViewSet):
             schema_builder.build_schema_ab(sql_file_paths_json, schema_dir)
             schema_builder.build_schema_c(sql_file_paths_json, schema_dir)
 
-            # After successful import, update usage cache so frontend can sync immediately
+            # After successful import, update storage cache so frontend can sync immediately
             try:
                 today = timezone.now().date()
                 # get_or_create can race under SQLite when two threads try to create the same row.
@@ -144,21 +144,15 @@ class FilesViewSet(GBLimitMixin, viewsets.ModelViewSet):
                 except IntegrityError:
                     du = DailyUsage.objects.get(user=user, date=today)
                 cache_key = f"usage_cache:{user.id}"
-                # compute used bytes and other fields for a best-effort payload
+                # compute used bytes and expose only GB values for storage
                 agg = Files.objects.filter(user=user).aggregate(total=Sum('size'))
                 used_bytes = int(agg.get('total') or 0)
                 GB = 1024 ** 3
+                used_gb = round(used_bytes / GB, 3)
                 limits, _ = UserLimits.objects.get_or_create(user=user)
-                now = timezone.now()
-                next_day = (now + timezone.timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
-                seconds_until_reset = int((next_day - now).total_seconds())
                 payload = {
-                    'max_chats': limits.max_chats,
-                    'max_gb': limits.max_gb_db,
-                    'chats_used_today': du.chats_used,
-                    'used_bytes': used_bytes,
-                    'max_bytes': int(limits.max_gb_db) * GB,
-                    'seconds_until_reset': seconds_until_reset,
+                    'max_gb': float(limits.max_gb_db),
+                    'used_gb': float(used_gb),
                 }
                 from django.core.cache import cache as _cache
                 try:
@@ -170,7 +164,8 @@ class FilesViewSet(GBLimitMixin, viewsets.ModelViewSet):
 
             response_body = {'saved': saved}
             if payload:
-                response_body['usage'] = payload
+                # storage endpoints return a compact storage payload
+                response_body['storage'] = payload
 
             return Response(response_body, status=status.HTTP_201_CREATED)
 
@@ -218,7 +213,7 @@ class FilesViewSet(GBLimitMixin, viewsets.ModelViewSet):
 
             resp = {"status": "All files deleted."}
             if payload:
-                resp['usage'] = payload
+                resp['storage'] = payload
             return Response(resp, status=200)
         except Exception as e:
             return Response({"error": str(e)}, status=500)
@@ -235,3 +230,47 @@ class FilesViewSet(GBLimitMixin, viewsets.ModelViewSet):
             as_attachment=True,
             filename=os.path.basename(file_obj.file.name)
         )
+
+    @action(detail=False, methods=["get"])
+    def storage(self, request):
+        """Return a compact storage payload: { max_gb, used_gb }"""
+        user = request.user
+        try:
+            agg = Files.objects.filter(user=user).aggregate(total=Sum('size'))
+            used_bytes = int(agg.get('total') or 0)
+            GB = 1024 ** 3
+            used_gb = round(used_bytes / GB, 3)
+            limits, _ = UserLimits.objects.get_or_create(user=user)
+            payload = {
+                'max_gb': float(limits.max_gb_db),
+                'used_gb': float(used_gb),
+            }
+            return Response(payload, status=200)
+        except Exception as e:
+            return Response({'error': str(e)}, status=500)
+
+    def destroy(self, request, *args, **kwargs):
+        """Override destroy to return compact storage payload after deletion."""
+        instance = self.get_object()
+        user = request.user
+        try:
+            # Delete file from disk then DB
+            if instance.file and instance.file.path and os.path.exists(instance.file.path):
+                os.remove(instance.file.path)
+            instance.delete()
+
+            # compute storage payload
+            agg = Files.objects.filter(user=user).aggregate(total=Sum('size'))
+            used_bytes = int(agg.get('total') or 0)
+            GB = 1024 ** 3
+            used_gb = round(used_bytes / GB, 3)
+            limits, _ = UserLimits.objects.get_or_create(user=user)
+            payload = {
+                'max_gb': float(limits.max_gb_db),
+                'used_gb': float(used_gb),
+            }
+
+            resp = {'status': 'deleted', 'storage': payload}
+            return Response(resp, status=200)
+        except Exception as e:
+            return Response({'error': str(e)}, status=500)
