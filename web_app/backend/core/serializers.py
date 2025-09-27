@@ -1,23 +1,20 @@
 from rest_framework import serializers
-from .models import APIKey, Files, Sessions, Chats, APIKey
+from .models import Files, APIKeys
 
 class FilesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Files
-        fields = ['id', 'database', 'file', 'time']
-        extra_kwargs = {"database": {"read_only": True}}
+        fields = ['id', 'user', 'file', 'database', 'time']
 
-class SessionsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Sessions
-        fields = ['id', 'user', 'start_time']
+# Chats model removed; frontend stores chat session in localStorage and can POST to download endpoint
 
-class ChatsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Chats
-        fields = ['id', 'time', 'user', 'agent', 'prompt', 'response']
+class APIKeysSerializer(serializers.ModelSerializer):
+    has_key = serializers.SerializerMethodField(read_only=True)
 
-class APIKeySerializer(serializers.ModelSerializer):
     class Meta:
-        model = APIKey
-        fields = ['api_key']
+        model = APIKeys
+        # do NOT expose the api_key field
+        fields = ['id', 'user', 'has_key']
+
+    def get_has_key(self, obj):
+        return bool(obj.api_key)
