@@ -3,6 +3,12 @@ For CITS5553 - Data Science Capstone Project | Semester 2, 2025
 
 ---
 
+<p align="center">
+  <img src="media/demo.png" alt="Demo Screenshot" width="700"/>
+</p>
+
+---
+
 ## Setup Guide
 
 This project is designed to be run entirely using Docker. No manual Python or Conda environment setup is required.  
