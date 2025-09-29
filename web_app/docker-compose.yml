@@ -12,6 +12,7 @@ services:
     volumes:
       - ./backend:/app
       - backend_media:/app/media
+      - ../data:/data
     depends_on:
       - db
 

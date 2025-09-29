@@ -15,6 +15,8 @@ export interface file_actions_props {
   apiFetch: typeof import("../services/api").apiFetch;
   files: import("./page").FileItem[];
   setSelected: React.Dispatch<React.SetStateAction<number[]>>;
+  setSpiderLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  spiderLoading: boolean;
 }
 
 const FileActions: React.FC<file_actions_props> = ({
@@ -31,6 +33,8 @@ const FileActions: React.FC<file_actions_props> = ({
   apiFetch,
   files,
   setSelected,
+  setSpiderLoading,
+  spiderLoading,
 }) => {
   const allSelected = files.length > 0 && selected.length === files.length;
   
@@ -135,6 +139,34 @@ const FileActions: React.FC<file_actions_props> = ({
       onClick={handleSelectAll}
       title={allSelected ? "Deselect all files" : "Select all files"}
     >{allSelected ? "Deselect All" : "Select All"}</button>
+    <button
+      className={`px-4 py-2 rounded font-medium flex items-center justify-center ${spiderLoading ? 'bg-gray-400 text-gray-200 cursor-not-allowed opacity-60' : 'bg-purple-600 text-white hover:bg-purple-700 cursor-pointer'}`}
+      disabled={spiderLoading}
+      onClick={async () => {
+        console.log("Add All Spider button: clicked");
+        if (typeof window !== 'undefined') {
+          const ok = window.confirm("This will upload all Spider databases from /data/spider_data/test_database. This may take a few minutes. Continue?");
+          if (!ok) {
+            console.log("Add All Spider button: cancelled by user");
+            return;
+          }
+        }
+        setSpiderLoading(true);
+        try {
+          console.log("Add All Spider button: apiFetch");
+          await apiFetch("/api/core/files/add_spider_databases/", { method: "POST" });
+          console.log("Add All Spider button: fetchFiles");
+          await fetchFiles();
+        } catch (e: any) {
+          console.error("Add All Spider button: error", e);
+          alert(e.message || JSON.stringify(e));
+        } finally {
+          setSpiderLoading(false);
+          console.log("Add All Spider button: end");
+        }
+      }}
+      title="Upload all Spider test databases from /data/spider_data/test_database"
+    >{spiderLoading ? <span className="animate-spin mr-2 w-4 h-4 border-2 border-t-2 border-white rounded-full"></span> : null}Add All Spider</button>
   </div>
   );
 };
