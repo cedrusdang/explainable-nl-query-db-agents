@@ -82,6 +82,7 @@ Example format:
     db_chain = prompt_db | llm
 
     def database_selection_agent(user_query: str):
+        # similarity_search_with_score returns (Document, distance). Lower distance = closer.
         relevant_docs = vectorstore.similarity_search_with_score(user_query, k=top_k)
         retrieved_schema = "\n".join(
             f"score: {score:.4f}, content: {doc.page_content}"
@@ -108,18 +109,23 @@ Example format:
         for doc, score in relevant_docs:
             try:
                 schema_json = json.loads(doc.page_content)
+                distance = float(score)
+                # Provide a derived similarity (1/(1+distance)); higher is better
+                similarity = round(1.0 / (1.0 + max(distance, 0.0)), 6)
                 structured_schema.append(
                     {
-                        "score": round(float(score), 4),
+                        "similarity": similarity,
                         "database": schema_json.get("database"),
                         "table": schema_json.get("table"),
                         "columns": schema_json.get("columns", []),
                     }
                 )
             except json.JSONDecodeError:
+                distance = float(score)
+                similarity = round(1.0 / (1.0 + max(distance, 0.0)), 6)
                 structured_schema.append(
                     {
-                        "score": round(float(score), 4),
+                        "similarity": similarity,
                         "raw_content": doc.page_content,
                     }
                 )

@@ -255,29 +255,6 @@ const Menu: React.FC<MenuProps> = ({ minimized, setMinimized, username, onReques
         </div>
       </div>
 
-      {/* Clear chat session */}
-      <button
-        className="w-full px-3 py-2 mt-2 rounded bg-red-600 text-white text-xs font-medium hover:bg-red-700"
-        onClick={() => {
-          (async () => {
-            if (!window.confirm("Are you sure you want to clear the chat session?")) return;
-            try {
-              // Clear local cache first
-              try { localStorage.removeItem("chatbot_messages"); } catch {}
-              // Clear server-side stored chat if available
-              try { await apiFetch("/api/core/chats/", { method: "DELETE" }); } catch {}
-              // Clear any cached agent pipeline result
-              try { await deleteAgentsCache(); } catch {}
-            } finally {
-              // Reload UI to ensure clean state
-              window.location.reload();
-            }
-          })();
-        }}
-      >
-        Clear chat session
-      </button>
-
       {/* Parameter Selection Section */}
       <div className="mt-4 p-3 bg-gray-800/50 rounded-lg border border-gray-700">
         <div className="text-xs font-semibold text-gray-300 mb-3">Agent Parameters</div>
@@ -320,7 +297,7 @@ const Menu: React.FC<MenuProps> = ({ minimized, setMinimized, username, onReques
           <label className="text-xs text-gray-400 block mb-1">Show Reasoning:</label>
           <select 
             className="w-full px-2 py-1 bg-gray-900 text-white text-xs rounded border border-gray-600"
-            defaultValue="true"
+            defaultValue="false"
             onChange={(e) => {
               localStorage.setItem('agent_include_reasons', e.target.value);
               // Trigger re-render of current messages
@@ -337,7 +314,7 @@ const Menu: React.FC<MenuProps> = ({ minimized, setMinimized, username, onReques
           <label className="text-xs text-gray-400 block mb-1">Show Detailed Description of Agent:</label>
           <select 
             className="w-full px-2 py-1 bg-gray-900 text-white text-xs rounded border border-gray-600"
-            defaultValue="true"
+            defaultValue="false"
             onChange={(e) => {
               localStorage.setItem('agent_include_process', e.target.value);
               // Trigger re-render of current messages
@@ -348,16 +325,52 @@ const Menu: React.FC<MenuProps> = ({ minimized, setMinimized, username, onReques
             <option value="false">No</option>
           </select>
         </div>
+
+        {/* Include Agent Inputs */}
+        <div className="mt-3">
+          <label className="text-xs text-gray-400 block mb-1">Show Agent Inputs:</label>
+          <select 
+            className="w-full px-2 py-1 bg-gray-900 text-white text-xs rounded border border-gray-600"
+            defaultValue="false"
+            onChange={(e) => {
+              localStorage.setItem('agent_include_inputs', e.target.value);
+              // Trigger re-render of current messages
+              window.dispatchEvent(new CustomEvent('agent_params_changed'));
+            }}
+          >
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+          </select>
+        </div>
       </div>
 
+      {/* Clear chat session (after parameters) */}
+      <button
+        className="w-full px-3 py-2 rounded text-xs font-medium bg-gray-900 text-gray-100 border border-purple-500 hover:bg-gray-800"
+        onClick={() => {
+          (async () => {
+            if (!window.confirm("Are you sure you want to clear the chat session?")) return;
+            try {
+              try { localStorage.removeItem("chatbot_messages"); } catch {}
+              try { await apiFetch("/api/core/chats/", { method: "DELETE" }); } catch {}
+              try { await deleteAgentsCache(); } catch {}
+            } finally {
+              window.location.reload();
+            }
+          })();
+        }}
+      >
+        Clear chat session
+      </button>
 
-      {/* Usage card (bottom) */}
-      <div className="mb-3">
-        <div className="rounded-lg bg-gray-800/60 border border-white/10 p-3 text-sm text-gray-200">
-          <div className="font-medium mb-1">Usage</div>
+
+      {/* Usage (bottom) */}
+      <div className="mt-3 mb-3">
+        <div className="rounded-lg bg-gray-800/60 border border-white/10 p-3 text-xs text-gray-300">
+          <div className="font-medium mb-1 text-xs">Usage</div>
           {usage ? (
             <div className="grid grid-cols-1 gap-1">
-              <div>Chats: <span className="font-semibold">{usage.chats_used_today ?? 0}</span> / <span className="text-gray-300">{usage.max_chats ?? '-'}</span></div>
+              <div>Chats: <span className="font-semibold">{usage.chats_used_today ?? 0}</span> / <span className="text-gray-400">{usage.max_chats ?? '-'}</span></div>
               <div>Reset at: <span className="font-semibold">{countdown}</span></div>
             </div>
           ) : (
@@ -366,7 +379,7 @@ const Menu: React.FC<MenuProps> = ({ minimized, setMinimized, username, onReques
         </div>
       </div>
       <button
-        className="w-full px-3 py-2 rounded bg-indigo-600 text-white text-xs font-medium hover:bg-indigo-700"
+        className="w-full px-3 py-2 rounded text-xs font-medium bg-gray-900 text-gray-100 border border-white/10 hover:bg-gray-800"
         onClick={() => {
           // navigate in-app instead of opening a new tab
           router.push('/view-files');
@@ -375,7 +388,7 @@ const Menu: React.FC<MenuProps> = ({ minimized, setMinimized, username, onReques
         View/Import/Delete Databases
       </button>
       <button
-        className="w-full px-3 py-2 rounded bg-purple-600 text-white text-xs font-medium hover:bg-purple-700 mt-3"
+        className="w-full px-3 py-2 rounded text-xs font-medium bg-gray-900 text-gray-100 border border-white/10 hover:bg-gray-800 mt-3"
         onClick={() => {
           router.push('/settings');
         }}
@@ -385,7 +398,7 @@ const Menu: React.FC<MenuProps> = ({ minimized, setMinimized, username, onReques
 
       
         <button
-          className="w-full px-3 py-2 rounded bg-yellow-600 text-white text-xs font-medium hover:bg-yellow-700 mt-3 disabled:opacity-70"
+          className="w-full px-3 py-2 rounded text-xs font-medium bg-gray-900 text-gray-100 border border-white/10 hover:bg-gray-800 mt-3 disabled:opacity-70"
           onClick={async () => {
             setDownloadLoading(true);
             try {

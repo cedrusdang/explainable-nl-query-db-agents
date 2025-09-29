@@ -164,7 +164,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ messages, loadingBot, onEdit, onDelet
           const isEditing = editId === msg.id;
           return (
             <div key={msg.id} className={`flex items-start gap-0 ${msg.sender === 'user' ? 'justify-end' : ''}`}>
-              <div className={`max-w-[80%] rounded-2xl px-4 py-2 text-sm shadow-sm break-words [overflow-wrap:anywhere] ${msg.sender === 'user' ? 'bg-violet-600 text-white' : 'bg-gray-700 text-gray-100'}`}> 
+              <div className={`max-w-[80%] rounded-2xl px-4 py-2 text-sm shadow-sm break-words [overflow-wrap:anywhere] ${msg.sender === 'user' ? 'bg-purple-500/25 text-white border border-purple-500' : 'bg-gray-900 text-gray-100 border border-purple-500/40'}`}> 
                 {isEditing ? (
                   <div className="flex flex-col gap-2">
                     <textarea
@@ -202,14 +202,16 @@ function BotJsonRender({ data }: { data: any }) {
   if (data.success === false) return <div className="text-yellow-500 font-semibold">⚠️ Failed: {data.message || "Unknown error"}</div>;
 
   // Check parameters from localStorage with state for dynamic updates
-  const [include_reasons, setIncludeReasons] = React.useState(localStorage.getItem('agent_include_reasons') !== 'false');
-  const [include_process, setIncludeProcess] = React.useState(localStorage.getItem('agent_include_process') !== 'false');
+  const [include_reasons, setIncludeReasons] = React.useState(localStorage.getItem('agent_include_reasons') === 'true');
+  const [include_process, setIncludeProcess] = React.useState(localStorage.getItem('agent_include_process') === 'true');
+  const [include_inputs, setIncludeInputs] = React.useState(localStorage.getItem('agent_include_inputs') === 'true');
 
   // Listen for parameter changes
   React.useEffect(() => {
     const handleParamChange = () => {
-      setIncludeReasons(localStorage.getItem('agent_include_reasons') !== 'false');
-      setIncludeProcess(localStorage.getItem('agent_include_process') !== 'false');
+      setIncludeReasons(localStorage.getItem('agent_include_reasons') === 'true');
+      setIncludeProcess(localStorage.getItem('agent_include_process') === 'true');
+      setIncludeInputs(localStorage.getItem('agent_include_inputs') === 'true');
     };
 
     window.addEventListener('agent_params_changed', handleParamChange);
@@ -218,23 +220,25 @@ function BotJsonRender({ data }: { data: any }) {
 
   // Determine which agent this output is from based on the data structure
   const getAgentInfo = (data: any) => {
+    // Unified purple-themed styling for all agents to match app feel
+    const purpleBadge = "bg-purple-600";
     if (data.SQL) {
       return {
         name: "Agent C - SQL Generation",
         description: "Generates the final SQL query",
-        color: "bg-purple-600"
+        color: purpleBadge,
       };
     } else if (data.tables || data.relevant_tables) {
       return {
-        name: "Agent B - Table Selection", 
+        name: "Agent B - Table Selection",
         description: "Selects relevant tables from the database",
-        color: "bg-blue-600"
+        color: purpleBadge,
       };
     } else if (data.database) {
       return {
         name: "Agent A - Database Selection",
         description: "Identifies the most relevant database",
-        color: "bg-green-600"
+        color: purpleBadge,
       };
     }
     return null;
@@ -245,7 +249,7 @@ function BotJsonRender({ data }: { data: any }) {
   return (
     <div className="space-y-3">
       {agentInfo && (
-        <div className={`${agentInfo.color} text-white px-3 py-2 rounded-lg`}>
+        <div className={`bg-gray-900 border-2 border-purple-500 text-white px-3 py-2 rounded-lg`}>
           <div className="font-semibold text-sm">{agentInfo.name}</div>
           <div className="text-xs opacity-90">{agentInfo.description}</div>
         </div>
@@ -274,7 +278,7 @@ function BotJsonRender({ data }: { data: any }) {
               </div>
               <div>2. <span className="text-blue-400">Schema Embedding</span> - Convert each schema (database + table + columns) to OpenAI text-embedding-ada-002 vectors</div>
               <div>3. <span className="text-blue-400">Query Embedding</span> - Convert user query to same OpenAI embedding vector</div>
-              <div>4. <span className="text-blue-400">Similarity Search</span> - Find top-K schemas with highest cosine similarity scores</div>
+              <div>4. <span className="text-blue-400">Similarity Search</span> - Find top-K schemas with highest similarity scores</div>
               <div>5. <span className="text-blue-400">LLM Decision</span> - Pass retrieved schemas + scores to LLM to select best database with reasoning</div>
             </div>
           )}
@@ -297,8 +301,8 @@ function BotJsonRender({ data }: { data: any }) {
         </div>
       )}
 
-      {/* Input Section - only show if there's content */}
-      {(data.query || data.retrieved_schemas || data.database || data.relevant_tables) && (
+      {/* Input Section - only show if enabled and there's content */}
+      {include_inputs && (data.query || data.retrieved_schemas || data.database || data.relevant_tables) && (
         <div className="bg-gray-800 rounded-lg p-3">
           <div className="text-xs font-semibold text-gray-300 mb-2">Input to Agent</div>
         {data.query && (
@@ -315,11 +319,29 @@ function BotJsonRender({ data }: { data: any }) {
               <div className="text-xs text-gray-500 mb-2">
                 Semantic similarity search found {data.retrieved_schemas.length} most relevant schemas:
               </div>
-              {data.retrieved_schemas.map((schema: any, i: number) => (
+              {[...data.retrieved_schemas]
+                .sort((a: any, b: any) => {
+                  const sa = typeof a?.similarity === 'number' ? a.similarity : undefined;
+                  const sb = typeof b?.similarity === 'number' ? b.similarity : undefined;
+                  if (sa !== undefined || sb !== undefined) {
+                    return Number(sb ?? 0) - Number(sa ?? 0);
+                  }
+                  const da = typeof a?.score === 'number' ? a.score : undefined;
+                  const db = typeof b?.score === 'number' ? b.score : undefined;
+                  if (da !== undefined || db !== undefined) {
+                    // Older payloads: score is distance. Lower is better → sort ascending
+                    if (da === undefined && db === undefined) return 0;
+                    if (da === undefined) return 1;
+                    if (db === undefined) return -1;
+                    return Number(da) - Number(db);
+                  }
+                  return 0;
+                })
+                .map((schema: any, i: number) => (
                 <div key={i} className="mb-2 p-2 bg-gray-800 rounded text-xs">
                   <div className="flex justify-between items-center mb-1">
                     <span className="text-blue-400 font-medium">
-                      #{i + 1} Score: {schema.score}
+                      #{i + 1} {typeof schema.similarity === 'number' ? `Similarity: ${schema.similarity}` : (typeof schema.score === 'number' ? `Score (lower is better): ${schema.score}` : '')}
                     </span>
                     <span className="text-green-400">{schema.database}</span>
                   </div>
@@ -374,7 +396,7 @@ function BotJsonRender({ data }: { data: any }) {
             {agentInfo.name === "Agent B - Table Selection" && data.database && (
               <div className="bg-gray-900 px-2 py-1 rounded text-sm mt-1">
                 <button 
-                  className="text-blue-400 hover:text-blue-300 underline"
+                  className="text-blue-400 hover:text-blue-300 underline block"
                   onClick={async () => {
                     try {
                       const schemaData = await apiFetch(`/api/agents/schema/${encodeURIComponent(data.database)}/ab/`);
@@ -498,7 +520,7 @@ function BotJsonRender({ data }: { data: any }) {
                   Full Schema ({data.database})
                 </button>
                 <button 
-                  className="text-green-400 hover:text-green-300 underline"
+                  className="text-green-400 hover:text-green-300 underline block mt-2"
                   onClick={async () => {
                     try {
                       const schemaData = await apiFetch(`/api/agents/schema/${encodeURIComponent(data.database)}/c/`);
@@ -885,20 +907,22 @@ function BotJsonRender({ data }: { data: any }) {
         return (
           <div className="space-y-3">
             {/* Query Execution Header */}
-            <div className="bg-black text-white px-3 py-2 rounded-lg">
+            <div className="bg-gray-900 text-gray-100 px-3 py-2 rounded-lg border-2 border-gray-200">
               <div className="font-semibold text-sm">Query Execution</div>
               <div className="text-xs opacity-90">Running SQL query on the selected database</div>
             </div>
 
-            {/* Tools/Data Access */}
-            <div className="bg-gray-800 rounded-lg p-3">
-              <div className="text-xs font-semibold text-gray-300 mb-2">🛠️ Execution Environment</div>
-              <div className="text-xs text-gray-400 space-y-1">
-                <div>• <span className="text-blue-400">SQLite Database</span> - Direct execution on uploaded database file</div>
-                <div>• <span className="text-blue-400">Query Engine</span> - Native SQLite query processing</div>
-                <div>• <span className="text-blue-400">Result Streaming</span> - Real-time data retrieval and formatting</div>
+            {/* Tools/Data Access (shown only when detailed description is enabled) */}
+            {include_process && (
+              <div className="bg-gray-800 rounded-lg p-3">
+                <div className="text-xs font-semibold text-gray-300 mb-2">🛠️ Execution Environment</div>
+                <div className="text-xs text-gray-400 space-y-1">
+                  <div>• <span className="text-blue-400">SQLite Database</span> - Direct execution on uploaded database file</div>
+                  <div>• <span className="text-blue-400">Query Engine</span> - Native SQLite query processing</div>
+                  <div>• <span className="text-blue-400">Result Streaming</span> - Real-time data retrieval and formatting</div>
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Execution Results */}
             <div className="bg-gray-800 rounded-lg p-3">
@@ -908,7 +932,7 @@ function BotJsonRender({ data }: { data: any }) {
               </div>
             <div className="flex gap-2 mb-2">
               <button
-                className="px-3 py-1 rounded bg-blue-600 text-white text-xs font-medium hover:bg-blue-700"
+                className="px-3 py-1 rounded text-xs font-medium bg-gray-900 text-white border border-purple-500 hover:bg-gray-800"
                 onClick={() => {
                   try {
                     // Save full result to sessionStorage so /result page can render it
@@ -921,7 +945,7 @@ function BotJsonRender({ data }: { data: any }) {
                 }}
               >View all columns & rows</button>
               <button
-                className="px-3 py-1 rounded bg-green-600 text-white text-xs font-medium hover:bg-green-700"
+                className="px-3 py-1 rounded text-xs font-medium bg-gray-900 text-white border border-purple-500 hover:bg-gray-800"
                 onClick={() => {
                   // CSV generator
                   function toCSV(headers: string[], rows: Array<Record<string, any>>) {
