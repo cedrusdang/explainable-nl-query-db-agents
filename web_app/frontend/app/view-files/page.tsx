@@ -194,6 +194,8 @@ const ViewFilesPage: React.FC = () => {
         setClearLoading={setClearLoading}
         setAddLoading={setAddLoading}
         apiFetch={apiFetch}
+        files={files}
+        setSelected={setSelected}
       />
       {loading && <div className="mb-4 text-gray-500">Loading...</div>}
   {/* error popup only, no HTML error rendering */}
