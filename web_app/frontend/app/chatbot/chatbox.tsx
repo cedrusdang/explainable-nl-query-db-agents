@@ -448,6 +448,304 @@ function BotJsonRender({ data }: { data: any }) {
                 >
                   Full Schema ({data.database})
                 </button>
+                <button 
+                  className="text-green-400 hover:text-green-300 underline"
+                  onClick={async () => {
+                    try {
+                      const schemaData = await apiFetch(`/api/agents/schema/${encodeURIComponent(data.database)}/c/`);
+                      
+                      // Create interactive schema visualization
+                      const schema = schemaData.schema || {};
+                      const tables = schema.tables || {};
+                      
+                      // Generate the interactive HTML with NetworkX-style visualization
+                      const interactiveHtml = `
+                        <!DOCTYPE html>
+                        <html>
+                        <head>
+                          <title>Interactive Schema for ${data.database}</title>
+                          <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+                          <style>
+                            body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f5f5f5; }
+                            #network { width: 100%; height: 80vh; border: 1px solid #ccc; background-color: white; border-radius: 8px; }
+                            .header { text-align: center; margin-bottom: 20px; }
+                            .controls { margin-bottom: 15px; text-align: center; }
+                            .controls button { margin: 5px; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; }
+                            .btn-primary { background-color: #007bff; color: white; }
+                            .btn-secondary { background-color: #6c757d; color: white; }
+                            .btn-success { background-color: #28a745; color: white; }
+                            
+                            .legend { 
+                              margin: 20px 0; 
+                              padding: 15px; 
+                              background-color: #f8f9fa; 
+                              border: 1px solid #dee2e6; 
+                              border-radius: 8px; 
+                            }
+                            .legend h3 { 
+                              margin: 0 0 10px 0; 
+                              color: #333; 
+                              font-size: 16px; 
+                            }
+                            .legend-items { 
+                              display: flex; 
+                              flex-wrap: wrap; 
+                              gap: 15px; 
+                              align-items: center; 
+                            }
+                            .legend-item { 
+                              display: flex; 
+                              align-items: center; 
+                              gap: 8px; 
+                              font-size: 14px; 
+                              color: #555; 
+                            }
+                            .legend-node { 
+                              width: 20px; 
+                              height: 20px; 
+                              border: 2px solid; 
+                              border-radius: 3px; 
+                            }
+                            .table-node { 
+                              background-color: #5BBCD6; 
+                              border-color: #4A9BC7; 
+                              border-radius: 3px; 
+                            }
+                            .pk-node { 
+                              background-color: #FFD700; 
+                              border-color: #FFA500; 
+                              border-radius: 50%; 
+                            }
+                            .fk-node { 
+                              background-color: #FF6B6B; 
+                              border-color: #FF4444; 
+                              border-radius: 50%; 
+                            }
+                            .column-node { 
+                              background-color: #a4e6a0; 
+                              border-color: #90C695; 
+                              border-radius: 50%; 
+                            }
+                            .legend-edge { 
+                              width: 30px; 
+                              height: 3px; 
+                              border-radius: 2px; 
+                            }
+                            .has-column { 
+                              background-color: #999999; 
+                            }
+                            .fk-relationship { 
+                              background: repeating-linear-gradient(
+                                90deg,
+                                #FF0000,
+                                #FF0000 3px,
+                                transparent 3px,
+                                transparent 6px
+                              );
+                            }
+                          </style>
+                        </head>
+                        <body>
+                          <div class="header">
+                            <h1>Interactive Schema: ${data.database}</h1>
+                            <p>Click and drag nodes to explore the database structure. Red edges show foreign key relationships.</p>
+                            
+                            <div class="legend">
+                              <h3>Legend:</h3>
+                              <div class="legend-items">
+                                <div class="legend-item">
+                                  <div class="legend-node table-node"></div>
+                                  <span>Table</span>
+                                </div>
+                                <div class="legend-item">
+                                  <div class="legend-node pk-node"></div>
+                                  <span>Primary Key</span>
+                                </div>
+                                <div class="legend-item">
+                                  <div class="legend-node fk-node"></div>
+                                  <span>Foreign Key</span>
+                                </div>
+                                <div class="legend-item">
+                                  <div class="legend-node column-node"></div>
+                                  <span>Column</span>
+                                </div>
+                                <div class="legend-item">
+                                  <div class="legend-edge has-column"></div>
+                                  <span>Table-Column Relationship</span>
+                                </div>
+                                <div class="legend-item">
+                                  <div class="legend-edge fk-relationship"></div>
+                                  <span>Foreign Key Relationship</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div class="controls">
+                            <button class="btn-primary" onclick="fitNetwork()">Fit to Screen</button>
+                            <button class="btn-success" onclick="resetView()">Reset View</button>
+                          </div>
+                          
+                          <div id="network"></div>
+                          
+                          <script>
+                            let nodes = new vis.DataSet([]);
+                            let edges = new vis.DataSet([]);
+                            
+                            // Schema data from backend
+                            const schemaData = ${JSON.stringify(tables)};
+                            
+                            // Create nodes and edges
+                            function createNetwork() {
+                              const nodeList = [];
+                              const edgeList = [];
+                              
+                              // Add table nodes
+                              Object.keys(schemaData).forEach(tableName => {
+                                const tableInfo = schemaData[tableName];
+                                nodeList.push({
+                                  id: tableName,
+                                  label: tableName,
+                                  group: 'table',
+                                  color: { background: '#5BBCD6', border: '#4A9BC7' },
+                                  shape: 'box',
+                                  font: { size: 16, color: 'white' },
+                                  title: \`Table: \${tableName}\\nPrimary Keys: \${tableInfo.primary_key?.join(', ') || 'None'}\\nColumns: \${tableInfo.columns?.join(', ') || 'None'}\`
+                                });
+                                
+                                // Add column nodes
+                                tableInfo.columns?.forEach(column => {
+                                  const columnId = \`\${tableName}.\${column}\`;
+                                  const isPrimaryKey = tableInfo.primary_key?.includes(column);
+                                  const isForeignKey = tableInfo.foreign_keys?.some(fk => fk.from_column === column);
+                                  
+                                  nodeList.push({
+                                    id: columnId,
+                                    label: column,
+                                    group: 'column',
+                                    color: { 
+                                      background: isPrimaryKey ? '#FFD700' : isForeignKey ? '#FF6B6B' : '#a4e6a0',
+                                      border: isPrimaryKey ? '#FFA500' : isForeignKey ? '#FF4444' : '#90C695'
+                                    },
+                                    shape: 'ellipse',
+                                    font: { size: 12 },
+                                    title: \`Column: \${column}\\nTable: \${tableName}\\nType: \${isPrimaryKey ? 'Primary Key' : isForeignKey ? 'Foreign Key' : 'Regular Column'}\`
+                                  });
+                                  
+                                  // Add edge from table to column
+                                  edgeList.push({
+                                    from: tableName,
+                                    to: columnId,
+                                    color: { color: '#999999' },
+                                    arrows: 'to',
+                                    title: 'HAS_COLUMN'
+                                  });
+                                });
+                                
+                                // Add foreign key edges
+                                tableInfo.foreign_keys?.forEach(fk => {
+                                  const fromColumn = \`\${tableName}.\${fk.from_column}\`;
+                                  const toColumn = \`\${fk.ref_table}.\${fk.ref_column}\`;
+                                  
+                                  edgeList.push({
+                                    from: fromColumn,
+                                    to: toColumn,
+                                    color: { color: '#FF0000' },
+                                    arrows: 'to',
+                                    title: \`Foreign Key: \${tableName}.\${fk.from_column} → \${fk.ref_table}.\${fk.ref_column}\`,
+                                    dashes: true
+                                  });
+                                });
+                              });
+                              
+                              nodes = new vis.DataSet(nodeList);
+                              edges = new vis.DataSet(edgeList);
+                              
+                              // Create network
+                              const container = document.getElementById('network');
+                              const data = { nodes: nodes, edges: edges };
+                              const options = {
+                                nodes: {
+                                  borderWidth: 2,
+                                  shadow: true,
+                                  font: { face: 'Arial' }
+                                },
+                                edges: {
+                                  width: 2,
+                                  shadow: true,
+                                  font: { size: 10, color: '#666' }
+                                },
+                                physics: {
+                                  enabled: true,
+                                  solver: 'forceAtlas2Based',
+                                  forceAtlas2Based: {
+                                    gravitationalConstant: -50,
+                                    centralGravity: 0.01,
+                                    springLength: 100,
+                                    springConstant: 0.08
+                                  },
+                                  stabilization: { iterations: 200 }
+                                },
+                                groups: {
+                                  table: {
+                                    shape: 'box',
+                                    color: { background: '#5BBCD6', border: '#4A9BC7' }
+                                  },
+                                  column: {
+                                    shape: 'ellipse',
+                                    color: { background: '#a4e6a0', border: '#90C695' }
+                                  }
+                                }
+                              };
+                              
+                              network = new vis.Network(container, data, options);
+                              
+                              // Add event listeners
+                              network.on("selectNode", function (params) {
+                                if (params.nodes.length > 0) {
+                                  const nodeId = params.nodes[0];
+                                  const node = nodes.get(nodeId);
+                                  console.log("Selected node:", node);
+                                }
+                              });
+                            }
+                            
+                            // Control functions
+                            function fitNetwork() {
+                              network.fit();
+                            }
+                            
+                            function resetView() {
+                              network.setData({ nodes: nodes, edges: edges });
+                              network.fit();
+                            }
+                            
+                            // Initialize network when page loads
+                            let network;
+                            window.onload = function() {
+                              createNetwork();
+                            };
+                          </script>
+                        </body>
+                        </html>
+                      `;
+                      
+                      // Open interactive schema in new window
+                      const newWindow = window.open('', '_blank', 'width=1200,height=800,scrollbars=yes');
+                      if (newWindow) {
+                        newWindow.document.write(interactiveHtml);
+                        newWindow.document.close();
+                      } else {
+                        alert('Popup blocked! Please allow popups for this site to view the interactive schema.');
+                      }
+                    } catch (error) {
+                      console.error('Interactive schema loading error:', error);
+                      alert(`Failed to load interactive schema: ${error instanceof Error ? error.message : 'Unknown error'}`);
+                    }
+                  }}
+                >
+                  View Interactive Schema Graph
+                </button>
               </div>
             )}
           </div>
