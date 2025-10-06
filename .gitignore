@@ -12,3 +12,5 @@ __pycache__/
 *.pyc
 web_app/backend/db.sqlite3
 *.sqlite*
+/web_app/node_modules/.bin
+/web_app/node_modules
