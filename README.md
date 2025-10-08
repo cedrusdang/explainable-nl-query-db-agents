@@ -67,7 +67,7 @@ This project is designed to be run entirely using Docker. No manual Python or Co
 
 ### 4. Access the Application
 
-- **Frontend:** [http://localhost:3000](http://localhost:3000)
+- **Frontend:** [http://localhost:3001](http://localhost:3001)
 - **Backend API:** [http://localhost:8000](http://localhost:8000)
 - **Django Admin:** [http://localhost:8000/admin](http://localhost:8000/admin)
 
@@ -80,7 +80,7 @@ This project is designed to be run entirely using Docker. No manual Python or Co
       - **Password:** `admin123`
   
 - **Web Application Login:**
-  - Log in at [http://localhost:3000](http://localhost:3000)
+  - Log in at [http://localhost:3001](http://localhost:3001)
   - Use the same credentials (`admin` / `admin123`)
 
 
