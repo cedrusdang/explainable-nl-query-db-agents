@@ -1,0 +1,65 @@
+flowchart TB
+  %% Frontend and Backend only
+  subgraph Frontend
+    direction TB
+    U[User]
+    FE[Web Frontend - Next.js]
+  end
+  U --> FE
+  FE --> U
+
+  subgraph Backend
+    direction TB
+    API[REST API - Django]
+
+    %% Preprocessing: schema extraction and embeddings
+    subgraph Preprocessing
+      direction LR
+      SCHEMA[Schema Extractor]
+      VEC[Vector Store - Schema Embeddings]
+      EXPL[Explainability & Schema Graph]
+    end
+
+    %% Data execution: uploaded DBs and SQL engine
+    subgraph "Data Execution"
+      direction LR
+      UP[Uploaded SQLite files]
+      SQLX[SQLite Engine]
+    end
+
+    %% Agents: orchestration and LLM services
+    subgraph Agents
+      direction LR
+      A[Agent A: Database Selection (FAISS + OpenAI)]
+      B[Agent B: Table Recommendation (schema_ab.jsonl)]
+      C[Agent C: SQL Generation & Execution (schema_c.json)]
+      LLM[LLM Service (ChatOpenAI)]
+    end
+  end
+
+  %% Frontend <-> Backend
+  FE --> API
+  API --> FE
+
+  %% Preprocessing flows
+  %% Preprocessing pipeline (scripts/)
+  API --> PS[process_schemas.py]
+  PS --> CE[create_embeddings.py]
+  CE --> VEC[FAISS Vector Store (schema embeddings)]
+  %% process_schemas also produces schema_ab.jsonl and schema_c.json used by agents
+  PS --> B
+  PS --> C
+  VEC --> A
+
+  %% Agents: linear chain (A -> B -> C) and LLM usage
+  API --> A
+  A --> B
+  B --> C
+  A --> LLM
+  B --> LLM
+  C --> LLM
+
+  %% Data execution action (Agent C runs SQL)
+  C -- "Execute SQL" --> SQLX
+  UP --> SQLX
+  SQLX --> API

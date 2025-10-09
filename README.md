@@ -104,7 +104,7 @@ git config --global core.autocrlf input
 
 - Go to "View/Import/Delete Databases" in the menu.
 - Click the purple **"Add All Spider"** button to upload all Spider databases and generate their schemas.
-- Alternatively, you can upload your own SQLite databases using the **"Add"** button. The application accepts `.sqlite` files that up to version 6 (currently .sqlite3). You can zip multiple files and upload them together or upload them one by one.
+- Alternatively, you can upload your own SQLite databases using the **"Add"** button. The application accepts `.sqlite` files that up to version 6 (currently .sqlite3). You can zip multiple files and upload them together or upload them one by one. Ensure no duplicate database names, and no _MACOSX folders inside the zip file.
 - After uploading, the databases will appear in the list and further manipulation is possible (view schema, delete, etc.).
 
 ### 8. Test the Agents
