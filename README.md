@@ -10,7 +10,24 @@ For CITS5553 - Data Science Capstone Project | Semester 2, 2025
 
 ---
 
-## Setup Guide
+## I. Project Overview
+
+This project implements an explainable natural language query interface for relational databases using a multi-agent system. It allows users to interact with databases by asking questions in natural language, and the system generates SQL queries to retrieve the relevant data. The key features include:
+
+- **Multi-Agent System:** Utilizes multiple AI agents to handle different aspects of the query process, including understanding the question, generating SQL, executing the query, and explaining the results.
+- **Explainability:** Provides explanations for the generated SQL queries and the results, enhancing user trust and understanding.
+- **Database Support:** Supports multiple SQLite databases, including the Spider dataset, allowing users to query various database schemas.
+- **User-Friendly Interface:** A web-based frontend built with Next.js for easy interaction.
+- **Backend:** A Django REST API backend to manage database interactions and agent coordination.
+- **Dockerized Deployment:** The entire application can be run using Docker, simplifying setup and deployment.
+
+**The architecture of the system is illustrated below:**
+
+
+![alt text](<Diagram 01.png>)
+
+
+## II. Setup Guide
 
 This project is designed to be run entirely using Docker. No manual Python or Conda environment setup is required.
 
