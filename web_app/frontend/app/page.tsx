@@ -66,13 +66,18 @@ export default function Home() {
     <main className="flex min-h-screen items-center justify-center bg-gray-900 text-gray-100">
       <form
         onSubmit={handleLogin}
-        className="bg-gray-800 text-gray-100 border-gray-700 shadow-xl shadow-black/30 p-8 rounded-xl w-96 border"
+        className="bg-gray-800 text-gray-100 border-gray-700 shadow-xl shadow-black/30 p-8 rounded-xl w-[440px] border"
       >
-        <div className="mb-4 text-center">
-          <div className="text-sm font-medium tracking-wide text-violet-600">NL to SQL chatbot</div>
-        </div>
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-center w-full text-gray-100">Login</h1>
+        <div className="mb-8 text-center">
+          <h1 className="text-3xl font-bold mb-3 whitespace-nowrap">
+            <span className="bg-gradient-to-r from-emerald-400 to-green-400 bg-clip-text text-transparent">Chat</span>
+            <span className="bg-gradient-to-r from-emerald-400 to-green-400 bg-clip-text text-transparent">NL</span>
+            <span className="text-gray-300">2</span>
+            <span className="bg-gradient-to-r from-purple-400 to-violet-400 bg-clip-text text-transparent">XQuery</span>
+          </h1>
+          <p className="text-lg text-violet-300 font-medium tracking-wide text-center leading-relaxed max-w-[400px] mx-auto">
+            Natural Language to Explainable SQL Query Chatbot
+          </p>
         </div>
 
         <label className="block text-sm mb-1">Username</label>
@@ -120,7 +125,7 @@ export default function Home() {
                   href={`http://localhost:8000/admin/`}
                   className="text-violet-400 hover:text-violet-300 underline underline-offset-2"
                 >
-                  Open Admin
+                  Open Admin Page
                 </a>
               </div>
 
