@@ -1,4 +1,5 @@
 # Explainable Natural Language Query Interface for Relational Databases Using a Multi-Agent System
+
 For CITS5553 - Data Science Capstone Project | Semester 2, 2025
 
 ---
@@ -11,8 +12,7 @@ For CITS5553 - Data Science Capstone Project | Semester 2, 2025
 
 ## Setup Guide
 
-This project is designed to be run entirely using Docker. No manual Python or Conda environment setup is required.  
-
+This project is designed to be run entirely using Docker. No manual Python or Conda environment setup is required. 
 
 ### 1. Download and Prepare the Spider Dataset
 
@@ -81,7 +81,7 @@ This project is designed to be run entirely using Docker. No manual Python or Co
   - Login 
       - **Username:** `admin`
       - **Password:** `admin123`
-  
+
 - **Web Application Login:**
   - Log in at [http://localhost:3001](http://localhost:3001)
   - Use the same credentials (`admin` / `admin123`)
@@ -94,21 +94,29 @@ This project is designed to be run entirely using Docker. No manual Python or Co
 
   > **Note:** Each user must enter their own OpenAI API key. The `.env` file API key is only for development/testing, currently not in use.
 
-### 7. Add the Spider Databases
+### 7. Add the Spider Databases or Your Own Databases
 
 - Go to "View/Import/Delete Databases" in the menu.
 - Click the purple **"Add All Spider"** button to upload all Spider databases and generate their schemas.
+- Alternatively, you can upload your own SQLite databases using the **"Add"** button. The application accepts `.sqlite` files that up to version 6 (currently .sqlite3). You can zip multiple files and upload them together or upload them one by one.
+- After uploading, the databases will appear in the list and further manipulation is possible (view schema, delete, etc.).
 
 ### 8. Test the Agents
 
 - Go to the chatbot and ask questions about your databases.
-**Example question:**  
+**Example question:**
 > Find the name of all students who were in the tryout sorted in alphabetic order
 - The AI agents will use your API key to generate SQL queries and provide explanations.
 - Play with Agent Parameters
 
+### 9. Web Servers Development
+
+As this is a Data Science Project Application, the backend is connected with an external `data` folder so it can be readable and convenient for local usage.
+
+However, it also prevents non-local app deployment. So, if you want to build web servers, by using docker or not, you will need to change the path of the default `spider` data to inside the `media` folder of the backend instead of the current `data` folder, which is outside of the `web_app` folder as it is now.
+
 ---
 
-**Troubleshooting:**  
-If you encounter issues, ensure Docker is running and the `data/spider_data` directory exists (if using the Spider dataset).  
+**Troubleshooting:**
+If you encounter issues, ensure Docker is running and the `data/spider_data` directory exists (if using the Spider dataset).
 For further help, consult your team.
