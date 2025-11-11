@@ -1,16 +1,28 @@
 # Explainable Natural Language Query Interface for Relational Databases Using a Multi-Agent System
 
-For CITS5553 - Data Science Capstone Project | Semester 2, 2025
+**UWA · CITS5553 Data Science Capstone Project — Semester 2, 2025**
+
+**Team Members:**  
+Cedrus Dang · Franco Meng · Laine Mulvay · Nirma Rajapaksha Senadherage · Aswathy Mini Sasikumar · RuiZhe Wang
+
+**Supervisors:** Assoc. Prof. Wei Liu (UWA) and UWA's Teaching Team
+
+**Client:** Dr. Sirui Li (Murdoch University)
 
 ---
+
+## Repository Contents
+
+- 📁 **[Web-Application](./web_app/)**  
+
+- 📄 **[Final Report](./CITS5553_Team_9_Project_Report.pdf)**  
+
+---
+## I. Project Overview
 
 <p align="center">
   <img src="media/demo.png" alt="Demo Screenshot" width="700"/>
 </p>
-
----
-
-## I. Project Overview
 
 This project implements an explainable natural language query interface for relational databases using a multi-agent system. It allows users to interact with databases by asking questions in natural language, and the system generates SQL queries to retrieve the relevant data. The key features include:
 
