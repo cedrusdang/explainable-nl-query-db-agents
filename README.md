@@ -15,8 +15,6 @@ Cedrus Dang · Franco Meng · Laine Mulvay · Nirma Rajapaksha Senadherage · As
 
 - 📁 **[Web-Application](./web_app/)**  
 
-- 📄 **[Final Report](./CITS5553_Team_9_Project_Report.pdf)**  
-
 ---
 ## I. Project Overview
 
