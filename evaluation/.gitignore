@@ -9,3 +9,7 @@
 # Legacy results folder
 /test_chunks/*
 !/test_chunks/.gitkeep
+
+# Local evaluation env file
+.env
+.env.*

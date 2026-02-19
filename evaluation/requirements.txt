@@ -1,0 +1,17 @@
+langchain==0.2.16
+langchain-community==0.2.16
+langchain-openai==0.1.25
+openai
+transformers
+faiss-cpu
+python-dotenv
+pandas
+tqdm
+--extra-index-url https://download.pytorch.org/whl/cu121
+torch==2.4.1+cu121
+torchvision==0.19.1+cu121
+torchaudio==2.4.1+cu121
+accelerate
+sentencepiece
+sentence-transformers
+nltk

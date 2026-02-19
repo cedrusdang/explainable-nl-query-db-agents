@@ -26,4 +26,5 @@ DB_NAMES_FILE = SCHEMA_OUTPUT_DIR / "db_names.json"
 load_dotenv(PROJECT_ROOT / ".env")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 if not OPENAI_API_KEY:
-    raise RuntimeError("OPENAI_API_KEY not set in .env")
+    # Allow non-OpenAI paths (e.g., Qwen) to run without an API key.
+    print("WARN: OPENAI_API_KEY not set in .env. OpenAI-based agents may fail.")

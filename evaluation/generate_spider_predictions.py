@@ -15,12 +15,13 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import shutil
 import sys
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import IO, Any, Dict, List
 
 from langchain_community.vectorstores import FAISS
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
@@ -68,6 +69,70 @@ def _normalize_sql(sql: str) -> str:
     return " ".join(sql.replace("\n", " ").split())
 
 
+def _strip_code_fences(text: str) -> str:
+    stripped = text.strip()
+    if stripped.startswith("```"):
+        lines = stripped.splitlines()
+        if len(lines) >= 3:
+            return "\n".join(lines[1:-1]).strip()
+    return stripped
+
+
+def _extract_json_object(text: str) -> str:
+    stripped = _strip_code_fences(text)
+    start = stripped.find("{")
+    end = stripped.rfind("}")
+    if start != -1 and end != -1 and end > start:
+        return stripped[start : end + 1]
+    return stripped
+
+
+def _parse_json(text: str) -> Dict[str, Any] | None:
+    candidate = _extract_json_object(text)
+    try:
+        parsed = json.loads(candidate)
+    except json.JSONDecodeError:
+        return None
+    return parsed if isinstance(parsed, dict) else None
+
+
+def _parse_db_name(text: str) -> str | None:
+    parsed = _parse_json(text)
+    if parsed:
+        db_name = parsed.get("db_name") or parsed.get("database")
+        if db_name:
+            return str(db_name)
+
+    match = re.search(r'"db_name"\s*:\s*"([^"]+)"', text)
+    if match:
+        return match.group(1)
+    match = re.search(r"db_name\s*[:=]\s*([A-Za-z0-9_]+)", text)
+    if match:
+        return match.group(1)
+    return None
+
+
+def _clean_sql(text: str) -> str:
+    cleaned = _strip_code_fences(text)
+    if cleaned.startswith("(") and cleaned.endswith(")"):
+        cleaned = cleaned[1:-1].strip().strip("'").strip('"')
+    return cleaned
+
+
+def _detect_device() -> str:
+    try:
+        import torch
+    except ImportError:
+        return "cpu"
+    return "cuda" if torch.cuda.is_available() else "cpu"
+
+
+def _write_trace(trace_f: IO[str], payload: Dict[str, Any]) -> None:
+    line = json.dumps(payload, ensure_ascii=False)
+    print(line)
+    trace_f.write(line + "\n")
+
+
 def _pick_question(record: Dict[str, Any]) -> str:
     question = record.get("question") or record.get("Question")
     if not question:
@@ -113,6 +178,19 @@ def _prompt_dataset_kind() -> str:
         if choice == "3":
             return "test"
         print("Please select 1, 2, or 3.")
+
+
+def _prompt_llm_backend() -> str:
+    print("LLM backend:")
+    print("1) Using ChatGPT by API (Original)")
+    print("2) Qwen/Qwen2.5-7B-Instruct (transformers)")
+    while True:
+        choice = input("Select (1/2): ").strip()
+        if choice == "1":
+            return "openai"
+        if choice == "2":
+            return "qwen"
+        print("Please select 1 or 2.")
 
 
 def _resolve_dataset_file(dataset_root: Path, dataset_kind: str) -> Path:
@@ -216,15 +294,31 @@ def _format_schema_jsonish(
     return lines
 
 
-def _build_notebook_pipeline(schema_path: Path) -> Dict[str, Any]:
+def _build_notebook_pipeline(
+    schema_path: Path,
+    llm_backend: str,
+) -> Dict[str, Any]:
     tables_data = _load_tables_json(schema_path)
     essential_schemas = _extract_essential_schema(tables_data)
     reshaped_essential_schemas = _reshape_with_headings(essential_schemas)
     final_schema_result = _format_schema_jsonish(reshaped_essential_schemas)
 
-    embeddings = OpenAIEmbeddings()
+    if llm_backend == "openai":
+        embeddings = OpenAIEmbeddings()
+    else:
+        try:
+            from langchain_community.embeddings import HuggingFaceEmbeddings
+        except ImportError as exc:
+            raise ImportError(
+                "Please install sentence-transformers to use Qwen embeddings."
+            ) from exc
+        device = _detect_device()
+        embeddings = HuggingFaceEmbeddings(
+            model_name="sentence-transformers/all-MiniLM-L6-v2",
+            model_kwargs={"device": device},
+        )
+
     vectorstore = FAISS.from_texts(final_schema_result, embeddings)
-    llm = ChatOpenAI(model="gpt-5-mini", temperature=0)
 
     prompt_db = PromptTemplate(
         input_variables=["query", "retrieved_schema"],
@@ -251,55 +345,138 @@ def _build_notebook_pipeline(schema_path: Path) -> Dict[str, Any]:
         ),
     )
 
+    if llm_backend == "openai":
+        llm = ChatOpenAI(model="gpt-5-mini", temperature=0)
+        return {
+            "llm_backend": "openai",
+            "vectorstore": vectorstore,
+            "db_chain": prompt_db | llm,
+            "table_chain": list_tables_prompt | llm,
+            "reshaped_schemas": reshaped_essential_schemas,
+            "db_prompt": prompt_db,
+            "table_prompt": list_tables_prompt,
+        }
+
+    from qwen_model import QwenChatClient
+
+    qwen_client = QwenChatClient()
     return {
+        "llm_backend": "qwen",
         "vectorstore": vectorstore,
-        "db_chain": prompt_db | llm,
-        "table_chain": list_tables_prompt | llm,
+        "qwen_client": qwen_client,
+        "db_prompt": prompt_db,
+        "table_prompt": list_tables_prompt,
         "reshaped_schemas": reshaped_essential_schemas,
     }
 
 
 def _notebook_db_select(
     user_query: str, notebook_pipeline: Dict[str, Any], top_k: int
-) -> str | None:
+) -> tuple[str | None, Dict[str, Any]]:
     vectorstore = notebook_pipeline["vectorstore"]
-    db_chain = notebook_pipeline["db_chain"]
+    if notebook_pipeline.get("llm_backend") == "openai":
+        db_chain = notebook_pipeline["db_chain"]
+    else:
+        db_chain = None
 
     relevant_docs = vectorstore.similarity_search_with_score(user_query, k=top_k)
     selected_schema = ""
     for doc, score in relevant_docs:
         selected_schema += f"score: {score}, content: {doc.page_content}\n"
 
-    response = db_chain.invoke(
-        {"query": user_query, "retrieved_schema": selected_schema}
-    )
-    llm_output = response.content if hasattr(response, "content") else str(response)
-    try:
-        parsed = json.loads(llm_output)
-    except json.JSONDecodeError:
-        return None
-    return parsed.get("db_name")
+    prompt_db = notebook_pipeline["db_prompt"]
+    prompt_text = prompt_db.format(query=user_query, retrieved_schema=selected_schema)
+
+    if db_chain is not None:
+        response = db_chain.invoke(
+            {"query": user_query, "retrieved_schema": selected_schema}
+        )
+        llm_output = response.content if hasattr(response, "content") else str(response)
+    else:
+        qwen_client = notebook_pipeline["qwen_client"]
+        llm_output = qwen_client.invoke(prompt_text)
+
+    db_name = _parse_db_name(llm_output)
+    trace = {
+        "agent": "A",
+        "prompt": prompt_text,
+        "db_name": db_name,
+    }
+    return db_name, trace
 
 
 def _notebook_table_select(
     user_query: str, db_name: str, notebook_pipeline: Dict[str, Any]
-) -> List[str]:
+) -> tuple[List[str], Dict[str, Any]]:
     reshaped_schemas = notebook_pipeline["reshaped_schemas"]
-    table_chain = notebook_pipeline["table_chain"]
+    if notebook_pipeline.get("llm_backend") == "openai":
+        table_chain = notebook_pipeline["table_chain"]
+    else:
+        table_chain = None
 
     if db_name not in reshaped_schemas:
         raise ValueError(f"No schema found for database: {db_name}")
 
     full_schema = reshaped_schemas[db_name]["tables"]
-    response = table_chain.invoke(
-        {"user_query": user_query, "db_schema_json": full_schema}
+    prompt_table = notebook_pipeline["table_prompt"]
+    prompt_text = prompt_table.format(user_query=user_query, db_schema_json=full_schema)
+
+    if table_chain is not None:
+        response = table_chain.invoke(
+            {"user_query": user_query, "db_schema_json": full_schema}
+        )
+        llm_output = response.content if hasattr(response, "content") else str(response)
+    else:
+        qwen_client = notebook_pipeline["qwen_client"]
+        llm_output = qwen_client.invoke(prompt_text)
+
+    parsed = _parse_json(llm_output)
+    if not parsed:
+        raise ValueError("Agent B JSON parse error: invalid JSON output")
+
+    tables = parsed.get("relevant_tables") or parsed.get("tables") or []
+    trace = {
+        "agent": "B",
+        "prompt": prompt_text,
+        "tables": tables,
+    }
+    return tables, trace
+
+
+def _qwen_generate_sql(
+    user_query: str,
+    db_name: str,
+    recommended_tables: List[str],
+    notebook_pipeline: Dict[str, Any],
+) -> tuple[str, Dict[str, Any]]:
+    reshaped_schemas = notebook_pipeline["reshaped_schemas"]
+    if db_name not in reshaped_schemas:
+        raise ValueError(f"No schema found for database: {db_name}")
+
+    schema_json = reshaped_schemas[db_name]["tables"]
+    prompt = (
+        "You are an SQL expert. Given the following database schema:\n\n"
+        "DB schema JSON: {db_schema_json}\n\n"
+        "Recommended tables: {recommended_tables}\n\n"
+        "Write a SQL query that answers the following question:\n\n"
+        "User query: {user_query}\n\n"
+        "Only return the SQL query, nothing else."
     )
-    llm_output = response.content if hasattr(response, "content") else str(response)
-    try:
-        parsed = json.loads(llm_output)
-    except json.JSONDecodeError as exc:
-        raise ValueError(f"Agent B JSON parse error: {exc}") from exc
-    return parsed.get("relevant_tables", []) or []
+    prompt_text = prompt.format(
+        db_schema_json=schema_json,
+        recommended_tables=recommended_tables,
+        user_query=user_query,
+    )
+
+    qwen_client = notebook_pipeline["qwen_client"]
+    llm_output = qwen_client.invoke(prompt_text)
+    sql = _clean_sql(llm_output)
+    trace = {
+        "agent": "C",
+        "prompt": prompt_text,
+        "sql": sql,
+    }
+    return sql, trace
 
 
 def _run_one_question(
@@ -309,6 +486,7 @@ def _run_one_question(
     notebook_pipeline: Dict[str, Any],
     agent_c_mod: Any,
     log_file: Path,
+    trace_f: IO[str],
 ) -> Dict[str, Any]:
     question_start = time.perf_counter()
     question = _pick_question(row)
@@ -320,40 +498,55 @@ def _run_one_question(
     tables: List[str] = []
     sql = ""
     step_times: Dict[str, int] = {}
+    trace: Dict[str, Any] = {"question_index": index, "question": question}
 
     _log(log_file, f"Q{index} START")
+    _log(log_file, f"Q{index} Question: {question}")
 
     if use_gold_db:
         if not gold_db:
             raise ValueError("use_gold_db=true but current row has no db_id")
         predicted_db = gold_db
         step_times["agent_a_ms"] = 0
+        trace["agent_a"] = {"db_name": predicted_db}
         _log(log_file, f"Q{index} AgentA skipped (use_gold_db=true), db={predicted_db}")
     else:
         step_start = time.perf_counter()
-        predicted_db = _notebook_db_select(question, notebook_pipeline, top_k)
+        predicted_db, _ = _notebook_db_select(question, notebook_pipeline, top_k)
         step_times["agent_a_ms"] = _duration_ms(step_start)
         if not predicted_db:
             raise ValueError("Agent A returned empty db_name")
+        trace["agent_a"] = {"db_name": predicted_db}
+        _log(log_file, f"Q{index} AgentA db_name={predicted_db}")
         _log(log_file, f"Q{index} AgentA done in {step_times['agent_a_ms']}ms, db={predicted_db}")
 
     step_start = time.perf_counter()
-    tables = _notebook_table_select(question, predicted_db, notebook_pipeline)
+    tables, _ = _notebook_table_select(question, predicted_db, notebook_pipeline)
     step_times["agent_b_ms"] = _duration_ms(step_start)
+    trace["agent_b"] = {"tables": tables}
+    _log(log_file, f"Q{index} AgentB tables={tables}")
     _log(log_file, f"Q{index} AgentB done in {step_times['agent_b_ms']}ms, tables={len(tables)}")
 
     step_start = time.perf_counter()
-    c_result = agent_c_mod.agent_c(question, predicted_db, tables, mode="light")
+    if notebook_pipeline.get("llm_backend") == "qwen":
+        c_result, _ = _qwen_generate_sql(question, predicted_db, tables, notebook_pipeline)
+    else:
+        c_result = agent_c_mod.agent_c(question, predicted_db, tables, mode="light")
+        
     step_times["agent_c_ms"] = _duration_ms(step_start)
     if isinstance(c_result, dict) and c_result.get("error"):
         raise ValueError(f"Agent C error: {c_result['error']}")
     if not isinstance(c_result, str) or not c_result.strip():
         raise ValueError("Agent C returned empty SQL")
     sql = _normalize_sql(c_result)
+    trace["agent_c"] = {"sql": sql}
+    _log(log_file, f"Q{index} AgentC sql={sql}")
     _log(log_file, f"Q{index} AgentC done in {step_times['agent_c_ms']}ms")
 
     total_ms = _duration_ms(question_start)
     _log(log_file, f"Q{index} DONE total={total_ms}ms")
+
+    _write_trace(trace_f, trace)
 
     return {
         "index": index,
@@ -378,16 +571,21 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    if "OPENAI_API_KEY" not in os.environ:
-        print("ERROR: OPENAI_API_KEY is not set in environment.")
-        print("Tip: create project .env or export env var before running.")
-        return 1
-
     if not args.params.exists():
         print(f"ERROR: Parameter file not found: {args.params}")
         return 1
 
     params = _load_params(args.params)
+
+    llm_backend = params.get("llm_backend") or _prompt_llm_backend()
+    qwen_mode = None
+    if llm_backend == "qwen":
+        qwen_mode = "pipeline"
+    else:
+        if "OPENAI_API_KEY" not in os.environ:
+            print("ERROR: OPENAI_API_KEY is not set in environment.")
+            print("Tip: create project .env or export env var before running.")
+            return 1
 
     print("Path to the main dataset (Include train, dev, and test sets)")
     dataset_root = Path(
@@ -412,6 +610,9 @@ def main() -> int:
 
     output_root.mkdir(parents=True, exist_ok=True)
     session_log = output_root / "session.log"
+    _log(session_log, f"LLM backend: {llm_backend}")
+    if qwen_mode:
+        _log(session_log, f"Qwen mode: {qwen_mode}")
     _log(session_log, f"Dataset root: {dataset_root}")
     _log(session_log, f"Dataset kind: {dataset_kind}")
     _log(session_log, f"Input path: {input_path}")
@@ -446,7 +647,7 @@ def main() -> int:
         _log(session_log, f"ERROR: tables.json not found: {schema_path}")
         return 1
 
-    notebook_pipeline = _build_notebook_pipeline(schema_path)
+    notebook_pipeline = _build_notebook_pipeline(schema_path, llm_backend)
 
     tables_snapshot = output_root / "tables.json"
     try:
@@ -486,6 +687,7 @@ def main() -> int:
         debug_path = chunk_folder / "predictions_debug.jsonl"
         summary_path = chunk_folder / "summary.json"
         log_path = chunk_folder / "run.log"
+        trace_path = chunk_folder / "agent_cot.jsonl"
         params_copy_path = chunk_folder / "parameters.json"
         shutil.copy2(args.params, params_copy_path)
 
@@ -498,7 +700,11 @@ def main() -> int:
         chunk_ok = 0
         stop_all = False
 
-        with predictions_path.open("w", encoding="utf-8") as pred_f, debug_path.open("w", encoding="utf-8") as dbg_f:
+        with (
+            predictions_path.open("w", encoding="utf-8") as pred_f,
+            debug_path.open("w", encoding="utf-8") as dbg_f,
+            trace_path.open("w", encoding="utf-8") as trace_f,
+        ):
             for idx in range(chunk_start, chunk_end):
                 row = examples[idx]
                 attempt = 0
@@ -516,15 +722,28 @@ def main() -> int:
                             notebook_pipeline=notebook_pipeline,
                             agent_c_mod=agent_c_mod,
                             log_file=log_path,
+                            trace_f=trace_f,
                         )
                         pred_f.write(result["prediction_sql"] + "\n")
                         dbg_f.write(json.dumps(result, ensure_ascii=False) + "\n")
+                        pred_f.flush()
+                        dbg_f.flush()
+                        trace_f.flush()
                         chunk_debug_rows.append(result)
                         chunk_ok += 1
                         success = True
                     except Exception as err:
                         last_error = str(err)
                         _log(log_path, f"Q{idx} attempt {attempt} FAILED: {last_error}")
+                        _write_trace(
+                            trace_f,
+                            {
+                                "question_index": idx,
+                                "step": "error",
+                                "attempt": attempt,
+                                "error": last_error,
+                            },
+                        )
 
                 if not success:
                     fail_row = {
