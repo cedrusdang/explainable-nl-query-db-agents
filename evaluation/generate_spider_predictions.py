@@ -4,8 +4,9 @@ Generate Spider predictions in chunk folders with detailed timing logs.
 
 Main behavior:
 - Read run settings from evaluation/prediction_parameters.json
+- Prompt for dataset type and range on startup
 - Process 10 questions per chunk by default
-- Save each chunk to evaluation/test_chunks/test_chuck_<n>
+- Save each chunk to evaluation/predict_results/<Dataset>_predict_results/test_chuck_<n>
 - Retry failures; stop the run if a question still fails after retries
 """
 
@@ -21,9 +22,15 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List
 
+from langchain_community.vectorstores import FAISS
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from langchain.prompts import PromptTemplate
+
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_PARAMS_PATH = PROJECT_ROOT / "evaluation" / "prediction_parameters.json"
+DEFAULT_DATASET_ROOT = PROJECT_ROOT / "evaluation" / "spider_data"
+DEFAULT_OUTPUT_BASE = PROJECT_ROOT / "evaluation" / "predict_results"
 
 
 def _load_examples(input_path: Path) -> List[Dict[str, Any]]:
@@ -73,12 +80,233 @@ def _pick_gold_db(record: Dict[str, Any]) -> str | None:
     return str(db_id) if db_id else None
 
 
+def _prompt_text(label: str, default: str | None = None) -> str:
+    suffix = f" [{default}]" if default else ""
+    while True:
+        value = input(f"{label}{suffix}: ").strip()
+        if value:
+            return value
+        if default is not None:
+            return default
+
+
+def _prompt_int(label: str, default: int | None = None) -> int:
+    while True:
+        raw = _prompt_text(label, str(default) if default is not None else None)
+        try:
+            return int(raw)
+        except ValueError:
+            print("Please enter a valid integer.")
+
+
+def _prompt_dataset_kind() -> str:
+    print("What kind of dataset you use:")
+    print("1) Train set")
+    print("2) Dev set")
+    print("3) Test set")
+    while True:
+        choice = input("Select (1/2/3): ").strip()
+        if choice == "1":
+            return "train"
+        if choice == "2":
+            return "dev"
+        if choice == "3":
+            return "test"
+        print("Please select 1, 2, or 3.")
+
+
+def _resolve_dataset_file(dataset_root: Path, dataset_kind: str) -> Path:
+    candidates = {
+        "train": [
+            dataset_root / "train_spider.json",
+            dataset_root / "train.json",
+            dataset_root / "train_others.json",
+        ],
+        "dev": [dataset_root / "dev.json"],
+        "test": [dataset_root / "test.json"],
+    }
+    for candidate in candidates.get(dataset_kind, []):
+        if candidate.exists():
+            return candidate
+    fallback = _prompt_text(
+        "Dataset file path (could not auto-detect)",
+        str(dataset_root),
+    )
+    return Path(fallback)
+
+
+def _compute_range(start_case: int, end_case: int, total_examples: int) -> tuple[int, int]:
+    start_index = max(0, start_case)
+    if end_case < 0:
+        end_index = total_examples
+    else:
+        end_index = min(end_case + 1, total_examples)
+    return start_index, end_index
+
+
+def _load_tables_json(schema_path: Path) -> List[Dict[str, Any]]:
+    with schema_path.open("r", encoding="utf-8") as f:
+        data = json.load(f)
+    if not isinstance(data, list):
+        raise ValueError(
+            f"Expected list JSON in {schema_path}, got {type(data).__name__}"
+        )
+    return data
+
+
+def _extract_essential_schema(tables_data: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    essential_data: List[Dict[str, Any]] = []
+    for entry in tables_data:
+        essential_data.append(
+            {
+                "database_name": entry.get("db_id", "undefined"),
+                "table_names": entry.get("table_names", []),
+                "column_names": entry.get("column_names", []),
+            }
+        )
+    return essential_data
+
+
+def _reshape_with_headings(
+    essential_schemas: List[Dict[str, Any]],
+) -> Dict[str, Dict[str, Any]]:
+    out: Dict[str, Dict[str, Any]] = {}
+    for db in essential_schemas:
+        db_name = db.get("database_name", "unknown")
+        table_names = list(db.get("table_names", []))
+        col_specs = list(db.get("column_names", []))
+        tables = []
+
+        for idx, table_name in enumerate(table_names):
+            cols: List[str] = []
+            for pair in col_specs:
+                if not isinstance(pair, (list, tuple)) or len(pair) != 2:
+                    continue
+                t_idx, col = pair
+                try:
+                    t_idx = int(t_idx)
+                except (ValueError, TypeError):
+                    continue
+                if t_idx != idx:
+                    continue
+                if col is None or str(col).strip() == "*" or t_idx < 0:
+                    continue
+                cols.append(str(col))
+
+            tables.append({"table_name": table_name, "columns": cols})
+
+        out[db_name] = {"database_name": db_name, "tables": tables}
+
+    return out
+
+
+def _format_schema_jsonish(
+    reshaped_essential_schemas: Dict[str, Dict[str, Any]],
+) -> List[str]:
+    lines: List[str] = []
+    for _, db in reshaped_essential_schemas.items():
+        db_name = db.get("database_name", "unknown")
+        for table in db.get("tables", []):
+            obj = {
+                "database": db_name,
+                "table": table.get("table_name", "unknown"),
+                "columns": table.get("columns", []),
+            }
+            lines.append(json.dumps(obj, ensure_ascii=False, separators=(",", ":")))
+    return lines
+
+
+def _build_notebook_pipeline(schema_path: Path) -> Dict[str, Any]:
+    tables_data = _load_tables_json(schema_path)
+    essential_schemas = _extract_essential_schema(tables_data)
+    reshaped_essential_schemas = _reshape_with_headings(essential_schemas)
+    final_schema_result = _format_schema_jsonish(reshaped_essential_schemas)
+
+    embeddings = OpenAIEmbeddings()
+    vectorstore = FAISS.from_texts(final_schema_result, embeddings)
+    llm = ChatOpenAI(model="gpt-5-mini", temperature=0)
+
+    prompt_db = PromptTemplate(
+        input_variables=["query", "retrieved_schema"],
+        template=(
+            "Please selects the most relevant database and table in order to answer user's query.\n"
+            "User query: {query}\n"
+            "Schema info: {retrieved_schema}\n"
+            "Which database and tables has the most relevant information for this query? "
+            "Selecting 1 database only. Respond the database name, table and column "
+            "infomation in JSON format: {{ \"db_name\": \"...\", \"tables\": [\"...\"], "
+            "\"columns\":[\"...\"]}}\n"
+        ),
+    )
+
+    list_tables_prompt = PromptTemplate(
+        input_variables=["user_query", "db_schema_json"],
+        template=(
+            "Given the selected database schema, return ONLY valid JSON with exactly these keys"
+            '  "relevant_tables": ["..."],\n'
+            '  "reasons": "..." \n\n'
+            "User query: {user_query}\n"
+            "DB schema JSON: {db_schema_json}\n"
+            "Do not wrap all_tables in an extra list. Do not include any text outside JSON."
+        ),
+    )
+
+    return {
+        "vectorstore": vectorstore,
+        "db_chain": prompt_db | llm,
+        "table_chain": list_tables_prompt | llm,
+        "reshaped_schemas": reshaped_essential_schemas,
+    }
+
+
+def _notebook_db_select(
+    user_query: str, notebook_pipeline: Dict[str, Any], top_k: int
+) -> str | None:
+    vectorstore = notebook_pipeline["vectorstore"]
+    db_chain = notebook_pipeline["db_chain"]
+
+    relevant_docs = vectorstore.similarity_search_with_score(user_query, k=top_k)
+    selected_schema = ""
+    for doc, score in relevant_docs:
+        selected_schema += f"score: {score}, content: {doc.page_content}\n"
+
+    response = db_chain.invoke(
+        {"query": user_query, "retrieved_schema": selected_schema}
+    )
+    llm_output = response.content if hasattr(response, "content") else str(response)
+    try:
+        parsed = json.loads(llm_output)
+    except json.JSONDecodeError:
+        return None
+    return parsed.get("db_name")
+
+
+def _notebook_table_select(
+    user_query: str, db_name: str, notebook_pipeline: Dict[str, Any]
+) -> List[str]:
+    reshaped_schemas = notebook_pipeline["reshaped_schemas"]
+    table_chain = notebook_pipeline["table_chain"]
+
+    if db_name not in reshaped_schemas:
+        raise ValueError(f"No schema found for database: {db_name}")
+
+    full_schema = reshaped_schemas[db_name]["tables"]
+    response = table_chain.invoke(
+        {"user_query": user_query, "db_schema_json": full_schema}
+    )
+    llm_output = response.content if hasattr(response, "content") else str(response)
+    try:
+        parsed = json.loads(llm_output)
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"Agent B JSON parse error: {exc}") from exc
+    return parsed.get("relevant_tables", []) or []
+
+
 def _run_one_question(
     row: Dict[str, Any],
     index: int,
     params: Dict[str, Any],
-    agent_a_mod: Any,
-    agent_b_mod: Any,
+    notebook_pipeline: Dict[str, Any],
     agent_c_mod: Any,
     log_file: Path,
 ) -> Dict[str, Any]:
@@ -103,23 +331,15 @@ def _run_one_question(
         _log(log_file, f"Q{index} AgentA skipped (use_gold_db=true), db={predicted_db}")
     else:
         step_start = time.perf_counter()
-        predicted_db = agent_a_mod.apply_database_selector(
-            question,
-            mode="light",
-            top_k=top_k,
-        )
+        predicted_db = _notebook_db_select(question, notebook_pipeline, top_k)
         step_times["agent_a_ms"] = _duration_ms(step_start)
         if not predicted_db:
             raise ValueError("Agent A returned empty db_name")
         _log(log_file, f"Q{index} AgentA done in {step_times['agent_a_ms']}ms, db={predicted_db}")
 
     step_start = time.perf_counter()
-    b_result = agent_b_mod.agent_b(question, predicted_db, mode="light")
+    tables = _notebook_table_select(question, predicted_db, notebook_pipeline)
     step_times["agent_b_ms"] = _duration_ms(step_start)
-    if isinstance(b_result, dict) and b_result.get("error"):
-        raise ValueError(f"Agent B error: {b_result['error']}")
-    if isinstance(b_result, dict):
-        tables = b_result.get("Tables", []) or []
     _log(log_file, f"Q{index} AgentB done in {step_times['agent_b_ms']}ms, tables={len(tables)}")
 
     step_start = time.perf_counter()
@@ -169,42 +389,90 @@ def main() -> int:
 
     params = _load_params(args.params)
 
-    input_path = Path(params.get("input", PROJECT_ROOT / "data" / "test" / "spider_query_answers.json"))
-    output_root = Path(params.get("output_root", PROJECT_ROOT / "evaluation" / "test_chunks"))
-    start_index = max(0, int(params.get("start", 0)))
-    end_cfg = int(params.get("end", -1))
+    print("Path to the main dataset (Include train, dev, and test sets)")
+    dataset_root = Path(
+        _prompt_text(
+            "Dataset root",
+            str(params.get("dataset_root", DEFAULT_DATASET_ROOT)),
+        )
+    )
+    dataset_kind = _prompt_dataset_kind()
+    input_path = _resolve_dataset_file(dataset_root, dataset_kind)
+
+    from_case = _prompt_int("From case", int(params.get("start", 0)))
+    to_case = _prompt_int("To case", int(params.get("end", -1)))
+
+    output_base = Path(params.get("output_base", DEFAULT_OUTPUT_BASE))
+    output_root = output_base / f"{dataset_kind.capitalize()}_predict_results"
+
     chunk_size = int(params.get("chunk_size", 10))
     if chunk_size <= 0:
         raise ValueError("chunk_size must be > 0")
     max_retries = int(params.get("max_retries", 2))
 
+    output_root.mkdir(parents=True, exist_ok=True)
+    session_log = output_root / "session.log"
+    _log(session_log, f"Dataset root: {dataset_root}")
+    _log(session_log, f"Dataset kind: {dataset_kind}")
+    _log(session_log, f"Input path: {input_path}")
+    _log(session_log, f"Output root: {output_root}")
+    _log(session_log, f"Chunk size: {chunk_size}")
+    _log(session_log, f"Max retries: {max_retries}")
+
     if not input_path.exists():
         print(f"ERROR: Input file not found: {input_path}")
+        _log(session_log, f"ERROR: Input file not found: {input_path}")
         return 1
 
     sys.path.append(str(PROJECT_ROOT))
 
     try:
-        import scripts.agents.agent_a as agent_a_mod
-        import scripts.agents.agent_b as agent_b_mod
         import scripts.agents.agent_c as agent_c_mod
     except Exception as import_error:
-        print(f"ERROR: Failed to import scripts agents: {import_error}")
+        print(f"ERROR: Failed to import scripts agent_c: {import_error}")
         return 1
 
-    agent_a_mod.QUIET_MODE = True
-    agent_b_mod.QUIET_MODE = True
     agent_c_mod.QUIET_MODE = True
+
+    schema_path = Path(
+        params.get(
+            "schema_path",
+            dataset_root / "tables.json",
+        )
+    )
+    _log(session_log, f"Schema path: {schema_path}")
+    if not schema_path.exists():
+        print(f"ERROR: tables.json not found: {schema_path}")
+        _log(session_log, f"ERROR: tables.json not found: {schema_path}")
+        return 1
+
+    notebook_pipeline = _build_notebook_pipeline(schema_path)
+
+    tables_snapshot = output_root / "tables.json"
+    try:
+        shutil.copy2(schema_path, tables_snapshot)
+        _log(session_log, f"Schema snapshot saved: {tables_snapshot}")
+    except Exception as copy_error:
+        _log(session_log, f"WARN: Failed to copy tables.json: {copy_error}")
+
+    input_snapshot = output_root / input_path.name
+    try:
+        shutil.copy2(input_path, input_snapshot)
+        _log(session_log, f"Input snapshot saved: {input_snapshot}")
+    except Exception as copy_error:
+        _log(session_log, f"WARN: Failed to copy input file: {copy_error}")
 
     examples = _load_examples(input_path)
     total_examples = len(examples)
-    end_index = total_examples if end_cfg < 0 else min(end_cfg, total_examples)
+    start_index, end_index = _compute_range(from_case, to_case, total_examples)
+
+    _log(session_log, f"Range: start={start_index} end_exclusive={end_index}")
 
     if start_index >= end_index:
         print(f"Nothing to run: start={start_index}, end={end_index}, total={total_examples}")
+        _log(session_log, f"Nothing to run: start={start_index}, end={end_index}, total={total_examples}")
         return 0
 
-    output_root.mkdir(parents=True, exist_ok=True)
     chunk_no = 1
     current = start_index
 
@@ -224,6 +492,7 @@ def main() -> int:
         chunk_timer = time.perf_counter()
         _log(log_path, f"CHUNK {chunk_no} START range=[{chunk_start}, {chunk_end})")
         _log(log_path, f"Parameters copied to: {params_copy_path}")
+        _log(session_log, f"CHUNK {chunk_no} START range=[{chunk_start}, {chunk_end})")
 
         chunk_debug_rows: List[Dict[str, Any]] = []
         chunk_ok = 0
@@ -244,8 +513,7 @@ def main() -> int:
                             row=row,
                             index=idx,
                             params=params,
-                            agent_a_mod=agent_a_mod,
-                            agent_b_mod=agent_b_mod,
+                            notebook_pipeline=notebook_pipeline,
                             agent_c_mod=agent_c_mod,
                             log_file=log_path,
                         )
@@ -300,9 +568,11 @@ def main() -> int:
 
         _log(log_path, f"CHUNK {chunk_no} END total={chunk_total_ms}ms ok={predicted_count}/{expected_count}")
         _log(log_path, f"Summary saved: {summary_path}")
+        _log(session_log, f"CHUNK {chunk_no} END total={chunk_total_ms}ms ok={predicted_count}/{expected_count}")
 
         if stop_all:
             print(f"Stopped at chunk {chunk_no}. Check logs in: {chunk_folder}")
+            _log(session_log, f"STOPPED at chunk {chunk_no}. See: {chunk_folder}")
             return 2
 
         current = chunk_end
@@ -310,6 +580,7 @@ def main() -> int:
 
     print("Done all chunks successfully.")
     print(f"Output root: {output_root}")
+    _log(session_log, "RUN COMPLETE")
     return 0
 
 

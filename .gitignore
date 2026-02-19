@@ -1,8 +1,10 @@
 .DS_Store
 __pycache__/
-/data/spider_data
+/data/spider_data/*
+!/data/spider_data/.gitkeep
 /data/processed
 .env
+.env.*
 /capstone*
 */venv/
 web_app/backend/db.sqlite3

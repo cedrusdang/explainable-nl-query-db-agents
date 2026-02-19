@@ -47,9 +47,9 @@ Before starting, if you use Windows, ensure that you have run the code below in 
 git config --global core.autocrlf input
 ```
 
-### 1. Download and Prepare the Spider Dataset
+### 1. Download and Prepare the Spider Dataset (Required)
 
-- **Download the Spider Dataset:**
+- **Download the Spider Dataset (required to run the app with default databases):**
   - Visit: https://yale-lily.github.io/spider  
     or use the direct link: [Google Drive Download](https://drive.google.com/file/d/1403EGqzIDoHMdQF4c9Bkyl7dZLZ5Wt6J/view)
   - Download the ZIP file to your computer.
@@ -82,7 +82,7 @@ git config --global core.autocrlf input
           └── ... (200+ more databases)
   ```
 
-  > **Note:** The Spider databases are not included in this repository due to size. Each user must download and place them manually.
+  > **Note:** The Spider databases are not included in this repository due to size. You must download and place them manually before running the app.
 
 ### 2. Install Docker
 

@@ -1,10 +1,10 @@
 # Evaluation (Spider Predictions)
 
-This folder contains a chunk-based Spider prediction pipeline that uses the existing agents in `scripts`.
+This folder contains a chunk-based Spider prediction pipeline that uses the notebook-style Agent A/B plus Agent C.
 
 ## How to run
 
-Run with the default parameter file `prediction_parameters.json`:
+Run with the default parameter file `prediction_parameters.json` (the script will prompt for dataset and range):
 
 ```powershell
 python -m evaluation.generate_spider_predictions
@@ -18,11 +18,11 @@ python -m evaluation.generate_spider_predictions --params evaluation/prediction_
 
 ## Chunk output
 
-Each chunk (default: 10 questions) is saved to:
+Each chunk (default: 10 questions) is saved under:
 
-- `evaluation/test_chunks/test_chuck_1`
-- `evaluation/test_chunks/test_chuck_2`
-- ...
+- `evaluation/predict_results/Train_predict_results/test_chuck_1`
+- `evaluation/predict_results/Dev_predict_results/test_chuck_1`
+- `evaluation/predict_results/Test_predict_results/test_chuck_1`
 
 Each chunk folder contains:
 
@@ -34,7 +34,7 @@ Each chunk folder contains:
 
 ## Combine all chunks for Spider testing
 
-After chunk generation is complete, combine all `test_chuck_*` folders into one final file:
+After chunk generation is complete, combine all `test_chuck_*` folders for the chosen dataset:
 
 ```powershell
 python -m evaluation.combine_spider_chunks
@@ -46,11 +46,11 @@ Optional strict validation (fails on incomplete/broken chunks):
 python -m evaluation.combine_spider_chunks --strict
 ```
 
-Combine outputs:
+Combine outputs (saved in the same dataset folder):
 
-- `evaluation/predictions_combined.txt`
-- `evaluation/predictions_debug_combined.jsonl`
-- `evaluation/combine_report.json`
+- `predictions_combined.txt`
+- `predictions_debug_combined.jsonl`
+- `combine_report.json`
 
 ## Retry and safe stop
 
@@ -58,8 +58,16 @@ Combine outputs:
 - If it still fails after retries, the run stops immediately at that chunk
 - All logs and output files for the chunk are still saved before stopping
 
+## Evaluate EX/EM
+
+Run the evaluator (it will prompt for dataset type and paths if you do not pass args):
+
+```powershell
+python -m evaluation.evaluation
+```
+
 ## Prerequisites
 
-1. Test data exists at `data/test/spider_query_answers.json` (or another path in params)
-2. Required schema/embeddings exist for the current pipeline
+1. Spider dataset exists in `evaluation/spider_data` (train/dev/test/tables.json)
+2. `OPENAI_API_KEY` is set in the environment
 3. `OPENAI_API_KEY` is set in the environment

@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-Combine chunk outputs from evaluation/test_chunks/test_chuck_* into one Spider prediction file.
+Combine chunk outputs from a dataset-specific prediction folder.
 
 Default behavior:
 - Reads all chunk folders matching test_chuck_<n>
 - Sorts chunks by numeric <n>
 - Validates chunk summary and line counts
-- Writes combined predictions and debug outputs
+- Writes combined predictions and debug outputs in the same dataset folder
 """
 
 from __future__ import annotations
@@ -19,12 +19,35 @@ from typing import Dict, List, Tuple
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_CHUNKS_ROOT = PROJECT_ROOT / "evaluation" / "test_chunks"
-DEFAULT_OUTPUT = PROJECT_ROOT / "evaluation" / "predictions_combined.txt"
-DEFAULT_DEBUG_OUTPUT = PROJECT_ROOT / "evaluation" / "predictions_debug_combined.jsonl"
-DEFAULT_REPORT = PROJECT_ROOT / "evaluation" / "combine_report.json"
+DEFAULT_OUTPUT_BASE = PROJECT_ROOT / "evaluation" / "predict_results"
 
 CHUNK_DIR_PATTERN = re.compile(r"^test_chuck_(\d+)$")
+
+
+def _prompt_text(label: str, default: str | None = None) -> str:
+    suffix = f" [{default}]" if default else ""
+    while True:
+        value = input(f"{label}{suffix}: ").strip()
+        if value:
+            return value
+        if default is not None:
+            return default
+
+
+def _prompt_dataset_kind() -> str:
+    print("What kind of dataset you use:")
+    print("1) Train set")
+    print("2) Dev set")
+    print("3) Test set")
+    while True:
+        choice = input("Select (1/2/3): ").strip()
+        if choice == "1":
+            return "train"
+        if choice == "2":
+            return "dev"
+        if choice == "3":
+            return "test"
+        print("Please select 1, 2, or 3.")
 
 
 def _read_lines(path: Path) -> List[str]:
@@ -56,15 +79,16 @@ def _find_chunk_dirs(chunks_root: Path) -> List[Tuple[int, Path]]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Combine Spider chunk predictions")
-    parser.add_argument("--chunks-root", type=Path, default=DEFAULT_CHUNKS_ROOT, help="Folder that contains test_chuck_*")
-    parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT, help="Combined predictions output file")
+    parser.add_argument("--output-base", type=Path, default=DEFAULT_OUTPUT_BASE, help="Base folder for predict_results")
+    parser.add_argument("--dataset-kind", type=str, choices=["train", "dev", "test"], help="Dataset type")
+    parser.add_argument("--chunks-root", type=Path, help="Folder that contains test_chuck_*")
+    parser.add_argument("--output", type=Path, help="Combined predictions output file")
     parser.add_argument(
         "--debug-output",
         type=Path,
-        default=DEFAULT_DEBUG_OUTPUT,
         help="Combined debug JSONL output file",
     )
-    parser.add_argument("--report", type=Path, default=DEFAULT_REPORT, help="Merge report JSON file")
+    parser.add_argument("--report", type=Path, help="Merge report JSON file")
     parser.add_argument(
         "--strict",
         action="store_true",
@@ -72,20 +96,28 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    chunk_dirs = _find_chunk_dirs(args.chunks_root)
+    dataset_kind = args.dataset_kind or _prompt_dataset_kind()
+    output_root = args.output_base / f"{dataset_kind.capitalize()}_predict_results"
+    chunks_root = args.chunks_root or output_root
+    output_path = args.output or (output_root / "predictions_combined.txt")
+    debug_output_path = args.debug_output or (output_root / "predictions_debug_combined.jsonl")
+    report_path = args.report or (output_root / "combine_report.json")
+
+    chunk_dirs = _find_chunk_dirs(chunks_root)
     if not chunk_dirs:
-        print(f"ERROR: No chunk folders found in: {args.chunks_root}")
+        print(f"ERROR: No chunk folders found in: {chunks_root}")
         return 1
 
-    args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.debug_output.parent.mkdir(parents=True, exist_ok=True)
-    args.report.parent.mkdir(parents=True, exist_ok=True)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    debug_output_path.parent.mkdir(parents=True, exist_ok=True)
+    report_path.parent.mkdir(parents=True, exist_ok=True)
 
     merged_prediction_lines: List[str] = []
     merged_debug_lines: List[str] = []
 
     report: Dict[str, object] = {
-        "chunks_root": str(args.chunks_root),
+        "chunks_root": str(chunks_root),
+        "dataset_kind": dataset_kind,
         "chunk_count": len(chunk_dirs),
         "chunks": [],
         "total_prediction_lines": 0,
@@ -178,27 +210,27 @@ def main() -> int:
         chunk_report["used"] = True
         report["chunks"].append(chunk_report)
 
-    with args.output.open("w", encoding="utf-8") as f:
+    with output_path.open("w", encoding="utf-8") as f:
         for line in merged_prediction_lines:
             f.write(line + "\n")
 
-    with args.debug_output.open("w", encoding="utf-8") as f:
+    with debug_output_path.open("w", encoding="utf-8") as f:
         for line in merged_debug_lines:
             f.write(line + "\n")
 
     report["total_prediction_lines"] = len(merged_prediction_lines)
     report["total_debug_lines"] = len(merged_debug_lines)
-    report["output"] = str(args.output)
-    report["debug_output"] = str(args.debug_output)
+    report["output"] = str(output_path)
+    report["debug_output"] = str(debug_output_path)
 
-    with args.report.open("w", encoding="utf-8") as f:
+    with report_path.open("w", encoding="utf-8") as f:
         json.dump(report, f, ensure_ascii=False, indent=2)
 
     print("Combine complete.")
-    print(f"Chunks root           : {args.chunks_root}")
-    print(f"Combined predictions  : {args.output}")
-    print(f"Combined debug        : {args.debug_output}")
-    print(f"Report                : {args.report}")
+    print(f"Chunks root           : {chunks_root}")
+    print(f"Combined predictions  : {output_path}")
+    print(f"Combined debug        : {debug_output_path}")
+    print(f"Report                : {report_path}")
     print(f"Total prediction lines: {len(merged_prediction_lines)}")
     print(f"Warnings              : {len(report['warnings'])}")
 
