@@ -207,7 +207,7 @@ Make sure your SQL is formatted so that it is easily tokenizable:
 - Use proper SQL syntax and table/column names from the schema
 - Be case insensitive as the schema data may have mixed case
 - The SQL must directly use the table and column names from the schema without any modifications or aliases. 
-
+- Do not introduce additional predicates, null conditions, joins, subqueries, or set operators unless they are explicitly required by the question.
 """,
 )
 

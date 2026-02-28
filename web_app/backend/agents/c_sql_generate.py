@@ -21,7 +21,9 @@ def create_chain(api_key: str):
             "DB schema JSON: {db_schema_json}\n"
             "Selected tables: {selected_tables}\n"
             "Do not wrap all_tables in an extra list. Do not include any text outside JSON."
-            "The SQL must directly use the table and column names from the schema without any modifications or aliases."
+            "The SQL must directly use the table and column names from the schema without any modifications or aliases in short SQL code."
+            "Use aliases only when a JOIN is present or when disambiguation is required, defined as Tx for tables and Cx for columns, where x is a number."
+            "Do not introduce additional predicates, null conditions, joins, subqueries, or set operators unless they are explicitly required by the question."
         ),
     )
     return produce_sql_prompt | llm
