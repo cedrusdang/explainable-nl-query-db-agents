@@ -24,26 +24,19 @@ def _call_qwen(prompt: str, api_key: str, api_url: str, model: str) -> str:
 PRODUCE_SQL_PROMPT = PromptTemplate(
     input_variables=["user_query", "db_schema_json", "selected_tables"],
     template=(
-        "You are generating SQLite SQL for Spider evaluation.\n"
-        "Return ONLY valid JSON with EXACTLY these keys:\n"
+        "Given the selected database schema and selected table names, "
+        "please be case insensitive, return ONLY valid JSON with exactly these keys\n"
         '  "relevant_tables": ["..."],\n'
-        '  "SQL Code": "..." ,\n'
+        '  "SQL Code": "..."\n\n'
         '  "reasons": "..." \n\n'
-        "Rules for SQL (must follow strictly):\n"
-        "- SQLite dialect ONLY.\n"
-        "- NO aliases of any kind:\n"
-        "  - No column aliases (no 'AS alias', no implicit alias).\n"
-        "  - No table aliases (no 'FROM table t', no 'FROM table AS t', no 'JOIN table t').\n"
-        "- Do NOT use SQL functions or expressions that wrap columns:\n"
-        "  - No LOWER/UPPER/TRIM/CAST/CASE/COALESCE/SUBSTR/INSTR/POSITION/SUBSTRING.\n"
-        "- Use only plain column references, aggregation functions (COUNT/SUM/AVG/MIN/MAX), "
-        "basic arithmetic (+ - * /), and standard WHERE operators (=, !=, <, >, <=, >=, IN, LIKE, IS, BETWEEN).\n"
-        "- Use table_name.column_name ONLY when needed to disambiguate (still no aliases).\n"
-        "- Match string values exactly as given in the question or schema when possible (no case-insensitive rewriting).\n"
-        "- SQL must be a single line string (no newlines).\n\n"
+        "The SQL should be structured and readable, using new lines and indentation as appropriate.\n"
         "User query: {user_query}\n"
         "DB schema JSON: {db_schema_json}\n"
         "Selected tables: {selected_tables}\n"
+        "Do not wrap all_tables in an extra list. Do not include any text outside JSON."
+        "The SQL must directly use the table and column names from the schema without any modifications or aliases in short SQL code."
+        "Use aliases only when a JOIN is present or when disambiguation is required, defined as Tx for tables and Cx for columns, where x is a number."
+        "Do not introduce additional predicates, null conditions, joins, subqueries, or set operators unless they are explicitly required by the question."
     ),
 )
 
