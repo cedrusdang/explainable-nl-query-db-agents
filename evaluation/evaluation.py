@@ -25,13 +25,8 @@ import json
 import sqlite3
 import traceback
 import argparse
-from pathlib import Path
 
 from process_sql import tokenize, get_schema, get_tables_with_alias, Schema, get_sql
-
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_DATASET_ROOT = PROJECT_ROOT / "evaluation" / "spider_data"
-DEFAULT_OUTPUT_BASE = PROJECT_ROOT / "evaluation" / "predict_results"
 
 # Flag to disable value evaluation
 DISABLE_VALUE = True
@@ -851,45 +846,6 @@ def build_foreign_key_map_from_json(table):
     return tables
 
 
-def _prompt_text(label, default=None):
-    suffix = f" [{default}]" if default else ""
-    while True:
-        value = input(f"{label}{suffix}: ").strip()
-        if value:
-            return value
-        if default is not None:
-            return default
-
-
-def _prompt_dataset_kind():
-    print("What kind of dataset you use:")
-    print("1) Train set")
-    print("2) Dev set")
-    print("3) Test set")
-    while True:
-        choice = input("Select (1/2/3): ").strip()
-        if choice == "1":
-            return "train"
-        if choice == "2":
-            return "dev"
-        if choice == "3":
-            return "test"
-        print("Please select 1, 2, or 3.")
-
-
-def _default_eval_paths(dataset_root, dataset_kind):
-    dataset_root = Path(dataset_root)
-    gold_name = f"{dataset_kind}_gold.sql"
-    db_dir = "test_database" if dataset_kind == "test" else "database"
-    pred_root = DEFAULT_OUTPUT_BASE / f"{dataset_kind.capitalize()}_predict_results"
-    return {
-        "gold": dataset_root / gold_name,
-        "pred": pred_root / "predictions_combined.txt",
-        "db": dataset_root / db_dir,
-        "table": dataset_root / "tables.json",
-    }
-
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--gold', dest='gold', type=str)
@@ -899,19 +855,11 @@ if __name__ == "__main__":
     parser.add_argument('--etype', dest='etype', type=str)
     args = parser.parse_args()
 
-    needs_prompt = not all([args.gold, args.pred, args.db, args.table, args.etype])
-    if needs_prompt:
-        dataset_root = _prompt_text("Dataset root", str(DEFAULT_DATASET_ROOT))
-        dataset_kind = _prompt_dataset_kind()
-        defaults = _default_eval_paths(dataset_root, dataset_kind)
-    else:
-        defaults = {}
-
-    gold = args.gold or str(defaults.get("gold", ""))
-    pred = args.pred or str(defaults.get("pred", ""))
-    db_dir = args.db or str(defaults.get("db", ""))
-    table = args.table or str(defaults.get("table", ""))
-    etype = args.etype or _prompt_text("Evaluation type (all/exec/match)", "match")
+    gold = args.gold
+    pred = args.pred
+    db_dir = args.db
+    table = args.table
+    etype = args.etype
 
     assert etype in ["all", "exec", "match"], "Unknown evaluation method"
 

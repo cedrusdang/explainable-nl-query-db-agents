@@ -1,0 +1,7 @@
+SELECT COUNT(DISTINCT Club_ID) FROM club;	soccer_3
+SELECT COUNT(*) FROM club;	soccer_3
+SELECT name FROM club ORDER BY LOWER(name) ASC;	soccer_3
+SELECT name FROM club ORDER BY name ASC;	soccer_3
+SELECT Club_ID, Name, Manager, Captain FROM club ORDER BY Name;	soccer_3
+SELECT Club_ID, Name, Manager, Captain FROM club;	soccer_3
+SELECT Name FROM club WHERE Manufacturer IS NOT NULL AND TRIM(LOWER(Manufacturer)) <> 'nike';	soccer_3

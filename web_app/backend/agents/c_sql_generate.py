@@ -21,6 +21,7 @@ def create_chain(api_key: str):
             "DB schema JSON: {db_schema_json}\n"
             "Selected tables: {selected_tables}\n"
             "Do not wrap all_tables in an extra list. Do not include any text outside JSON."
+            "The SQL must directly use the table and column names from the schema without any modifications or aliases."
         ),
     )
     return produce_sql_prompt | llm

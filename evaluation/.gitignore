@@ -1,15 +1,4 @@
-# Keep dataset shell but ignore contents
-/spider_data/*
-!/spider_data/.gitkeep
-
-# Keep results shell but ignore contents
-/predict_results/*
-!/predict_results/.gitkeep
-
-# Legacy results folder
-/test_chunks/*
-!/test_chunks/.gitkeep
-
-# Local evaluation env file
+.venv
+spider_data
+__pycache__
 .env
-.env.*

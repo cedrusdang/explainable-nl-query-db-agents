@@ -1,0 +1,1056 @@
+{"database": "aan_1", "table": "Affiliation", "columns": ["affiliation_id", "name", "address"]}
+{"database": "aan_1", "table": "Author", "columns": ["author_id", "name", "email"]}
+{"database": "aan_1", "table": "Author_list", "columns": ["paper_id", "author_id", "affiliation_id"]}
+{"database": "aan_1", "table": "Citation", "columns": ["paper_id", "cited_paper_id"]}
+{"database": "aan_1", "table": "Paper", "columns": ["paper_id", "title", "venue", "year"]}
+{"database": "academic", "table": "author", "columns": ["aid", "homepage", "name", "oid"]}
+{"database": "academic", "table": "conference", "columns": ["cid", "homepage", "name"]}
+{"database": "academic", "table": "domain", "columns": ["did", "name"]}
+{"database": "academic", "table": "domain_author", "columns": ["aid", "did"]}
+{"database": "academic", "table": "domain_conference", "columns": ["cid", "did"]}
+{"database": "academic", "table": "journal", "columns": ["homepage", "jid", "name"]}
+{"database": "academic", "table": "domain_journal", "columns": ["did", "jid"]}
+{"database": "academic", "table": "keyword", "columns": ["keyword", "kid"]}
+{"database": "academic", "table": "domain_keyword", "columns": ["did", "kid"]}
+{"database": "academic", "table": "publication", "columns": ["abstract", "cid", "citation_num", "jid", "pid", "reference_num", "title", "year"]}
+{"database": "academic", "table": "domain_publication", "columns": ["did", "pid"]}
+{"database": "academic", "table": "organization", "columns": ["continent", "homepage", "name", "oid"]}
+{"database": "academic", "table": "publication_keyword", "columns": ["pid", "kid"]}
+{"database": "academic", "table": "writes", "columns": ["aid", "pid"]}
+{"database": "academic", "table": "cite", "columns": ["cited", "citing"]}
+{"database": "activity_1", "table": "Activity", "columns": ["actid", "activity_name"]}
+{"database": "activity_1", "table": "Participates_in", "columns": ["stuid", "actid"]}
+{"database": "activity_1", "table": "Faculty_Participates_in", "columns": ["FacID", "actid"]}
+{"database": "activity_1", "table": "Student", "columns": ["StuID", "LName", "Fname", "Age", "Sex", "Major", "Advisor", "city_code"]}
+{"database": "activity_1", "table": "Faculty", "columns": ["FacID", "Lname", "Fname", "Rank", "Sex", "Phone", "Room", "Building"]}
+{"database": "address_1", "table": "Student", "columns": ["StuID", "LName", "Fname", "Age", "Sex", "Major", "Advisor", "city_code"]}
+{"database": "address_1", "table": "Direct_distance", "columns": ["city1_code", "city2_code", "distance"]}
+{"database": "address_1", "table": "City", "columns": ["city_code", "city_name", "state", "country", "latitude", "longitude"]}
+{"database": "advertising_agencies", "table": "Agencies", "columns": ["agency_id", "agency_details"]}
+{"database": "advertising_agencies", "table": "Staff", "columns": ["staff_id", "agency_id", "staff_details"]}
+{"database": "advertising_agencies", "table": "Clients", "columns": ["client_id", "agency_id", "sic_code", "client_details"]}
+{"database": "advertising_agencies", "table": "Invoices", "columns": ["invoice_id", "client_id", "invoice_status", "invoice_details"]}
+{"database": "advertising_agencies", "table": "Meetings", "columns": ["meeting_id", "client_id", "meeting_outcome", "meeting_type", "billable_yn", "start_date_time", "end_date_time", "purpose_of_meeting", "other_details"]}
+{"database": "advertising_agencies", "table": "Payments", "columns": ["payment_id", "invoice_id", "payment_details"]}
+{"database": "advertising_agencies", "table": "Staff_in_Meetings", "columns": ["meeting_id", "staff_id"]}
+{"database": "aircraft", "table": "pilot", "columns": ["Pilot_Id", "Name", "Age"]}
+{"database": "aircraft", "table": "aircraft", "columns": ["Aircraft_ID", "Aircraft", "Description", "Max_Gross_Weight", "Total_disk_area", "Max_disk_Loading"]}
+{"database": "aircraft", "table": "match", "columns": ["Round", "Location", "Country", "Date", "Fastest_Qualifying", "Winning_Pilot", "Winning_Aircraft"]}
+{"database": "aircraft", "table": "airport", "columns": ["Airport_ID", "Airport_Name", "Total_Passengers", "%_Change_2007", "International_Passengers", "Domestic_Passengers", "Transit_Passengers", "Aircraft_Movements", "Freight_Metric_Tonnes"]}
+{"database": "aircraft", "table": "airport_aircraft", "columns": ["ID", "Airport_ID", "Aircraft_ID"]}
+{"database": "allergy_1", "table": "Allergy_Type", "columns": ["Allergy", "AllergyType"]}
+{"database": "allergy_1", "table": "Has_Allergy", "columns": ["StuID", "Allergy"]}
+{"database": "allergy_1", "table": "Student", "columns": ["StuID", "LName", "Fname", "Age", "Sex", "Major", "Advisor", "city_code"]}
+{"database": "apartment_rentals", "table": "Apartment_Buildings", "columns": ["building_id", "building_short_name", "building_full_name", "building_description", "building_address", "building_manager", "building_phone"]}
+{"database": "apartment_rentals", "table": "Apartments", "columns": ["apt_id", "building_id", "apt_type_code", "apt_number", "bathroom_count", "bedroom_count", "room_count"]}
+{"database": "apartment_rentals", "table": "Apartment_Facilities", "columns": ["apt_id", "facility_code"]}
+{"database": "apartment_rentals", "table": "Guests", "columns": ["guest_id", "gender_code", "guest_first_name", "guest_last_name", "date_of_birth"]}
+{"database": "apartment_rentals", "table": "Apartment_Bookings", "columns": ["apt_booking_id", "apt_id", "guest_id", "booking_status_code", "booking_start_date", "booking_end_date"]}
+{"database": "apartment_rentals", "table": "View_Unit_Status", "columns": ["apt_id", "apt_booking_id", "status_date", "available_yn"]}
+{"database": "architecture", "table": "architect", "columns": ["id", "name", "nationality", "gender"]}
+{"database": "architecture", "table": "bridge", "columns": ["architect_id", "id", "name", "location", "length_meters", "length_feet"]}
+{"database": "architecture", "table": "mill", "columns": ["architect_id", "id", "location", "name", "type", "built_year", "notes"]}
+{"database": "art_1", "table": "Artists", "columns": ["artistID", "lname", "fname", "birthYear", "deathYear"]}
+{"database": "art_1", "table": "Paintings", "columns": ["paintingID", "title", "year", "height_mm", "width_mm", "medium", "mediumOn", "location", "painterID"]}
+{"database": "art_1", "table": "Sculptures", "columns": ["sculptureID", "title", "year", "medium", "location", "sculptorID"]}
+{"database": "assets_maintenance", "table": "Third_Party_Companies", "columns": ["company_id", "company_type", "company_name", "company_address", "other_company_details"]}
+{"database": "assets_maintenance", "table": "Maintenance_Contracts", "columns": ["maintenance_contract_id", "maintenance_contract_company_id", "contract_start_date", "contract_end_date", "other_contract_details"]}
+{"database": "assets_maintenance", "table": "Parts", "columns": ["part_id", "part_name", "chargeable_yn", "chargeable_amount", "other_part_details"]}
+{"database": "assets_maintenance", "table": "Skills", "columns": ["skill_id", "skill_code", "skill_description"]}
+{"database": "assets_maintenance", "table": "Staff", "columns": ["staff_id", "staff_name", "gender", "other_staff_details"]}
+{"database": "assets_maintenance", "table": "Assets", "columns": ["asset_id", "maintenance_contract_id", "supplier_company_id", "asset_details", "asset_make", "asset_model", "asset_acquired_date", "asset_disposed_date", "other_asset_details"]}
+{"database": "assets_maintenance", "table": "Asset_Parts", "columns": ["asset_id", "part_id"]}
+{"database": "assets_maintenance", "table": "Maintenance_Engineers", "columns": ["engineer_id", "company_id", "first_name", "last_name", "other_details"]}
+{"database": "assets_maintenance", "table": "Engineer_Skills", "columns": ["engineer_id", "skill_id"]}
+{"database": "assets_maintenance", "table": "Fault_Log", "columns": ["fault_log_entry_id", "asset_id", "recorded_by_staff_id", "fault_log_entry_datetime", "fault_description", "other_fault_details"]}
+{"database": "assets_maintenance", "table": "Engineer_Visits", "columns": ["engineer_visit_id", "contact_staff_id", "engineer_id", "fault_log_entry_id", "fault_status", "visit_start_datetime", "visit_end_datetime", "other_visit_details"]}
+{"database": "assets_maintenance", "table": "Part_Faults", "columns": ["part_fault_id", "part_id", "fault_short_name", "fault_description", "other_fault_details"]}
+{"database": "assets_maintenance", "table": "Fault_Log_Parts", "columns": ["fault_log_entry_id", "part_fault_id", "fault_status"]}
+{"database": "assets_maintenance", "table": "Skills_Required_To_Fix", "columns": ["part_fault_id", "skill_id"]}
+{"database": "bakery_1", "table": "customers", "columns": ["Id", "LastName", "FirstName"]}
+{"database": "bakery_1", "table": "goods", "columns": ["Id", "Flavor", "Food", "Price"]}
+{"database": "bakery_1", "table": "items", "columns": ["Receipt", "Ordinal", "Item"]}
+{"database": "bakery_1", "table": "receipts", "columns": ["ReceiptNumber", "Date", "CustomerId"]}
+{"database": "baseball_1", "table": "all_star", "columns": ["player_id", "year", "game_num", "game_id", "team_id", "league_id", "gp", "starting_pos"]}
+{"database": "baseball_1", "table": "appearances", "columns": ["year", "team_id", "league_id", "player_id", "g_all", "gs", "g_batting", "g_defense", "g_p", "g_c", "g_1b", "g_2b", "g_3b", "g_ss", "g_lf", "g_cf", "g_rf", "g_of", "g_dh", "g_ph", "g_pr"]}
+{"database": "baseball_1", "table": "manager_award", "columns": ["player_id", "award_id", "year", "league_id", "tie", "notes"]}
+{"database": "baseball_1", "table": "player_award", "columns": ["player_id", "award_id", "year", "league_id", "tie", "notes"]}
+{"database": "baseball_1", "table": "manager_award_vote", "columns": ["award_id", "year", "league_id", "player_id", "points_won", "points_max", "votes_first"]}
+{"database": "baseball_1", "table": "player_award_vote", "columns": ["award_id", "year", "league_id", "player_id", "points_won", "points_max", "votes_first"]}
+{"database": "baseball_1", "table": "batting", "columns": ["player_id", "year", "stint", "team_id", "league_id", "g", "ab", "r", "h", "double", "triple", "hr", "rbi", "sb", "cs", "bb", "so", "ibb", "hbp", "sh", "sf", "g_idp"]}
+{"database": "baseball_1", "table": "batting_postseason", "columns": ["year", "round", "player_id", "team_id", "league_id", "g", "ab", "r", "h", "double", "triple", "hr", "rbi", "sb", "cs", "bb", "so", "ibb", "hbp", "sh", "sf", "g_idp"]}
+{"database": "baseball_1", "table": "player_college", "columns": ["player_id", "college_id", "year"]}
+{"database": "baseball_1", "table": "fielding", "columns": ["player_id", "year", "stint", "team_id", "league_id", "pos", "g", "gs", "inn_outs", "po", "a", "e", "dp", "pb", "wp", "sb", "cs", "zr"]}
+{"database": "baseball_1", "table": "fielding_outfield", "columns": ["player_id", "year", "stint", "glf", "gcf", "grf"]}
+{"database": "baseball_1", "table": "fielding_postseason", "columns": ["player_id", "year", "team_id", "league_id", "round", "pos", "g", "gs", "inn_outs", "po", "a", "e", "dp", "tp", "pb", "sb", "cs"]}
+{"database": "baseball_1", "table": "hall_of_fame", "columns": ["player_id", "yearid", "votedby", "ballots", "needed", "votes", "inducted", "category", "needed_note"]}
+{"database": "baseball_1", "table": "home_game", "columns": ["year", "league_id", "team_id", "park_id", "span_first", "span_last", "games", "openings", "attendance"]}
+{"database": "baseball_1", "table": "manager", "columns": ["player_id", "year", "team_id", "league_id", "inseason", "g", "w", "l", "rank", "plyr_mgr"]}
+{"database": "baseball_1", "table": "manager_half", "columns": ["player_id", "year", "team_id", "league_id", "inseason", "half", "g", "w", "l", "rank"]}
+{"database": "baseball_1", "table": "player", "columns": ["player_id", "birth_year", "birth_month", "birth_day", "birth_country", "birth_state", "birth_city", "death_year", "death_month", "death_day", "death_country", "death_state", "death_city", "name_first", "name_last", "name_given", "weight", "height", "bats", "throws", "debut", "final_game", "retro_id", "bbref_id"]}
+{"database": "baseball_1", "table": "park", "columns": ["park_id", "park_name", "park_alias", "city", "state", "country"]}
+{"database": "baseball_1", "table": "pitching", "columns": ["player_id", "year", "stint", "team_id", "league_id", "w", "l", "g", "gs", "cg", "sho", "sv", "ipouts", "h", "er", "hr", "bb", "so", "baopp", "era", "ibb", "wp", "hbp", "bk", "bfp", "gf", "r", "sh", "sf", "g_idp"]}
+{"database": "baseball_1", "table": "pitching_postseason", "columns": ["player_id", "year", "round", "team_id", "league_id", "w", "l", "g", "gs", "cg", "sho", "sv", "ipouts", "h", "er", "hr", "bb", "so", "baopp", "era", "ibb", "wp", "hbp", "bk", "bfp", "gf", "r", "sh", "sf", "g_idp"]}
+{"database": "baseball_1", "table": "salary", "columns": ["year", "team_id", "league_id", "player_id", "salary"]}
+{"database": "baseball_1", "table": "college", "columns": ["college_id", "name_full", "city", "state", "country"]}
+{"database": "baseball_1", "table": "postseason", "columns": ["year", "round", "team_id_winner", "league_id_winner", "team_id_loser", "league_id_loser", "wins", "losses", "ties"]}
+{"database": "baseball_1", "table": "team", "columns": ["year", "league_id", "team_id", "franchise_id", "div_id", "rank", "g", "ghome", "w", "l", "div_win", "wc_win", "lg_win", "ws_win", "r", "ab", "h", "double", "triple", "hr", "bb", "so", "sb", "cs", "hbp", "sf", "ra", "er", "era", "cg", "sho", "sv", "ipouts", "ha", "hra", "bba", "soa", "e", "dp", "fp", "name", "park", "attendance", "bpf", "ppf", "team_id_br", "team_id_lahman45", "team_id_retro"]}
+{"database": "baseball_1", "table": "team_franchise", "columns": ["franchise_id", "franchise_name", "active", "na_assoc"]}
+{"database": "baseball_1", "table": "team_half", "columns": ["year", "league_id", "team_id", "half", "div_id", "div_win", "rank", "g", "w", "l"]}
+{"database": "battle_death", "table": "battle", "columns": ["id", "name", "date", "bulgarian_commander", "latin_commander", "result"]}
+{"database": "battle_death", "table": "ship", "columns": ["lost_in_battle", "id", "name", "tonnage", "ship_type", "location", "disposition_of_ship"]}
+{"database": "battle_death", "table": "death", "columns": ["caused_by_ship_id", "id", "note", "killed", "injured"]}
+{"database": "bbc_channels", "table": "channel", "columns": ["Channel_ID", "Name", "Analogue_terrestrial_channel", "Digital_terrestrial_channel", "Internet"]}
+{"database": "bbc_channels", "table": "director", "columns": ["Director_ID", "Name", "Age"]}
+{"database": "bbc_channels", "table": "program", "columns": ["Program_ID", "Start_Year", "Title", "Director_ID", "Channel_ID"]}
+{"database": "bbc_channels", "table": "director_admin", "columns": ["Director_ID", "Channel_ID", "Is_first_director"]}
+{"database": "behavior_monitoring", "table": "Ref_Address_Types", "columns": ["address_type_code", "address_type_description"]}
+{"database": "behavior_monitoring", "table": "Ref_Detention_Type", "columns": ["detention_type_code", "detention_type_description"]}
+{"database": "behavior_monitoring", "table": "Ref_Incident_Type", "columns": ["incident_type_code", "incident_type_description"]}
+{"database": "behavior_monitoring", "table": "Addresses", "columns": ["address_id", "line_1", "line_2", "line_3", "city", "zip_postcode", "state_province_county", "country", "other_address_details"]}
+{"database": "behavior_monitoring", "table": "Students", "columns": ["student_id", "address_id", "first_name", "middle_name", "last_name", "cell_mobile_number", "email_address", "date_first_rental", "date_left_university", "other_student_details"]}
+{"database": "behavior_monitoring", "table": "Teachers", "columns": ["teacher_id", "address_id", "first_name", "middle_name", "last_name", "gender", "cell_mobile_number", "email_address", "other_details"]}
+{"database": "behavior_monitoring", "table": "Assessment_Notes", "columns": ["notes_id", "student_id", "teacher_id", "date_of_notes", "text_of_notes", "other_details"]}
+{"database": "behavior_monitoring", "table": "Behavior_Incident", "columns": ["incident_id", "incident_type_code", "student_id", "date_incident_start", "date_incident_end", "incident_summary", "recommendations", "other_details"]}
+{"database": "behavior_monitoring", "table": "Detention", "columns": ["detention_id", "detention_type_code", "teacher_id", "datetime_detention_start", "datetime_detention_end", "detention_summary", "other_details"]}
+{"database": "behavior_monitoring", "table": "Student_Addresses", "columns": ["student_id", "address_id", "date_address_from", "date_address_to", "monthly_rental", "other_details"]}
+{"database": "behavior_monitoring", "table": "Students_in_Detention", "columns": ["student_id", "detention_id", "incident_id"]}
+{"database": "bike_1", "table": "station", "columns": ["id", "name", "lat", "long", "dock_count", "city", "installation_date"]}
+{"database": "bike_1", "table": "status", "columns": ["station_id", "bikes_available", "docks_available", "time"]}
+{"database": "bike_1", "table": "trip", "columns": ["id", "duration", "start_date", "start_station_name", "start_station_id", "end_date", "end_station_name", "end_station_id", "bike_id", "subscription_type", "zip_code"]}
+{"database": "bike_1", "table": "weather", "columns": ["date", "max_temperature_f", "mean_temperature_f", "min_temperature_f", "max_dew_point_f", "mean_dew_point_f", "min_dew_point_f", "max_humidity", "mean_humidity", "min_humidity", "max_sea_level_pressure_inches", "mean_sea_level_pressure_inches", "min_sea_level_pressure_inches", "max_visibility_miles", "mean_visibility_miles", "min_visibility_miles", "max_wind_Speed_mph", "mean_wind_speed_mph", "max_gust_speed_mph", "precipitation_inches", "cloud_cover", "events", "wind_dir_degrees", "zip_code"]}
+{"database": "bike_racing", "table": "bike", "columns": ["id", "product_name", "weight", "price", "material"]}
+{"database": "bike_racing", "table": "cyclist", "columns": ["id", "heat", "name", "nation", "result"]}
+{"database": "bike_racing", "table": "cyclists_own_bikes", "columns": ["cyclist_id", "bike_id", "purchase_year"]}
+{"database": "boat_1", "table": "Sailors", "columns": ["sid", "name", "rating", "age"]}
+{"database": "boat_1", "table": "Boats", "columns": ["bid", "name", "color"]}
+{"database": "boat_1", "table": "Reserves", "columns": ["sid", "bid", "day"]}
+{"database": "body_builder", "table": "body_builder", "columns": ["Body_Builder_ID", "People_ID", "Snatch", "Clean_Jerk", "Total"]}
+{"database": "body_builder", "table": "people", "columns": ["People_ID", "Name", "Height", "Weight", "Birth_Date", "Birth_Place"]}
+{"database": "book_1", "table": "Client", "columns": ["IdClient", "Name", "Address", "NumCC"]}
+{"database": "book_1", "table": "Orders", "columns": ["IdOrder", "IdClient", "DateOrder", "DateExped"]}
+{"database": "book_1", "table": "Author", "columns": ["idAuthor", "Name"]}
+{"database": "book_1", "table": "Book", "columns": ["ISBN", "Title", "Author", "PurchasePrice", "SalePrice"]}
+{"database": "book_1", "table": "Author_Book", "columns": ["ISBN", "Author"]}
+{"database": "book_1", "table": "Books_Order", "columns": ["ISBN", "IdOrder", "amount"]}
+{"database": "book_2", "table": "publication", "columns": ["Publication_ID", "Book_ID", "Publisher", "Publication_Date", "Price"]}
+{"database": "book_2", "table": "book", "columns": ["Book_ID", "Title", "Issues", "Writer"]}
+{"database": "book_press", "table": "author", "columns": ["Author_ID", "Name", "Age", "Gender"]}
+{"database": "book_press", "table": "press", "columns": ["Press_ID", "Name", "Month_Profits_billion", "Year_Profits_billion"]}
+{"database": "book_press", "table": "book", "columns": ["Book_ID", "Title", "Book_Series", "Author_ID", "Press_ID", "Sale_Amount", "Release_date"]}
+{"database": "book_review", "table": "book", "columns": ["Book_ID", "Title", "Type", "Pages", "Chapters", "Audio", "Release"]}
+{"database": "book_review", "table": "review", "columns": ["Review_ID", "Book_ID", "Rating", "Readers_in_Million", "Rank"]}
+{"database": "browser_web", "table": "Web_client_accelerator", "columns": ["id", "name", "Operating_system", "Client", "Connection"]}
+{"database": "browser_web", "table": "browser", "columns": ["id", "name", "market_share"]}
+{"database": "browser_web", "table": "accelerator_compatible_browser", "columns": ["accelerator_id", "browser_id", "compatible_since_year"]}
+{"database": "candidate_poll", "table": "candidate", "columns": ["Candidate_ID", "People_ID", "Poll_Source", "Date", "Support_rate", "Consider_rate", "Oppose_rate", "Unsure_rate"]}
+{"database": "candidate_poll", "table": "people", "columns": ["People_ID", "Sex", "Name", "Date_of_Birth", "Height", "Weight"]}
+{"database": "car_1", "table": "continents", "columns": ["ContId", "Continent"]}
+{"database": "car_1", "table": "countries", "columns": ["CountryId", "CountryName", "Continent"]}
+{"database": "car_1", "table": "car_makers", "columns": ["Id", "Maker", "FullName", "Country"]}
+{"database": "car_1", "table": "model_list", "columns": ["ModelId", "Maker", "Model"]}
+{"database": "car_1", "table": "car_names", "columns": ["MakeId", "Model", "Make"]}
+{"database": "car_1", "table": "cars_data", "columns": ["Id", "MPG", "Cylinders", "Edispl", "Horsepower", "Weight", "Accelerate", "Year"]}
+{"database": "car_racing", "table": "country", "columns": ["Country_Id", "Country", "Capital", "Official_native_language", "Regoin"]}
+{"database": "car_racing", "table": "team", "columns": ["Team_ID", "Team", "Make", "Manager", "Sponsor", "Car_Owner"]}
+{"database": "car_racing", "table": "driver", "columns": ["Driver_ID", "Driver", "Country", "Age", "Car_#", "Make", "Points", "Laps", "Winnings"]}
+{"database": "car_racing", "table": "team_driver", "columns": ["Team_ID", "Driver_ID"]}
+{"database": "car_road_race", "table": "driver", "columns": ["Driver_ID", "Driver_Name", "Entrant", "Constructor", "Chassis", "Engine", "Age"]}
+{"database": "car_road_race", "table": "race", "columns": ["Road", "Driver_ID", "Race_Name", "Pole_Position", "Fastest_Lap", "Winning_driver", "Winning_team", "Report"]}
+{"database": "chinook_1", "table": "Album", "columns": ["AlbumId", "Title", "ArtistId"]}
+{"database": "chinook_1", "table": "Artist", "columns": ["ArtistId", "Name"]}
+{"database": "chinook_1", "table": "Customer", "columns": ["CustomerId", "FirstName", "LastName", "Company", "Address", "City", "State", "Country", "PostalCode", "Phone", "Fax", "Email", "SupportRepId"]}
+{"database": "chinook_1", "table": "Employee", "columns": ["EmployeeId", "LastName", "FirstName", "Title", "ReportsTo", "BirthDate", "HireDate", "Address", "City", "State", "Country", "PostalCode", "Phone", "Fax", "Email"]}
+{"database": "chinook_1", "table": "Genre", "columns": ["GenreId", "Name"]}
+{"database": "chinook_1", "table": "Invoice", "columns": ["InvoiceId", "CustomerId", "InvoiceDate", "BillingAddress", "BillingCity", "BillingState", "BillingCountry", "BillingPostalCode", "Total"]}
+{"database": "chinook_1", "table": "InvoiceLine", "columns": ["InvoiceLineId", "InvoiceId", "TrackId", "UnitPrice", "Quantity"]}
+{"database": "chinook_1", "table": "MediaType", "columns": ["MediaTypeId", "Name"]}
+{"database": "chinook_1", "table": "Playlist", "columns": ["PlaylistId", "Name"]}
+{"database": "chinook_1", "table": "PlaylistTrack", "columns": ["PlaylistId", "TrackId"]}
+{"database": "chinook_1", "table": "Track", "columns": ["TrackId", "Name", "AlbumId", "MediaTypeId", "GenreId", "Composer", "Milliseconds", "Bytes", "UnitPrice"]}
+{"database": "cinema", "table": "film", "columns": ["Film_ID", "Rank_in_series", "Number_in_season", "Title", "Directed_by", "Original_air_date", "Production_code"]}
+{"database": "cinema", "table": "cinema", "columns": ["Cinema_ID", "Name", "Openning_year", "Capacity", "Location"]}
+{"database": "cinema", "table": "schedule", "columns": ["Cinema_ID", "Film_ID", "Date", "Show_times_per_day", "Price"]}
+{"database": "city_record", "table": "city", "columns": ["City_ID", "City", "Hanzi", "Hanyu_Pinyin", "Regional_Population", "GDP"]}
+{"database": "city_record", "table": "match", "columns": ["Match_ID", "Date", "Venue", "Score", "Result", "Competition"]}
+{"database": "city_record", "table": "temperature", "columns": ["City_ID", "Jan", "Feb", "Mar", "Apr", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]}
+{"database": "city_record", "table": "hosting_city", "columns": ["Year", "Match_ID", "Host_City"]}
+{"database": "climbing", "table": "mountain", "columns": ["Mountain_ID", "Name", "Height", "Prominence", "Range", "Country"]}
+{"database": "climbing", "table": "climber", "columns": ["Climber_ID", "Name", "Country", "Time", "Points", "Mountain_ID"]}
+{"database": "club_1", "table": "Student", "columns": ["StuID", "LName", "Fname", "Age", "Sex", "Major", "Advisor", "city_code"]}
+{"database": "club_1", "table": "Club", "columns": ["ClubID", "ClubName", "ClubDesc", "ClubLocation"]}
+{"database": "club_1", "table": "Member_of_club", "columns": ["StuID", "ClubID", "Position"]}
+{"database": "club_leader", "table": "member", "columns": ["Member_ID", "Name", "Nationality", "Age"]}
+{"database": "club_leader", "table": "club", "columns": ["Club_ID", "Overall_Ranking", "Team_Leader", "Club_Name"]}
+{"database": "club_leader", "table": "club_leader", "columns": ["Club_ID", "Member_ID", "Year_Join"]}
+{"database": "coffee_shop", "table": "shop", "columns": ["Shop_ID", "Address", "Num_of_staff", "Score", "Open_Year"]}
+{"database": "coffee_shop", "table": "member", "columns": ["Member_ID", "Name", "Membership_card", "Age", "Time_of_purchase", "Level_of_membership", "Address"]}
+{"database": "coffee_shop", "table": "happy_hour", "columns": ["HH_ID", "Shop_ID", "Month", "Num_of_shaff_in_charge"]}
+{"database": "coffee_shop", "table": "happy_hour_member", "columns": ["HH_ID", "Member_ID", "Total_amount"]}
+{"database": "college_1", "table": "CLASS", "columns": ["CLASS_CODE", "CRS_CODE", "CLASS_SECTION", "CLASS_TIME", "CLASS_ROOM", "PROF_NUM"]}
+{"database": "college_1", "table": "COURSE", "columns": ["CRS_CODE", "DEPT_CODE", "CRS_DESCRIPTION", "CRS_CREDIT"]}
+{"database": "college_1", "table": "DEPARTMENT", "columns": ["DEPT_CODE", "DEPT_NAME", "SCHOOL_CODE", "EMP_NUM", "DEPT_ADDRESS", "DEPT_EXTENSION"]}
+{"database": "college_1", "table": "EMPLOYEE", "columns": ["EMP_NUM", "EMP_LNAME", "EMP_FNAME", "EMP_INITIAL", "EMP_JOBCODE", "EMP_HIREDATE", "EMP_DOB"]}
+{"database": "college_1", "table": "ENROLL", "columns": ["CLASS_CODE", "STU_NUM", "ENROLL_GRADE"]}
+{"database": "college_1", "table": "PROFESSOR", "columns": ["EMP_NUM", "DEPT_CODE", "PROF_OFFICE", "PROF_EXTENSION", "PROF_HIGH_DEGREE"]}
+{"database": "college_1", "table": "STUDENT", "columns": ["STU_NUM", "STU_LNAME", "STU_FNAME", "STU_INIT", "STU_DOB", "STU_HRS", "STU_CLASS", "STU_GPA", "STU_TRANSFER", "DEPT_CODE", "STU_PHONE", "PROF_NUM"]}
+{"database": "college_2", "table": "classroom", "columns": ["building", "room_number", "capacity"]}
+{"database": "college_2", "table": "department", "columns": ["dept_name", "building", "budget"]}
+{"database": "college_2", "table": "course", "columns": ["course_id", "title", "dept_name", "credits"]}
+{"database": "college_2", "table": "instructor", "columns": ["ID", "name", "dept_name", "salary"]}
+{"database": "college_2", "table": "section", "columns": ["course_id", "sec_id", "semester", "year", "building", "room_number", "time_slot_id"]}
+{"database": "college_2", "table": "teaches", "columns": ["ID", "course_id", "sec_id", "semester", "year"]}
+{"database": "college_2", "table": "student", "columns": ["ID", "name", "dept_name", "tot_cred"]}
+{"database": "college_2", "table": "takes", "columns": ["ID", "course_id", "sec_id", "semester", "year", "grade"]}
+{"database": "college_2", "table": "advisor", "columns": ["s_ID", "i_ID"]}
+{"database": "college_2", "table": "time_slot", "columns": ["time_slot_id", "day", "start_hr", "start_min", "end_hr", "end_min"]}
+{"database": "college_2", "table": "prereq", "columns": ["course_id", "prereq_id"]}
+{"database": "college_3", "table": "Student", "columns": ["StuID", "LName", "Fname", "Age", "Sex", "Major", "Advisor", "city_code"]}
+{"database": "college_3", "table": "Faculty", "columns": ["FacID", "Lname", "Fname", "Rank", "Sex", "Phone", "Room", "Building"]}
+{"database": "college_3", "table": "Department", "columns": ["DNO", "Division", "DName", "Room", "Building", "DPhone"]}
+{"database": "college_3", "table": "Member_of", "columns": ["FacID", "DNO", "Appt_Type"]}
+{"database": "college_3", "table": "Course", "columns": ["CID", "CName", "Credits", "Instructor", "Days", "Hours", "DNO"]}
+{"database": "college_3", "table": "Minor_in", "columns": ["StuID", "DNO"]}
+{"database": "college_3", "table": "Enrolled_in", "columns": ["StuID", "CID", "Grade"]}
+{"database": "college_3", "table": "Gradeconversion", "columns": ["lettergrade", "gradepoint"]}
+{"database": "company_1", "table": "works_on", "columns": ["Essn", "Pno", "Hours"]}
+{"database": "company_1", "table": "employee", "columns": ["Fname", "Minit", "Lname", "Ssn", "Bdate", "Address", "Sex", "Salary", "Super_ssn", "Dno"]}
+{"database": "company_1", "table": "department", "columns": ["Dname", "Dnumber", "Mgr_ssn", "Mgr_start_date"]}
+{"database": "company_1", "table": "project", "columns": ["Pname", "Pnumber", "Plocation", "Dnum"]}
+{"database": "company_1", "table": "dependent", "columns": ["Essn", "Dependent_name", "Sex", "Bdate", "Relationship"]}
+{"database": "company_1", "table": "dept_locations", "columns": ["Dnumber", "Dlocation"]}
+{"database": "company_employee", "table": "people", "columns": ["People_ID", "Age", "Name", "Nationality", "Graduation_College"]}
+{"database": "company_employee", "table": "company", "columns": ["Company_ID", "Name", "Headquarters", "Industry", "Sales_in_Billion", "Profits_in_Billion", "Assets_in_Billion", "Market_Value_in_Billion"]}
+{"database": "company_employee", "table": "employment", "columns": ["Company_ID", "People_ID", "Year_working"]}
+{"database": "company_office", "table": "buildings", "columns": ["id", "name", "City", "Height", "Stories", "Status"]}
+{"database": "company_office", "table": "Companies", "columns": ["id", "name", "Headquarters", "Industry", "Sales_billion", "Profits_billion", "Assets_billion", "Market_Value_billion"]}
+{"database": "company_office", "table": "Office_locations", "columns": ["building_id", "company_id", "move_in_year"]}
+{"database": "concert_singer", "table": "stadium", "columns": ["Stadium_ID", "Location", "Name", "Capacity", "Highest", "Lowest", "Average"]}
+{"database": "concert_singer", "table": "singer", "columns": ["Singer_ID", "Name", "Country", "Song_Name", "Song_release_year", "Age", "Is_male"]}
+{"database": "concert_singer", "table": "concert", "columns": ["concert_ID", "concert_Name", "Theme", "Stadium_ID", "Year"]}
+{"database": "concert_singer", "table": "singer_in_concert", "columns": ["concert_ID", "Singer_ID"]}
+{"database": "conference", "table": "conference", "columns": ["Conference_ID", "Conference_Name", "Year", "Location"]}
+{"database": "conference", "table": "institution", "columns": ["Institution_ID", "Institution_Name", "Location", "Founded"]}
+{"database": "conference", "table": "staff", "columns": ["staff_ID", "name", "Age", "Nationality", "Institution_ID"]}
+{"database": "conference", "table": "conference_participation", "columns": ["Conference_ID", "staff_ID", "role"]}
+{"database": "country_language", "table": "languages", "columns": ["id", "name"]}
+{"database": "country_language", "table": "countries", "columns": ["id", "name", "overall_score", "justice_score", "health_score", "education_score", "economics_score", "politics_score"]}
+{"database": "country_language", "table": "official_languages", "columns": ["language_id", "country_id"]}
+{"database": "county_public_safety", "table": "county_public_safety", "columns": ["County_ID", "Name", "Population", "Police_officers", "Residents_per_officer", "Case_burden", "Crime_rate", "Police_force", "Location"]}
+{"database": "county_public_safety", "table": "city", "columns": ["City_ID", "County_ID", "Name", "White", "Black", "Amerindian", "Asian", "Multiracial", "Hispanic"]}
+{"database": "course_teach", "table": "course", "columns": ["Course_ID", "Staring_Date", "Course"]}
+{"database": "course_teach", "table": "teacher", "columns": ["Teacher_ID", "Name", "Age", "Hometown"]}
+{"database": "course_teach", "table": "course_arrange", "columns": ["Course_ID", "Teacher_ID", "Grade"]}
+{"database": "cre_Docs_and_Epenses", "table": "Ref_Document_Types", "columns": ["Document_Type_Code", "Document_Type_Name", "Document_Type_Description"]}
+{"database": "cre_Docs_and_Epenses", "table": "Ref_Budget_Codes", "columns": ["Budget_Type_Code", "Budget_Type_Description"]}
+{"database": "cre_Docs_and_Epenses", "table": "Projects", "columns": ["Project_ID", "Project_Details"]}
+{"database": "cre_Docs_and_Epenses", "table": "Documents", "columns": ["Document_ID", "Document_Type_Code", "Project_ID", "Document_Date", "Document_Name", "Document_Description", "Other_Details"]}
+{"database": "cre_Docs_and_Epenses", "table": "Statements", "columns": ["Statement_ID", "Statement_Details"]}
+{"database": "cre_Docs_and_Epenses", "table": "Documents_with_Expenses", "columns": ["Document_ID", "Budget_Type_Code", "Document_Details"]}
+{"database": "cre_Docs_and_Epenses", "table": "Accounts", "columns": ["Account_ID", "Statement_ID", "Account_Details"]}
+{"database": "cre_Doc_and_collections", "table": "Document_Subsets", "columns": ["Document_Subset_ID", "Document_Subset_Name", "Document_Subset_Details"]}
+{"database": "cre_Doc_and_collections", "table": "Collection_Subsets", "columns": ["Collection_Subset_ID", "Collection_Subset_Name", "Collecrtion_Subset_Details"]}
+{"database": "cre_Doc_and_collections", "table": "Document_Objects", "columns": ["Document_Object_ID", "Parent_Document_Object_ID", "Owner", "Description", "Other_Details"]}
+{"database": "cre_Doc_and_collections", "table": "Collections", "columns": ["Collection_ID", "Parent_Collection_ID", "Collection_Name", "Collection_Description"]}
+{"database": "cre_Doc_and_collections", "table": "Documents_in_Collections", "columns": ["Document_Object_ID", "Collection_ID"]}
+{"database": "cre_Doc_and_collections", "table": "Document_Subset_Members", "columns": ["Document_Object_ID", "Related_Document_Object_ID", "Document_Subset_ID"]}
+{"database": "cre_Doc_and_collections", "table": "Collection_Subset_Members", "columns": ["Collection_ID", "Related_Collection_ID", "Collection_Subset_ID"]}
+{"database": "cre_Doc_Control_Systems", "table": "Ref_Document_Types", "columns": ["document_type_code", "document_type_description"]}
+{"database": "cre_Doc_Control_Systems", "table": "Roles", "columns": ["role_code", "role_description"]}
+{"database": "cre_Doc_Control_Systems", "table": "Addresses", "columns": ["address_id", "address_details"]}
+{"database": "cre_Doc_Control_Systems", "table": "Ref_Document_Status", "columns": ["document_status_code", "document_status_description"]}
+{"database": "cre_Doc_Control_Systems", "table": "Ref_Shipping_Agents", "columns": ["shipping_agent_code", "shipping_agent_name", "shipping_agent_description"]}
+{"database": "cre_Doc_Control_Systems", "table": "Documents", "columns": ["document_id", "document_status_code", "document_type_code", "shipping_agent_code", "receipt_date", "receipt_number", "other_details"]}
+{"database": "cre_Doc_Control_Systems", "table": "Employees", "columns": ["employee_id", "role_code", "employee_name", "other_details"]}
+{"database": "cre_Doc_Control_Systems", "table": "Document_Drafts", "columns": ["document_id", "draft_number", "draft_details"]}
+{"database": "cre_Doc_Control_Systems", "table": "Draft_Copies", "columns": ["document_id", "draft_number", "copy_number"]}
+{"database": "cre_Doc_Control_Systems", "table": "Circulation_History", "columns": ["document_id", "draft_number", "copy_number", "employee_id"]}
+{"database": "cre_Doc_Control_Systems", "table": "Documents_Mailed", "columns": ["document_id", "mailed_to_address_id", "mailing_date"]}
+{"database": "cre_Doc_Template_Mgt", "table": "Ref_Template_Types", "columns": ["Template_Type_Code", "Template_Type_Description"]}
+{"database": "cre_Doc_Template_Mgt", "table": "Templates", "columns": ["Template_ID", "Version_Number", "Template_Type_Code", "Date_Effective_From", "Date_Effective_To", "Template_Details"]}
+{"database": "cre_Doc_Template_Mgt", "table": "Documents", "columns": ["Document_ID", "Template_ID", "Document_Name", "Document_Description", "Other_Details"]}
+{"database": "cre_Doc_Template_Mgt", "table": "Paragraphs", "columns": ["Paragraph_ID", "Document_ID", "Paragraph_Text", "Other_Details"]}
+{"database": "cre_Doc_Tracking_DB", "table": "Ref_Document_Types", "columns": ["Document_Type_Code", "Document_Type_Name", "Document_Type_Description"]}
+{"database": "cre_Doc_Tracking_DB", "table": "Ref_Calendar", "columns": ["Calendar_Date", "Day_Number"]}
+{"database": "cre_Doc_Tracking_DB", "table": "Ref_Locations", "columns": ["Location_Code", "Location_Name", "Location_Description"]}
+{"database": "cre_Doc_Tracking_DB", "table": "Roles", "columns": ["Role_Code", "Role_Name", "Role_Description"]}
+{"database": "cre_Doc_Tracking_DB", "table": "All_Documents", "columns": ["Document_ID", "Date_Stored", "Document_Type_Code", "Document_Name", "Document_Description", "Other_Details"]}
+{"database": "cre_Doc_Tracking_DB", "table": "Employees", "columns": ["Employee_ID", "Role_Code", "Employee_Name", "Gender_MFU", "Date_of_Birth", "Other_Details"]}
+{"database": "cre_Doc_Tracking_DB", "table": "Document_Locations", "columns": ["Document_ID", "Location_Code", "Date_in_Location_From", "Date_in_Locaton_To"]}
+{"database": "cre_Doc_Tracking_DB", "table": "Documents_to_be_Destroyed", "columns": ["Document_ID", "Destruction_Authorised_by_Employee_ID", "Destroyed_by_Employee_ID", "Planned_Destruction_Date", "Actual_Destruction_Date", "Other_Details"]}
+{"database": "cre_Doc_Workflow", "table": "Staff", "columns": ["staff_id", "staff_details"]}
+{"database": "cre_Doc_Workflow", "table": "Ref_Staff_Roles", "columns": ["staff_role_code", "staff_role_description"]}
+{"database": "cre_Doc_Workflow", "table": "Process_Outcomes", "columns": ["process_outcome_code", "process_outcome_description"]}
+{"database": "cre_Doc_Workflow", "table": "Process_Status", "columns": ["process_status_code", "process_status_description"]}
+{"database": "cre_Doc_Workflow", "table": "Authors", "columns": ["author_name", "other_details"]}
+{"database": "cre_Doc_Workflow", "table": "Documents", "columns": ["document_id", "author_name", "document_name", "document_description", "other_details"]}
+{"database": "cre_Doc_Workflow", "table": "Business_Processes", "columns": ["process_id", "next_process_id", "process_name", "process_description", "other_details"]}
+{"database": "cre_Doc_Workflow", "table": "Documents_Processes", "columns": ["document_id", "process_id", "process_outcome_code", "process_status_code"]}
+{"database": "cre_Doc_Workflow", "table": "Staff_in_Processes", "columns": ["document_id", "process_id", "staff_id", "staff_role_code", "date_from", "date_to", "other_details"]}
+{"database": "cre_Drama_Workshop_Groups", "table": "Ref_Payment_Methods", "columns": ["payment_method_code", "payment_method_description"]}
+{"database": "cre_Drama_Workshop_Groups", "table": "Ref_Service_Types", "columns": ["Service_Type_Code", "Parent_Service_Type_Code", "Service_Type_Description"]}
+{"database": "cre_Drama_Workshop_Groups", "table": "Addresses", "columns": ["Address_ID", "Line_1", "Line_2", "City_Town", "State_County", "Other_Details"]}
+{"database": "cre_Drama_Workshop_Groups", "table": "Products", "columns": ["Product_ID", "Product_Name", "Product_Price", "Product_Description", "Other_Product_Service_Details"]}
+{"database": "cre_Drama_Workshop_Groups", "table": "Marketing_Regions", "columns": ["Marketing_Region_Code", "Marketing_Region_Name", "Marketing_Region_Descriptrion", "Other_Details"]}
+{"database": "cre_Drama_Workshop_Groups", "table": "Clients", "columns": ["Client_ID", "Address_ID", "Customer_Email_Address", "Customer_Name", "Customer_Phone", "Other_Details"]}
+{"database": "cre_Drama_Workshop_Groups", "table": "Drama_Workshop_Groups", "columns": ["Workshop_Group_ID", "Address_ID", "Currency_Code", "Marketing_Region_Code", "Store_Name", "Store_Phone", "Store_Email_Address", "Other_Details"]}
+{"database": "cre_Drama_Workshop_Groups", "table": "Performers", "columns": ["Performer_ID", "Address_ID", "Customer_Name", "Customer_Phone", "Customer_Email_Address", "Other_Details"]}
+{"database": "cre_Drama_Workshop_Groups", "table": "Customers", "columns": ["Customer_ID", "Address_ID", "Customer_Name", "Customer_Phone", "Customer_Email_Address", "Other_Details"]}
+{"database": "cre_Drama_Workshop_Groups", "table": "Stores", "columns": ["Store_ID", "Address_ID", "Marketing_Region_Code", "Store_Name", "Store_Phone", "Store_Email_Address", "Other_Details"]}
+{"database": "cre_Drama_Workshop_Groups", "table": "Bookings", "columns": ["Booking_ID", "Customer_ID", "Workshop_Group_ID", "Status_Code", "Store_ID", "Order_Date", "Planned_Delivery_Date", "Actual_Delivery_Date", "Other_Order_Details"]}
+{"database": "cre_Drama_Workshop_Groups", "table": "Performers_in_Bookings", "columns": ["Order_ID", "Performer_ID"]}
+{"database": "cre_Drama_Workshop_Groups", "table": "Customer_Orders", "columns": ["Order_ID", "Customer_ID", "Store_ID", "Order_Date", "Planned_Delivery_Date", "Actual_Delivery_Date", "Other_Order_Details"]}
+{"database": "cre_Drama_Workshop_Groups", "table": "Order_Items", "columns": ["Order_Item_ID", "Order_ID", "Product_ID", "Order_Quantity", "Other_Item_Details"]}
+{"database": "cre_Drama_Workshop_Groups", "table": "Invoices", "columns": ["Invoice_ID", "Order_ID", "payment_method_code", "Product_ID", "Order_Quantity", "Other_Item_Details", "Order_Item_ID"]}
+{"database": "cre_Drama_Workshop_Groups", "table": "Services", "columns": ["Service_ID", "Service_Type_Code", "Workshop_Group_ID", "Product_Description", "Product_Name", "Product_Price", "Other_Product_Service_Details"]}
+{"database": "cre_Drama_Workshop_Groups", "table": "Bookings_Services", "columns": ["Order_ID", "Product_ID"]}
+{"database": "cre_Drama_Workshop_Groups", "table": "Invoice_Items", "columns": ["Invoice_Item_ID", "Invoice_ID", "Order_ID", "Order_Item_ID", "Product_ID", "Order_Quantity", "Other_Item_Details"]}
+{"database": "cre_Students_Information_Systems", "table": "Students", "columns": ["student_id", "bio_data", "student_details"]}
+{"database": "cre_Students_Information_Systems", "table": "Transcripts", "columns": ["transcript_id", "student_id", "date_of_transcript", "transcript_details"]}
+{"database": "cre_Students_Information_Systems", "table": "Behaviour_Monitoring", "columns": ["behaviour_monitoring_id", "student_id", "behaviour_monitoring_details"]}
+{"database": "cre_Students_Information_Systems", "table": "Addresses", "columns": ["address_id", "address_details"]}
+{"database": "cre_Students_Information_Systems", "table": "Ref_Event_Types", "columns": ["event_type_code", "event_type_description"]}
+{"database": "cre_Students_Information_Systems", "table": "Ref_Achievement_Type", "columns": ["achievement_type_code", "achievement_type_description"]}
+{"database": "cre_Students_Information_Systems", "table": "Ref_Address_Types", "columns": ["address_type_code", "address_type_description"]}
+{"database": "cre_Students_Information_Systems", "table": "Ref_Detention_Type", "columns": ["detention_type_code", "detention_type_description"]}
+{"database": "cre_Students_Information_Systems", "table": "Student_Events", "columns": ["event_id", "event_type_code", "student_id", "event_date", "other_details"]}
+{"database": "cre_Students_Information_Systems", "table": "Teachers", "columns": ["teacher_id", "teacher_details"]}
+{"database": "cre_Students_Information_Systems", "table": "Student_Loans", "columns": ["student_loan_id", "student_id", "date_of_loan", "amount_of_loan", "other_details"]}
+{"database": "cre_Students_Information_Systems", "table": "Classes", "columns": ["class_id", "student_id", "teacher_id", "class_details"]}
+{"database": "cre_Students_Information_Systems", "table": "Students_Addresses", "columns": ["student_address_id", "address_id", "address_type_code", "student_id", "date_from", "date_to"]}
+{"database": "cre_Students_Information_Systems", "table": "Detention", "columns": ["detention_id", "detention_type_code", "student_id", "datetime_detention_start", "datetime_detention_end", "detention_summary", "other_details"]}
+{"database": "cre_Students_Information_Systems", "table": "Achievements", "columns": ["achievement_id", "achievement_type_code", "student_id", "date_achievement", "achievement_details", "other_details"]}
+{"database": "cre_Theme_park", "table": "Ref_Hotel_Star_Ratings", "columns": ["star_rating_code", "star_rating_description"]}
+{"database": "cre_Theme_park", "table": "Locations", "columns": ["Location_ID", "Location_Name", "Address", "Other_Details"]}
+{"database": "cre_Theme_park", "table": "Ref_Attraction_Types", "columns": ["Attraction_Type_Code", "Attraction_Type_Description"]}
+{"database": "cre_Theme_park", "table": "Visitors", "columns": ["Tourist_ID", "Tourist_Details"]}
+{"database": "cre_Theme_park", "table": "Features", "columns": ["Feature_ID", "Feature_Details"]}
+{"database": "cre_Theme_park", "table": "Hotels", "columns": ["hotel_id", "star_rating_code", "pets_allowed_yn", "price_range", "other_hotel_details"]}
+{"database": "cre_Theme_park", "table": "Tourist_Attractions", "columns": ["Tourist_Attraction_ID", "Attraction_Type_Code", "Location_ID", "How_to_Get_There", "Name", "Description", "Opening_Hours", "Other_Details"]}
+{"database": "cre_Theme_park", "table": "Street_Markets", "columns": ["Market_ID", "Market_Details"]}
+{"database": "cre_Theme_park", "table": "Shops", "columns": ["Shop_ID", "Shop_Details"]}
+{"database": "cre_Theme_park", "table": "Museums", "columns": ["Museum_ID", "Museum_Details"]}
+{"database": "cre_Theme_park", "table": "Royal_Family", "columns": ["Royal_Family_ID", "Royal_Family_Details"]}
+{"database": "cre_Theme_park", "table": "Theme_Parks", "columns": ["Theme_Park_ID", "Theme_Park_Details"]}
+{"database": "cre_Theme_park", "table": "Visits", "columns": ["Visit_ID", "Tourist_Attraction_ID", "Tourist_ID", "Visit_Date", "Visit_Details"]}
+{"database": "cre_Theme_park", "table": "Photos", "columns": ["Photo_ID", "Tourist_Attraction_ID", "Name", "Description", "Filename", "Other_Details"]}
+{"database": "cre_Theme_park", "table": "Staff", "columns": ["Staff_ID", "Tourist_Attraction_ID", "Name", "Other_Details"]}
+{"database": "cre_Theme_park", "table": "Tourist_Attraction_Features", "columns": ["Tourist_Attraction_ID", "Feature_ID"]}
+{"database": "csu_1", "table": "Campuses", "columns": ["Id", "Campus", "Location", "County", "Year"]}
+{"database": "csu_1", "table": "csu_fees", "columns": ["Campus", "Year", "CampusFee"]}
+{"database": "csu_1", "table": "degrees", "columns": ["Year", "Campus", "Degrees"]}
+{"database": "csu_1", "table": "discipline_enrollments", "columns": ["Campus", "Discipline", "Year", "Undergraduate", "Graduate"]}
+{"database": "csu_1", "table": "enrollments", "columns": ["Campus", "Year", "TotalEnrollment_AY", "FTE_AY"]}
+{"database": "csu_1", "table": "faculty", "columns": ["Campus", "Year", "Faculty"]}
+{"database": "culture_company", "table": "book_club", "columns": ["book_club_id", "Year", "Author_or_Editor", "Book_Title", "Publisher", "Category", "Result"]}
+{"database": "culture_company", "table": "movie", "columns": ["movie_id", "Title", "Year", "Director", "Budget_million", "Gross_worldwide"]}
+{"database": "culture_company", "table": "culture_company", "columns": ["Company_name", "Type", "Incorporated_in", "Group_Equity_Shareholding", "book_club_id", "movie_id"]}
+{"database": "customers_and_addresses", "table": "Addresses", "columns": ["address_id", "address_content", "city", "zip_postcode", "state_province_county", "country", "other_address_details"]}
+{"database": "customers_and_addresses", "table": "Products", "columns": ["product_id", "product_details"]}
+{"database": "customers_and_addresses", "table": "Customers", "columns": ["customer_id", "payment_method", "customer_name", "date_became_customer", "other_customer_details"]}
+{"database": "customers_and_addresses", "table": "Customer_Addresses", "columns": ["customer_id", "address_id", "date_address_from", "address_type", "date_address_to"]}
+{"database": "customers_and_addresses", "table": "Customer_Contact_Channels", "columns": ["customer_id", "channel_code", "active_from_date", "active_to_date", "contact_number"]}
+{"database": "customers_and_addresses", "table": "Customer_Orders", "columns": ["order_id", "customer_id", "order_status", "order_date", "order_details"]}
+{"database": "customers_and_addresses", "table": "Order_Items", "columns": ["order_id", "product_id", "order_quantity"]}
+{"database": "customers_and_invoices", "table": "Customers", "columns": ["customer_id", "customer_first_name", "customer_middle_initial", "customer_last_name", "gender", "email_address", "login_name", "login_password", "phone_number", "town_city", "state_county_province", "country"]}
+{"database": "customers_and_invoices", "table": "Orders", "columns": ["order_id", "customer_id", "date_order_placed", "order_details"]}
+{"database": "customers_and_invoices", "table": "Invoices", "columns": ["invoice_number", "order_id", "invoice_date"]}
+{"database": "customers_and_invoices", "table": "Accounts", "columns": ["account_id", "customer_id", "date_account_opened", "account_name", "other_account_details"]}
+{"database": "customers_and_invoices", "table": "Product_Categories", "columns": ["production_type_code", "product_type_description", "vat_rating"]}
+{"database": "customers_and_invoices", "table": "Products", "columns": ["product_id", "parent_product_id", "production_type_code", "unit_price", "product_name", "product_color", "product_size"]}
+{"database": "customers_and_invoices", "table": "Financial_Transactions", "columns": ["transaction_id", "account_id", "invoice_number", "transaction_type", "transaction_date", "transaction_amount", "transaction_comment", "other_transaction_details"]}
+{"database": "customers_and_invoices", "table": "Order_Items", "columns": ["order_item_id", "order_id", "product_id", "product_quantity", "other_order_item_details"]}
+{"database": "customers_and_invoices", "table": "Invoice_Line_Items", "columns": ["order_item_id", "invoice_number", "product_id", "product_title", "product_quantity", "product_price", "derived_product_cost", "derived_vat_payable", "derived_total_cost"]}
+{"database": "customers_and_orders", "table": "Products", "columns": ["product_id", "product_type_code", "product_name", "product_price"]}
+{"database": "customers_and_orders", "table": "Addresses", "columns": ["address_id", "address_details"]}
+{"database": "customers_and_orders", "table": "Customers", "columns": ["customer_id", "address_id", "payment_method_code", "customer_number", "customer_name", "customer_address", "customer_phone", "customer_email"]}
+{"database": "customers_and_orders", "table": "Customer_Orders", "columns": ["order_id", "customer_id", "order_date", "order_status_code"]}
+{"database": "customers_and_orders", "table": "Order_Items", "columns": ["order_item_id", "order_id", "product_id", "order_quantity"]}
+{"database": "customers_and_products_contacts", "table": "Addresses", "columns": ["address_id", "line_1_number_building", "city", "zip_postcode", "state_province_county", "country"]}
+{"database": "customers_and_products_contacts", "table": "Products", "columns": ["product_id", "product_type_code", "product_name", "product_price"]}
+{"database": "customers_and_products_contacts", "table": "Customers", "columns": ["customer_id", "payment_method_code", "customer_number", "customer_name", "customer_address", "customer_phone", "customer_email"]}
+{"database": "customers_and_products_contacts", "table": "Contacts", "columns": ["contact_id", "customer_id", "gender", "first_name", "last_name", "contact_phone"]}
+{"database": "customers_and_products_contacts", "table": "Customer_Address_History", "columns": ["customer_id", "address_id", "date_from", "date_to"]}
+{"database": "customers_and_products_contacts", "table": "Customer_Orders", "columns": ["order_id", "customer_id", "order_date", "order_status_code"]}
+{"database": "customers_and_products_contacts", "table": "Order_Items", "columns": ["order_item_id", "order_id", "product_id", "order_quantity"]}
+{"database": "customers_campaigns_ecommerce", "table": "Premises", "columns": ["premise_id", "premises_type", "premise_details"]}
+{"database": "customers_campaigns_ecommerce", "table": "Products", "columns": ["product_id", "product_category", "product_name"]}
+{"database": "customers_campaigns_ecommerce", "table": "Customers", "columns": ["customer_id", "payment_method", "customer_name", "customer_phone", "customer_email", "customer_address", "customer_login", "customer_password"]}
+{"database": "customers_campaigns_ecommerce", "table": "Mailshot_Campaigns", "columns": ["mailshot_id", "product_category", "mailshot_name", "mailshot_start_date", "mailshot_end_date"]}
+{"database": "customers_campaigns_ecommerce", "table": "Customer_Addresses", "columns": ["customer_id", "premise_id", "date_address_from", "address_type_code", "date_address_to"]}
+{"database": "customers_campaigns_ecommerce", "table": "Customer_Orders", "columns": ["order_id", "customer_id", "order_status_code", "shipping_method_code", "order_placed_datetime", "order_delivered_datetime", "order_shipping_charges"]}
+{"database": "customers_campaigns_ecommerce", "table": "Mailshot_Customers", "columns": ["mailshot_id", "customer_id", "outcome_code", "mailshot_customer_date"]}
+{"database": "customers_campaigns_ecommerce", "table": "Order_Items", "columns": ["item_id", "order_item_status_code", "order_id", "product_id", "item_status_code", "item_delivered_datetime", "item_order_quantity"]}
+{"database": "customers_card_transactions", "table": "Accounts", "columns": ["account_id", "customer_id", "account_name", "other_account_details"]}
+{"database": "customers_card_transactions", "table": "Customers", "columns": ["customer_id", "customer_first_name", "customer_last_name", "customer_address", "customer_phone", "customer_email", "other_customer_details"]}
+{"database": "customers_card_transactions", "table": "Customers_Cards", "columns": ["card_id", "customer_id", "card_type_code", "card_number", "date_valid_from", "date_valid_to", "other_card_details"]}
+{"database": "customers_card_transactions", "table": "Financial_Transactions", "columns": ["transaction_id", "previous_transaction_id", "account_id", "card_id", "transaction_type", "transaction_date", "transaction_amount", "transaction_comment", "other_transaction_details"]}
+{"database": "customer_complaints", "table": "Staff", "columns": ["staff_id", "gender", "first_name", "last_name", "email_address", "phone_number"]}
+{"database": "customer_complaints", "table": "Customers", "columns": ["customer_id", "customer_type_code", "address_line_1", "address_line_2", "town_city", "state", "email_address", "phone_number"]}
+{"database": "customer_complaints", "table": "Products", "columns": ["product_id", "parent_product_id", "product_category_code", "date_product_first_available", "date_product_discontinued", "product_name", "product_description", "product_price"]}
+{"database": "customer_complaints", "table": "Complaints", "columns": ["complaint_id", "product_id", "customer_id", "complaint_outcome_code", "complaint_status_code", "complaint_type_code", "date_complaint_raised", "date_complaint_closed", "staff_id"]}
+{"database": "customer_deliveries", "table": "Products", "columns": ["product_id", "product_name", "product_price", "product_description"]}
+{"database": "customer_deliveries", "table": "Addresses", "columns": ["address_id", "address_details", "city", "zip_postcode", "state_province_county", "country"]}
+{"database": "customer_deliveries", "table": "Customers", "columns": ["customer_id", "payment_method", "customer_name", "customer_phone", "customer_email", "date_became_customer"]}
+{"database": "customer_deliveries", "table": "Regular_Orders", "columns": ["regular_order_id", "distributer_id"]}
+{"database": "customer_deliveries", "table": "Regular_Order_Products", "columns": ["regular_order_id", "product_id"]}
+{"database": "customer_deliveries", "table": "Actual_Orders", "columns": ["actual_order_id", "order_status_code", "regular_order_id", "actual_order_date"]}
+{"database": "customer_deliveries", "table": "Actual_Order_Products", "columns": ["actual_order_id", "product_id"]}
+{"database": "customer_deliveries", "table": "Customer_Addresses", "columns": ["customer_id", "address_id", "date_from", "address_type", "date_to"]}
+{"database": "customer_deliveries", "table": "Delivery_Routes", "columns": ["route_id", "route_name", "other_route_details"]}
+{"database": "customer_deliveries", "table": "Delivery_Route_Locations", "columns": ["location_code", "route_id", "location_address_id", "location_name"]}
+{"database": "customer_deliveries", "table": "Trucks", "columns": ["truck_id", "truck_licence_number", "truck_details"]}
+{"database": "customer_deliveries", "table": "Employees", "columns": ["employee_id", "employee_address_id", "employee_name", "employee_phone"]}
+{"database": "customer_deliveries", "table": "Order_Deliveries", "columns": ["location_code", "actual_order_id", "delivery_status_code", "driver_employee_id", "truck_id", "delivery_date"]}
+{"database": "debate", "table": "people", "columns": ["People_ID", "District", "Name", "Party", "Age"]}
+{"database": "debate", "table": "debate", "columns": ["Debate_ID", "Date", "Venue", "Num_of_Audience"]}
+{"database": "debate", "table": "debate_people", "columns": ["Debate_ID", "Affirmative", "Negative", "If_Affirmative_Win"]}
+{"database": "decoration_competition", "table": "college", "columns": ["College_ID", "Name", "Leader_Name", "College_Location"]}
+{"database": "decoration_competition", "table": "member", "columns": ["Member_ID", "Name", "Country", "College_ID"]}
+{"database": "decoration_competition", "table": "round", "columns": ["Round_ID", "Member_ID", "Decoration_Theme", "Rank_in_Round"]}
+{"database": "department_management", "table": "department", "columns": ["Department_ID", "Name", "Creation", "Ranking", "Budget_in_Billions", "Num_Employees"]}
+{"database": "department_management", "table": "head", "columns": ["head_ID", "name", "born_state", "age"]}
+{"database": "department_management", "table": "management", "columns": ["department_ID", "head_ID", "temporary_acting"]}
+{"database": "department_store", "table": "Addresses", "columns": ["address_id", "address_details"]}
+{"database": "department_store", "table": "Staff", "columns": ["staff_id", "staff_gender", "staff_name"]}
+{"database": "department_store", "table": "Suppliers", "columns": ["supplier_id", "supplier_name", "supplier_phone"]}
+{"database": "department_store", "table": "Department_Store_Chain", "columns": ["dept_store_chain_id", "dept_store_chain_name"]}
+{"database": "department_store", "table": "Customers", "columns": ["customer_id", "payment_method_code", "customer_code", "customer_name", "customer_address", "customer_phone", "customer_email"]}
+{"database": "department_store", "table": "Products", "columns": ["product_id", "product_type_code", "product_name", "product_price"]}
+{"database": "department_store", "table": "Supplier_Addresses", "columns": ["supplier_id", "address_id", "date_from", "date_to"]}
+{"database": "department_store", "table": "Customer_Addresses", "columns": ["customer_id", "address_id", "date_from", "date_to"]}
+{"database": "department_store", "table": "Customer_Orders", "columns": ["order_id", "customer_id", "order_status_code", "order_date"]}
+{"database": "department_store", "table": "Department_Stores", "columns": ["dept_store_id", "dept_store_chain_id", "store_name", "store_address", "store_phone", "store_email"]}
+{"database": "department_store", "table": "Departments", "columns": ["department_id", "dept_store_id", "department_name"]}
+{"database": "department_store", "table": "Order_Items", "columns": ["order_item_id", "order_id", "product_id"]}
+{"database": "department_store", "table": "Product_Suppliers", "columns": ["product_id", "supplier_id", "date_supplied_from", "date_supplied_to", "total_amount_purchased", "total_value_purchased"]}
+{"database": "department_store", "table": "Staff_Department_Assignments", "columns": ["staff_id", "department_id", "date_assigned_from", "job_title_code", "date_assigned_to"]}
+{"database": "device", "table": "device", "columns": ["Device_ID", "Device", "Carrier", "Package_Version", "Applications", "Software_Platform"]}
+{"database": "device", "table": "shop", "columns": ["Shop_ID", "Shop_Name", "Location", "Open_Date", "Open_Year"]}
+{"database": "device", "table": "stock", "columns": ["Shop_ID", "Device_ID", "Quantity"]}
+{"database": "district_spokesman", "table": "district", "columns": ["District_ID", "Name", "Area_km", "Population", "Density_km", "Government_website"]}
+{"database": "district_spokesman", "table": "spokesman", "columns": ["Spokesman_ID", "Name", "Age", "Speach_title", "Rank_position", "Points"]}
+{"database": "district_spokesman", "table": "spokesman_district", "columns": ["Spokesman_ID", "District_ID", "Start_year"]}
+{"database": "document_management", "table": "Roles", "columns": ["role_code", "role_description"]}
+{"database": "document_management", "table": "Users", "columns": ["user_id", "role_code", "user_name", "user_login", "password"]}
+{"database": "document_management", "table": "Document_Structures", "columns": ["document_structure_code", "parent_document_structure_code", "document_structure_description"]}
+{"database": "document_management", "table": "Functional_Areas", "columns": ["functional_area_code", "parent_functional_area_code", "functional_area_description"]}
+{"database": "document_management", "table": "Images", "columns": ["image_id", "image_alt_text", "image_name", "image_url"]}
+{"database": "document_management", "table": "Documents", "columns": ["document_code", "document_structure_code", "document_type_code", "access_count", "document_name"]}
+{"database": "document_management", "table": "Document_Functional_Areas", "columns": ["document_code", "functional_area_code"]}
+{"database": "document_management", "table": "Document_Sections", "columns": ["section_id", "document_code", "section_sequence", "section_code", "section_title"]}
+{"database": "document_management", "table": "Document_Sections_Images", "columns": ["section_id", "image_id"]}
+{"database": "dog_kennels", "table": "Breeds", "columns": ["breed_code", "breed_name"]}
+{"database": "dog_kennels", "table": "Charges", "columns": ["charge_id", "charge_type", "charge_amount"]}
+{"database": "dog_kennels", "table": "Sizes", "columns": ["size_code", "size_description"]}
+{"database": "dog_kennels", "table": "Treatment_Types", "columns": ["treatment_type_code", "treatment_type_description"]}
+{"database": "dog_kennels", "table": "Owners", "columns": ["owner_id", "first_name", "last_name", "street", "city", "state", "zip_code", "email_address", "home_phone", "cell_number"]}
+{"database": "dog_kennels", "table": "Dogs", "columns": ["dog_id", "owner_id", "abandoned_yn", "breed_code", "size_code", "name", "age", "date_of_birth", "gender", "weight", "date_arrived", "date_adopted", "date_departed"]}
+{"database": "dog_kennels", "table": "Professionals", "columns": ["professional_id", "role_code", "first_name", "street", "city", "state", "zip_code", "last_name", "email_address", "home_phone", "cell_number"]}
+{"database": "dog_kennels", "table": "Treatments", "columns": ["treatment_id", "dog_id", "professional_id", "treatment_type_code", "date_of_treatment", "cost_of_treatment"]}
+{"database": "dorm_1", "table": "Student", "columns": ["StuID", "LName", "Fname", "Age", "Sex", "Major", "Advisor", "city_code"]}
+{"database": "dorm_1", "table": "Dorm", "columns": ["dormid", "dorm_name", "student_capacity", "gender"]}
+{"database": "dorm_1", "table": "Dorm_amenity", "columns": ["amenid", "amenity_name"]}
+{"database": "dorm_1", "table": "Has_amenity", "columns": ["dormid", "amenid"]}
+{"database": "dorm_1", "table": "Lives_in", "columns": ["stuid", "dormid", "room_number"]}
+{"database": "driving_school", "table": "Addresses", "columns": ["address_id", "line_1_number_building", "city", "zip_postcode", "state_province_county", "country"]}
+{"database": "driving_school", "table": "Staff", "columns": ["staff_id", "staff_address_id", "nickname", "first_name", "middle_name", "last_name", "date_of_birth", "date_joined_staff", "date_left_staff"]}
+{"database": "driving_school", "table": "Vehicles", "columns": ["vehicle_id", "vehicle_details"]}
+{"database": "driving_school", "table": "Customers", "columns": ["customer_id", "customer_address_id", "customer_status_code", "date_became_customer", "date_of_birth", "first_name", "last_name", "amount_outstanding", "email_address", "phone_number", "cell_mobile_phone_number"]}
+{"database": "driving_school", "table": "Customer_Payments", "columns": ["customer_id", "datetime_payment", "payment_method_code", "amount_payment"]}
+{"database": "driving_school", "table": "Lessons", "columns": ["lesson_id", "customer_id", "lesson_status_code", "staff_id", "vehicle_id", "lesson_date", "lesson_time", "price"]}
+{"database": "election", "table": "county", "columns": ["County_Id", "County_name", "Population", "Zip_code"]}
+{"database": "election", "table": "party", "columns": ["Party_ID", "Year", "Party", "Governor", "Lieutenant_Governor", "Comptroller", "Attorney_General", "US_Senate"]}
+{"database": "election", "table": "election", "columns": ["Election_ID", "Counties_Represented", "District", "Delegate", "Party", "First_Elected", "Committee"]}
+{"database": "election_representative", "table": "election", "columns": ["Election_ID", "Representative_ID", "Date", "Votes", "Vote_Percent", "Seats", "Place"]}
+{"database": "election_representative", "table": "representative", "columns": ["Representative_ID", "Name", "State", "Party", "Lifespan"]}
+{"database": "employee_hire_evaluation", "table": "employee", "columns": ["Employee_ID", "Name", "Age", "City"]}
+{"database": "employee_hire_evaluation", "table": "shop", "columns": ["Shop_ID", "Name", "Location", "District", "Number_products", "Manager_name"]}
+{"database": "employee_hire_evaluation", "table": "hiring", "columns": ["Shop_ID", "Employee_ID", "Start_from", "Is_full_time"]}
+{"database": "employee_hire_evaluation", "table": "evaluation", "columns": ["Employee_ID", "Year_awarded", "Bonus"]}
+{"database": "entertainment_awards", "table": "festival_detail", "columns": ["Festival_ID", "Festival_Name", "Chair_Name", "Location", "Year", "Num_of_Audience"]}
+{"database": "entertainment_awards", "table": "artwork", "columns": ["Artwork_ID", "Type", "Name"]}
+{"database": "entertainment_awards", "table": "nomination", "columns": ["Artwork_ID", "Festival_ID", "Result"]}
+{"database": "entrepreneur", "table": "entrepreneur", "columns": ["Entrepreneur_ID", "People_ID", "Company", "Money_Requested", "Investor"]}
+{"database": "entrepreneur", "table": "people", "columns": ["People_ID", "Name", "Height", "Weight", "Date_of_Birth"]}
+{"database": "epinions_1", "table": "item", "columns": ["i_id", "title"]}
+{"database": "epinions_1", "table": "review", "columns": ["a_id", "u_id", "i_id", "rating", "rank"]}
+{"database": "epinions_1", "table": "useracct", "columns": ["u_id", "name"]}
+{"database": "epinions_1", "table": "trust", "columns": ["source_u_id", "target_u_id", "trust"]}
+{"database": "e_commerce", "table": "Products", "columns": ["product_id", "parent_product_id", "product_name", "product_price", "product_color", "product_size", "product_description"]}
+{"database": "e_commerce", "table": "Customers", "columns": ["customer_id", "gender_code", "customer_first_name", "customer_middle_initial", "customer_last_name", "email_address", "login_name", "login_password", "phone_number", "address_line_1", "town_city", "county", "country"]}
+{"database": "e_commerce", "table": "Customer_Payment_Methods", "columns": ["customer_id", "payment_method_code"]}
+{"database": "e_commerce", "table": "Invoices", "columns": ["invoice_number", "invoice_status_code", "invoice_date"]}
+{"database": "e_commerce", "table": "Orders", "columns": ["order_id", "customer_id", "order_status_code", "date_order_placed"]}
+{"database": "e_commerce", "table": "Order_Items", "columns": ["order_item_id", "product_id", "order_id", "order_item_status_code"]}
+{"database": "e_commerce", "table": "Shipments", "columns": ["shipment_id", "order_id", "invoice_number", "shipment_tracking_number", "shipment_date"]}
+{"database": "e_commerce", "table": "Shipment_Items", "columns": ["shipment_id", "order_item_id"]}
+{"database": "e_government", "table": "Addresses", "columns": ["address_id", "line_1_number_building", "town_city", "zip_postcode", "state_province_county", "country"]}
+{"database": "e_government", "table": "Services", "columns": ["service_id", "service_type_code", "service_name", "service_descriptio"]}
+{"database": "e_government", "table": "Forms", "columns": ["form_id", "form_type_code", "service_id", "form_number", "form_name", "form_description"]}
+{"database": "e_government", "table": "Individuals", "columns": ["individual_id", "individual_first_name", "individual_middle_name", "inidividual_phone", "individual_email", "individual_address", "individual_last_name"]}
+{"database": "e_government", "table": "Organizations", "columns": ["organization_id", "date_formed", "organization_name", "uk_vat_number"]}
+{"database": "e_government", "table": "Parties", "columns": ["party_id", "payment_method_code", "party_phone", "party_email"]}
+{"database": "e_government", "table": "Organization_Contact_Individuals", "columns": ["individual_id", "organization_id", "date_contact_from", "date_contact_to"]}
+{"database": "e_government", "table": "Party_Addresses", "columns": ["party_id", "address_id", "date_address_from", "address_type_code", "date_address_to"]}
+{"database": "e_government", "table": "Party_Forms", "columns": ["party_id", "form_id", "date_completion_started", "form_status_code", "date_fully_completed"]}
+{"database": "e_government", "table": "Party_Services", "columns": ["booking_id", "customer_id", "service_id", "service_datetime", "booking_made_date"]}
+{"database": "e_learning", "table": "Course_Authors_and_Tutors", "columns": ["author_id", "author_tutor_ATB", "login_name", "password", "personal_name", "middle_name", "family_name", "gender_mf", "address_line_1"]}
+{"database": "e_learning", "table": "Students", "columns": ["student_id", "date_of_registration", "date_of_latest_logon", "login_name", "password", "personal_name", "middle_name", "family_name"]}
+{"database": "e_learning", "table": "Subjects", "columns": ["subject_id", "subject_name"]}
+{"database": "e_learning", "table": "Courses", "columns": ["course_id", "author_id", "subject_id", "course_name", "course_description"]}
+{"database": "e_learning", "table": "Student_Course_Enrolment", "columns": ["registration_id", "student_id", "course_id", "date_of_enrolment", "date_of_completion"]}
+{"database": "e_learning", "table": "Student_Tests_Taken", "columns": ["registration_id", "date_test_taken", "test_result"]}
+{"database": "farm", "table": "city", "columns": ["City_ID", "Official_Name", "Status", "Area_km_2", "Population", "Census_Ranking"]}
+{"database": "farm", "table": "farm", "columns": ["Farm_ID", "Year", "Total_Horses", "Working_Horses", "Total_Cattle", "Oxen", "Bulls", "Cows", "Pigs", "Sheep_and_Goats"]}
+{"database": "farm", "table": "farm_competition", "columns": ["Competition_ID", "Year", "Theme", "Host_city_ID", "Hosts"]}
+{"database": "farm", "table": "competition_record", "columns": ["Competition_ID", "Farm_ID", "Rank"]}
+{"database": "film_rank", "table": "film", "columns": ["Film_ID", "Title", "Studio", "Director", "Gross_in_dollar"]}
+{"database": "film_rank", "table": "market", "columns": ["Market_ID", "Country", "Number_cities"]}
+{"database": "film_rank", "table": "film_market_estimation", "columns": ["Estimation_ID", "Low_Estimate", "High_Estimate", "Film_ID", "Type", "Market_ID", "Year"]}
+{"database": "flight_1", "table": "flight", "columns": ["flno", "origin", "destination", "distance", "departure_date", "arrival_date", "price", "aid"]}
+{"database": "flight_1", "table": "aircraft", "columns": ["aid", "name", "distance"]}
+{"database": "flight_1", "table": "employee", "columns": ["eid", "name", "salary"]}
+{"database": "flight_1", "table": "certificate", "columns": ["eid", "aid"]}
+{"database": "flight_2", "table": "airlines", "columns": ["uid", "Airline", "Abbreviation", "Country"]}
+{"database": "flight_2", "table": "airports", "columns": ["City", "AirportCode", "AirportName", "Country", "CountryAbbrev"]}
+{"database": "flight_2", "table": "flights", "columns": ["Airline", "FlightNo", "SourceAirport", "DestAirport"]}
+{"database": "flight_4", "table": "routes", "columns": ["rid", "dst_apid", "dst_ap", "src_apid", "src_ap", "alid", "airline", "codeshare"]}
+{"database": "flight_4", "table": "airports", "columns": ["apid", "name", "city", "country", "x", "y", "elevation", "iata", "icao"]}
+{"database": "flight_4", "table": "airlines", "columns": ["alid", "name", "iata", "icao", "callsign", "country", "active"]}
+{"database": "flight_company", "table": "airport", "columns": ["id", "City", "Country", "IATA", "ICAO", "name"]}
+{"database": "flight_company", "table": "operate_company", "columns": ["id", "name", "Type", "Principal_activities", "Incorporated_in", "Group_Equity_Shareholding"]}
+{"database": "flight_company", "table": "flight", "columns": ["id", "Vehicle_Flight_number", "Date", "Pilot", "Velocity", "Altitude", "airport_id", "company_id"]}
+{"database": "formula_1", "table": "circuits", "columns": ["circuitId", "circuitRef", "name", "location", "country", "lat", "lng", "alt", "url"]}
+{"database": "formula_1", "table": "races", "columns": ["raceId", "year", "round", "circuitId", "name", "date", "time", "url"]}
+{"database": "formula_1", "table": "drivers", "columns": ["driverId", "driverRef", "number", "code", "forename", "surname", "dob", "nationality", "url"]}
+{"database": "formula_1", "table": "status", "columns": ["statusId", "status"]}
+{"database": "formula_1", "table": "seasons", "columns": ["year", "url"]}
+{"database": "formula_1", "table": "constructors", "columns": ["constructorId", "constructorRef", "name", "nationality", "url"]}
+{"database": "formula_1", "table": "constructorStandings", "columns": ["constructorStandingsId", "raceId", "constructorId", "points", "position", "positionText", "wins"]}
+{"database": "formula_1", "table": "results", "columns": ["resultId", "raceId", "driverId", "constructorId", "number", "grid", "position", "positionText", "positionOrder", "points", "laps", "time", "milliseconds", "fastestLap", "rank", "fastestLapTime", "fastestLapSpeed", "statusId"]}
+{"database": "formula_1", "table": "driverStandings", "columns": ["driverStandingsId", "raceId", "driverId", "points", "position", "positionText", "wins"]}
+{"database": "formula_1", "table": "constructorResults", "columns": ["constructorResultsId", "raceId", "constructorId", "points", "status"]}
+{"database": "formula_1", "table": "qualifying", "columns": ["qualifyId", "raceId", "driverId", "constructorId", "number", "position", "q1", "q2", "q3"]}
+{"database": "formula_1", "table": "pitStops", "columns": ["raceId", "driverId", "stop", "lap", "time", "duration", "milliseconds"]}
+{"database": "formula_1", "table": "lapTimes", "columns": ["raceId", "driverId", "lap", "position", "time", "milliseconds"]}
+{"database": "game_1", "table": "Student", "columns": ["StuID", "LName", "Fname", "Age", "Sex", "Major", "Advisor", "city_code"]}
+{"database": "game_1", "table": "Video_Games", "columns": ["GameID", "GName", "GType"]}
+{"database": "game_1", "table": "Plays_Games", "columns": ["StuID", "GameID", "Hours_Played"]}
+{"database": "game_1", "table": "SportsInfo", "columns": ["StuID", "SportName", "HoursPerWeek", "GamesPlayed", "OnScholarship"]}
+{"database": "game_injury", "table": "stadium", "columns": ["id", "name", "Home_Games", "Average_Attendance", "Total_Attendance", "Capacity_Percentage"]}
+{"database": "game_injury", "table": "game", "columns": ["stadium_id", "id", "Season", "Date", "Home_team", "Away_team", "Score", "Competition"]}
+{"database": "game_injury", "table": "injury_accident", "columns": ["game_id", "id", "Player", "Injury", "Number_of_matches", "Source"]}
+{"database": "gas_company", "table": "company", "columns": ["Company_ID", "Rank", "Company", "Headquarters", "Main_Industry", "Sales_billion", "Profits_billion", "Assets_billion", "Market_Value"]}
+{"database": "gas_company", "table": "gas_station", "columns": ["Station_ID", "Open_Year", "Location", "Manager_Name", "Vice_Manager_Name", "Representative_Name"]}
+{"database": "gas_company", "table": "station_company", "columns": ["Station_ID", "Company_ID", "Rank_of_the_Year"]}
+{"database": "geo", "table": "state", "columns": ["state_name", "population", "area", "country_name", "capital", "density"]}
+{"database": "geo", "table": "city", "columns": ["city_name", "population", "country_name", "state_name"]}
+{"database": "geo", "table": "border_info", "columns": ["state_name", "border"]}
+{"database": "geo", "table": "highlow", "columns": ["state_name", "highest_elevation", "lowest_point", "highest_point", "lowest_elevation"]}
+{"database": "geo", "table": "lake", "columns": ["lake_name", "area", "country_name", "state_name"]}
+{"database": "geo", "table": "mountain", "columns": ["mountain_name", "mountain_altitude", "country_name", "state_name"]}
+{"database": "geo", "table": "river", "columns": ["river_name", "length", "country_name", "traverse"]}
+{"database": "government_shift", "table": "Services", "columns": ["Service_ID", "Service_Details"]}
+{"database": "government_shift", "table": "Customers", "columns": ["Customer_ID", "Customer_Details"]}
+{"database": "government_shift", "table": "Channels", "columns": ["Channel_ID", "Channel_Details"]}
+{"database": "government_shift", "table": "Customers_and_Services", "columns": ["Customers_and_Services_ID", "Customer_ID", "Service_ID", "Customers_and_Services_Details"]}
+{"database": "government_shift", "table": "Customer_Interactions", "columns": ["Customer_Interaction_ID", "Channel_ID", "Customer_ID", "Service_ID", "Status_Code", "Services_and_Channels_Details"]}
+{"database": "government_shift", "table": "Integration_Platform", "columns": ["Integration_Platform_ID", "Customer_Interaction_ID", "Integration_Platform_Details"]}
+{"database": "government_shift", "table": "Analytical_Layer", "columns": ["Analytical_ID", "Customers_and_Services_ID", "Pattern_Recognition", "Analytical_Layer_Type_Code"]}
+{"database": "gymnast", "table": "gymnast", "columns": ["Gymnast_ID", "Floor_Exercise_Points", "Pommel_Horse_Points", "Rings_Points", "Vault_Points", "Parallel_Bars_Points", "Horizontal_Bar_Points", "Total_Points"]}
+{"database": "gymnast", "table": "people", "columns": ["People_ID", "Name", "Age", "Height", "Hometown"]}
+{"database": "headphone_store", "table": "headphone", "columns": ["Headphone_ID", "Model", "Class", "Driver-matched_dB", "Construction", "Earpads", "Price"]}
+{"database": "headphone_store", "table": "store", "columns": ["Store_ID", "Name", "Neighborhood", "Parking", "Date_Opened"]}
+{"database": "headphone_store", "table": "stock", "columns": ["Store_ID", "Headphone_ID", "Quantity"]}
+{"database": "hospital_1", "table": "Physician", "columns": ["EmployeeID", "Name", "Position", "SSN"]}
+{"database": "hospital_1", "table": "Department", "columns": ["DepartmentID", "Name", "Head"]}
+{"database": "hospital_1", "table": "Affiliated_With", "columns": ["Physician", "Department", "PrimaryAffiliation"]}
+{"database": "hospital_1", "table": "Procedures", "columns": ["Code", "Name", "Cost"]}
+{"database": "hospital_1", "table": "Trained_In", "columns": ["Physician", "Treatment", "CertificationDate", "CertificationExpires"]}
+{"database": "hospital_1", "table": "Patient", "columns": ["SSN", "Name", "Address", "Phone", "InsuranceID", "PCP"]}
+{"database": "hospital_1", "table": "Nurse", "columns": ["EmployeeID", "Name", "Position", "Registered", "SSN"]}
+{"database": "hospital_1", "table": "Appointment", "columns": ["AppointmentID", "Patient", "PrepNurse", "Physician", "Start", "End", "ExaminationRoom"]}
+{"database": "hospital_1", "table": "Medication", "columns": ["Code", "Name", "Brand", "Description"]}
+{"database": "hospital_1", "table": "Prescribes", "columns": ["Physician", "Patient", "Medication", "Date", "Appointment", "Dose"]}
+{"database": "hospital_1", "table": "Block", "columns": ["BlockFloor", "BlockCode"]}
+{"database": "hospital_1", "table": "Room", "columns": ["RoomNumber", "RoomType", "BlockFloor", "BlockCode", "Unavailable"]}
+{"database": "hospital_1", "table": "On_Call", "columns": ["Nurse", "BlockFloor", "BlockCode", "OnCallStart", "OnCallEnd"]}
+{"database": "hospital_1", "table": "Stay", "columns": ["StayID", "Patient", "Room", "StayStart", "StayEnd"]}
+{"database": "hospital_1", "table": "Undergoes", "columns": ["Patient", "Procedures", "Stay", "DateUndergoes", "Physician", "AssistingNurse"]}
+{"database": "hr_1", "table": "regions", "columns": ["REGION_ID", "REGION_NAME"]}
+{"database": "hr_1", "table": "countries", "columns": ["COUNTRY_ID", "COUNTRY_NAME", "REGION_ID"]}
+{"database": "hr_1", "table": "departments", "columns": ["DEPARTMENT_ID", "DEPARTMENT_NAME", "MANAGER_ID", "LOCATION_ID"]}
+{"database": "hr_1", "table": "jobs", "columns": ["JOB_ID", "JOB_TITLE", "MIN_SALARY", "MAX_SALARY"]}
+{"database": "hr_1", "table": "employees", "columns": ["EMPLOYEE_ID", "FIRST_NAME", "LAST_NAME", "EMAIL", "PHONE_NUMBER", "HIRE_DATE", "JOB_ID", "SALARY", "COMMISSION_PCT", "MANAGER_ID", "DEPARTMENT_ID"]}
+{"database": "hr_1", "table": "job_history", "columns": ["EMPLOYEE_ID", "START_DATE", "END_DATE", "JOB_ID", "DEPARTMENT_ID"]}
+{"database": "hr_1", "table": "locations", "columns": ["LOCATION_ID", "STREET_ADDRESS", "POSTAL_CODE", "CITY", "STATE_PROVINCE", "COUNTRY_ID"]}
+{"database": "icfp_1", "table": "Inst", "columns": ["instID", "name", "country"]}
+{"database": "icfp_1", "table": "Authors", "columns": ["authID", "lname", "fname"]}
+{"database": "icfp_1", "table": "Papers", "columns": ["paperID", "title"]}
+{"database": "icfp_1", "table": "Authorship", "columns": ["authID", "instID", "paperID", "authOrder"]}
+{"database": "imdb", "table": "actor", "columns": ["aid", "gender", "name", "nationality", "birth_city", "birth_year"]}
+{"database": "imdb", "table": "copyright", "columns": ["id", "msid", "cid"]}
+{"database": "imdb", "table": "cast", "columns": ["id", "msid", "aid", "role"]}
+{"database": "imdb", "table": "genre", "columns": ["gid", "genre"]}
+{"database": "imdb", "table": "classification", "columns": ["id", "msid", "gid"]}
+{"database": "imdb", "table": "company", "columns": ["id", "name", "country_code"]}
+{"database": "imdb", "table": "director", "columns": ["did", "gender", "name", "nationality", "birth_city", "birth_year"]}
+{"database": "imdb", "table": "producer", "columns": ["pid", "gender", "name", "nationality", "birth_city", "birth_year"]}
+{"database": "imdb", "table": "directed_by", "columns": ["id", "msid", "did"]}
+{"database": "imdb", "table": "keyword", "columns": ["id", "keyword"]}
+{"database": "imdb", "table": "made_by", "columns": ["id", "msid", "pid"]}
+{"database": "imdb", "table": "movie", "columns": ["mid", "title", "release_year", "title_aka", "budget"]}
+{"database": "imdb", "table": "tags", "columns": ["id", "msid", "kid"]}
+{"database": "imdb", "table": "tv_series", "columns": ["sid", "title", "release_year", "num_of_seasons", "num_of_episodes", "title_aka", "budget"]}
+{"database": "imdb", "table": "writer", "columns": ["wid", "gender", "name", "nationality", "num_of_episodes", "birth_city", "birth_year"]}
+{"database": "imdb", "table": "written_by", "columns": ["id", "msid", "wid"]}
+{"database": "inn_1", "table": "Rooms", "columns": ["RoomId", "roomName", "beds", "bedType", "maxOccupancy", "basePrice", "decor"]}
+{"database": "inn_1", "table": "Reservations", "columns": ["Code", "Room", "CheckIn", "CheckOut", "Rate", "LastName", "FirstName", "Adults", "Kids"]}
+{"database": "institution_sports", "table": "institution", "columns": ["Institution_ID", "Name", "Team", "City", "Province", "Founded", "Affiliation", "Enrollment", "Endowment", "Stadium", "Capacity"]}
+{"database": "institution_sports", "table": "Championship", "columns": ["Institution_ID", "Nickname", "Joined", "Number_of_Championships"]}
+{"database": "insurance_and_eClaims", "table": "Customers", "columns": ["Customer_ID", "Customer_Details"]}
+{"database": "insurance_and_eClaims", "table": "Staff", "columns": ["Staff_ID", "Staff_Details"]}
+{"database": "insurance_and_eClaims", "table": "Policies", "columns": ["Policy_ID", "Customer_ID", "Policy_Type_Code", "Start_Date", "End_Date"]}
+{"database": "insurance_and_eClaims", "table": "Claim_Headers", "columns": ["Claim_Header_ID", "Claim_Status_Code", "Claim_Type_Code", "Policy_ID", "Date_of_Claim", "Date_of_Settlement", "Amount_Claimed", "Amount_Piad"]}
+{"database": "insurance_and_eClaims", "table": "Claims_Documents", "columns": ["Claim_ID", "Document_Type_Code", "Created_by_Staff_ID", "Created_Date"]}
+{"database": "insurance_and_eClaims", "table": "Claims_Processing_Stages", "columns": ["Claim_Stage_ID", "Next_Claim_Stage_ID", "Claim_Status_Name", "Claim_Status_Description"]}
+{"database": "insurance_and_eClaims", "table": "Claims_Processing", "columns": ["Claim_Processing_ID", "Claim_ID", "Claim_Outcome_Code", "Claim_Stage_ID", "Staff_ID"]}
+{"database": "insurance_fnol", "table": "Customers", "columns": ["Customer_ID", "Customer_name"]}
+{"database": "insurance_fnol", "table": "Services", "columns": ["Service_ID", "Service_name"]}
+{"database": "insurance_fnol", "table": "Available_Policies", "columns": ["Policy_ID", "policy_type_code", "Customer_Phone"]}
+{"database": "insurance_fnol", "table": "Customers_Policies", "columns": ["Customer_ID", "Policy_ID", "Date_Opened", "Date_Closed"]}
+{"database": "insurance_fnol", "table": "First_Notification_of_Loss", "columns": ["FNOL_ID", "Customer_ID", "Policy_ID", "Service_ID"]}
+{"database": "insurance_fnol", "table": "Claims", "columns": ["Claim_ID", "FNOL_ID", "Effective_Date"]}
+{"database": "insurance_fnol", "table": "Settlements", "columns": ["Settlement_ID", "Claim_ID", "Effective_Date", "Settlement_Amount"]}
+{"database": "insurance_policies", "table": "Customers", "columns": ["Customer_ID", "Customer_Details"]}
+{"database": "insurance_policies", "table": "Customer_Policies", "columns": ["Policy_ID", "Customer_ID", "Policy_Type_Code", "Start_Date", "End_Date"]}
+{"database": "insurance_policies", "table": "Claims", "columns": ["Claim_ID", "Policy_ID", "Date_Claim_Made", "Date_Claim_Settled", "Amount_Claimed", "Amount_Settled"]}
+{"database": "insurance_policies", "table": "Settlements", "columns": ["Settlement_ID", "Claim_ID", "Date_Claim_Made", "Date_Claim_Settled", "Amount_Claimed", "Amount_Settled", "Customer_Policy_ID"]}
+{"database": "insurance_policies", "table": "Payments", "columns": ["Payment_ID", "Settlement_ID", "Payment_Method_Code", "Date_Payment_Made", "Amount_Payment"]}
+{"database": "journal_committee", "table": "journal", "columns": ["Journal_ID", "Date", "Theme", "Sales"]}
+{"database": "journal_committee", "table": "editor", "columns": ["Editor_ID", "Name", "Age"]}
+{"database": "journal_committee", "table": "journal_committee", "columns": ["Editor_ID", "Journal_ID", "Work_Type"]}
+{"database": "loan_1", "table": "bank", "columns": ["branch_ID", "bname", "no_of_customers", "city", "state"]}
+{"database": "loan_1", "table": "customer", "columns": ["cust_ID", "cust_name", "acc_type", "acc_bal", "no_of_loans", "credit_score", "branch_ID", "state"]}
+{"database": "loan_1", "table": "loan", "columns": ["loan_ID", "loan_type", "cust_ID", "branch_ID", "amount"]}
+{"database": "local_govt_and_lot", "table": "Customers", "columns": ["customer_id", "customer_details"]}
+{"database": "local_govt_and_lot", "table": "Properties", "columns": ["property_id", "property_type_code", "property_address", "other_details"]}
+{"database": "local_govt_and_lot", "table": "Residents", "columns": ["resident_id", "property_id", "date_moved_in", "date_moved_out", "other_details"]}
+{"database": "local_govt_and_lot", "table": "Organizations", "columns": ["organization_id", "parent_organization_id", "organization_details"]}
+{"database": "local_govt_and_lot", "table": "Services", "columns": ["service_id", "organization_id", "service_type_code", "service_details"]}
+{"database": "local_govt_and_lot", "table": "Residents_Services", "columns": ["resident_id", "service_id", "date_moved_in", "property_id", "date_requested", "date_provided", "other_details"]}
+{"database": "local_govt_and_lot", "table": "Things", "columns": ["thing_id", "organization_id", "Type_of_Thing_Code", "service_type_code", "service_details"]}
+{"database": "local_govt_and_lot", "table": "Customer_Events", "columns": ["Customer_Event_ID", "customer_id", "date_moved_in", "property_id", "resident_id", "thing_id"]}
+{"database": "local_govt_and_lot", "table": "Customer_Event_Notes", "columns": ["Customer_Event_Note_ID", "Customer_Event_ID", "service_type_code", "resident_id", "property_id", "date_moved_in"]}
+{"database": "local_govt_and_lot", "table": "Timed_Status_of_Things", "columns": ["thing_id", "Date_and_Date", "Status_of_Thing_Code"]}
+{"database": "local_govt_and_lot", "table": "Timed_Locations_of_Things", "columns": ["thing_id", "Date_and_Time", "Location_Code"]}
+{"database": "local_govt_in_alabama", "table": "Services", "columns": ["Service_ID", "Service_Type_Code"]}
+{"database": "local_govt_in_alabama", "table": "Participants", "columns": ["Participant_ID", "Participant_Type_Code", "Participant_Details"]}
+{"database": "local_govt_in_alabama", "table": "Events", "columns": ["Event_ID", "Service_ID", "Event_Details"]}
+{"database": "local_govt_in_alabama", "table": "Participants_in_Events", "columns": ["Event_ID", "Participant_ID"]}
+{"database": "local_govt_mdm", "table": "Customer_Master_Index", "columns": ["master_customer_id", "cmi_details"]}
+{"database": "local_govt_mdm", "table": "CMI_Cross_References", "columns": ["cmi_cross_ref_id", "master_customer_id", "source_system_code"]}
+{"database": "local_govt_mdm", "table": "Council_Tax", "columns": ["council_tax_id", "cmi_cross_ref_id"]}
+{"database": "local_govt_mdm", "table": "Business_Rates", "columns": ["business_rates_id", "cmi_cross_ref_id"]}
+{"database": "local_govt_mdm", "table": "Benefits_Overpayments", "columns": ["council_tax_id", "cmi_cross_ref_id"]}
+{"database": "local_govt_mdm", "table": "Parking_Fines", "columns": ["council_tax_id", "cmi_cross_ref_id"]}
+{"database": "local_govt_mdm", "table": "Rent_Arrears", "columns": ["council_tax_id", "cmi_cross_ref_id"]}
+{"database": "local_govt_mdm", "table": "Electoral_Register", "columns": ["electoral_register_id", "cmi_cross_ref_id"]}
+{"database": "machine_repair", "table": "repair", "columns": ["repair_ID", "name", "Launch_Date", "Notes"]}
+{"database": "machine_repair", "table": "machine", "columns": ["Machine_ID", "Making_Year", "Class", "Team", "Machine_series", "value_points", "quality_rank"]}
+{"database": "machine_repair", "table": "technician", "columns": ["technician_id", "Name", "Team", "Starting_Year", "Age"]}
+{"database": "machine_repair", "table": "repair_assignment", "columns": ["technician_id", "repair_ID", "Machine_ID"]}
+{"database": "manufactory_1", "table": "Manufacturers", "columns": ["Code", "Name", "Headquarter", "Founder", "Revenue"]}
+{"database": "manufactory_1", "table": "Products", "columns": ["Code", "Name", "Price", "Manufacturer"]}
+{"database": "manufacturer", "table": "manufacturer", "columns": ["Manufacturer_ID", "Open_Year", "Name", "Num_of_Factories", "Num_of_Shops"]}
+{"database": "manufacturer", "table": "furniture", "columns": ["Furniture_ID", "Name", "Num_of_Component", "Market_Rate"]}
+{"database": "manufacturer", "table": "furniture_manufacte", "columns": ["Manufacturer_ID", "Furniture_ID", "Price_in_Dollar"]}
+{"database": "match_season", "table": "country", "columns": ["Country_id", "Country_name", "Capital", "Official_native_language"]}
+{"database": "match_season", "table": "team", "columns": ["Team_id", "Name"]}
+{"database": "match_season", "table": "match_season", "columns": ["Season", "Player", "Position", "Country", "Team", "Draft_Pick_Number", "Draft_Class", "College"]}
+{"database": "match_season", "table": "player", "columns": ["Player_ID", "Player", "Years_Played", "Total_WL", "Singles_WL", "Doubles_WL", "Team"]}
+{"database": "medicine_enzyme_interaction", "table": "medicine", "columns": ["id", "name", "Trade_Name", "FDA_approved"]}
+{"database": "medicine_enzyme_interaction", "table": "enzyme", "columns": ["id", "name", "Location", "Product", "Chromosome", "OMIM", "Porphyria"]}
+{"database": "medicine_enzyme_interaction", "table": "medicine_enzyme_interaction", "columns": ["enzyme_id", "medicine_id", "interaction_type"]}
+{"database": "mountain_photos", "table": "mountain", "columns": ["id", "name", "Height", "Prominence", "Range", "Country"]}
+{"database": "mountain_photos", "table": "camera_lens", "columns": ["id", "brand", "name", "focal_length_mm", "max_aperture"]}
+{"database": "mountain_photos", "table": "photos", "columns": ["id", "camera_lens_id", "mountain_id", "color", "name"]}
+{"database": "movie_1", "table": "Movie", "columns": ["mID", "title", "year", "director"]}
+{"database": "movie_1", "table": "Reviewer", "columns": ["rID", "name"]}
+{"database": "movie_1", "table": "Rating", "columns": ["rID", "mID", "stars", "ratingDate"]}
+{"database": "movie_2", "table": "Movies", "columns": ["Code", "Title", "Rating"]}
+{"database": "movie_2", "table": "MovieTheaters", "columns": ["Code", "Name", "Movie"]}
+{"database": "museum_visit", "table": "museum", "columns": ["Museum_ID", "Name", "Num_of_Staff", "Open_Year"]}
+{"database": "museum_visit", "table": "visitor", "columns": ["ID", "Name", "Level_of_membership", "Age"]}
+{"database": "museum_visit", "table": "visit", "columns": ["Museum_ID", "visitor_ID", "Num_of_Ticket", "Total_spent"]}
+{"database": "musical", "table": "musical", "columns": ["Musical_ID", "Name", "Year", "Award", "Category", "Nominee", "Result"]}
+{"database": "musical", "table": "actor", "columns": ["Actor_ID", "Name", "Musical_ID", "Character", "Duration", "age"]}
+{"database": "music_1", "table": "genre", "columns": ["g_name", "rating", "most_popular_in"]}
+{"database": "music_1", "table": "artist", "columns": ["artist_name", "country", "gender", "preferred_genre"]}
+{"database": "music_1", "table": "files", "columns": ["f_id", "artist_name", "file_size", "duration", "formats"]}
+{"database": "music_1", "table": "song", "columns": ["song_name", "artist_name", "country", "f_id", "genre_is", "rating", "languages", "releasedate", "resolution"]}
+{"database": "music_2", "table": "Songs", "columns": ["SongId", "Title"]}
+{"database": "music_2", "table": "Albums", "columns": ["AId", "Title", "Year", "Label", "Type"]}
+{"database": "music_2", "table": "Band", "columns": ["Id", "Firstname", "Lastname"]}
+{"database": "music_2", "table": "Instruments", "columns": ["SongId", "BandmateId", "Instrument"]}
+{"database": "music_2", "table": "Performance", "columns": ["SongId", "Bandmate", "StagePosition"]}
+{"database": "music_2", "table": "Tracklists", "columns": ["AlbumId", "Position", "SongId"]}
+{"database": "music_2", "table": "Vocals", "columns": ["SongId", "Bandmate", "Type"]}
+{"database": "music_4", "table": "artist", "columns": ["Artist_ID", "Artist", "Age", "Famous_Title", "Famous_Release_date"]}
+{"database": "music_4", "table": "volume", "columns": ["Volume_ID", "Volume_Issue", "Issue_Date", "Weeks_on_Top", "Song", "Artist_ID"]}
+{"database": "music_4", "table": "music_festival", "columns": ["ID", "Music_Festival", "Date_of_ceremony", "Category", "Volume", "Result"]}
+{"database": "network_1", "table": "Highschooler", "columns": ["ID", "name", "grade"]}
+{"database": "network_1", "table": "Friend", "columns": ["student_id", "friend_id"]}
+{"database": "network_1", "table": "Likes", "columns": ["student_id", "liked_id"]}
+{"database": "network_2", "table": "Person", "columns": ["name", "age", "city", "gender", "job"]}
+{"database": "network_2", "table": "PersonFriend", "columns": ["name", "friend", "year"]}
+{"database": "news_report", "table": "event", "columns": ["Event_ID", "Date", "Venue", "Name", "Event_Attendance"]}
+{"database": "news_report", "table": "journalist", "columns": ["journalist_ID", "Name", "Nationality", "Age", "Years_working"]}
+{"database": "news_report", "table": "news_report", "columns": ["journalist_ID", "Event_ID", "Work_Type"]}
+{"database": "online_exams", "table": "Students", "columns": ["Student_ID", "First_Name", "Middle_Name", "Last_Name", "Gender_MFU", "Student_Address", "Email_Adress", "Cell_Mobile_Phone", "Home_Phone"]}
+{"database": "online_exams", "table": "Questions", "columns": ["Question_ID", "Type_of_Question_Code", "Question_Text"]}
+{"database": "online_exams", "table": "Exams", "columns": ["Exam_ID", "Subject_Code", "Exam_Date", "Exam_Name"]}
+{"database": "online_exams", "table": "Questions_in_Exams", "columns": ["Exam_ID", "Question_ID"]}
+{"database": "online_exams", "table": "Valid_Answers", "columns": ["Valid_Answer_ID", "Question_ID", "Valid_Answer_Text"]}
+{"database": "online_exams", "table": "Student_Answers", "columns": ["Student_Answer_ID", "Exam_ID", "Question_ID", "Student_ID", "Date_of_Answer", "Comments", "Satisfactory_YN", "Student_Answer_Text"]}
+{"database": "online_exams", "table": "Student_Assessments", "columns": ["Student_Answer_ID", "Valid_Answer_ID", "Student_Answer_Text", "Satisfactory_YN", "Assessment"]}
+{"database": "orchestra", "table": "conductor", "columns": ["Conductor_ID", "Name", "Age", "Nationality", "Year_of_Work"]}
+{"database": "orchestra", "table": "orchestra", "columns": ["Orchestra_ID", "Orchestra", "Conductor_ID", "Record_Company", "Year_of_Founded", "Major_Record_Format"]}
+{"database": "orchestra", "table": "performance", "columns": ["Performance_ID", "Orchestra_ID", "Type", "Date", "Official_ratings_(millions)", "Weekly_rank", "Share"]}
+{"database": "orchestra", "table": "show", "columns": ["Show_ID", "Performance_ID", "If_first_show", "Result", "Attendance"]}
+{"database": "party_host", "table": "party", "columns": ["Party_ID", "Party_Theme", "Location", "First_year", "Last_year", "Number_of_hosts"]}
+{"database": "party_host", "table": "host", "columns": ["Host_ID", "Name", "Nationality", "Age"]}
+{"database": "party_host", "table": "party_host", "columns": ["Party_ID", "Host_ID", "Is_Main_in_Charge"]}
+{"database": "party_people", "table": "region", "columns": ["Region_ID", "Region_name", "Date", "Label", "Format", "Catalogue"]}
+{"database": "party_people", "table": "party", "columns": ["Party_ID", "Minister", "Took_office", "Left_office", "Region_ID", "Party_name"]}
+{"database": "party_people", "table": "member", "columns": ["Member_ID", "Member_Name", "Party_ID", "In_office"]}
+{"database": "party_people", "table": "party_events", "columns": ["Event_ID", "Event_Name", "Party_ID", "Member_in_charge_ID"]}
+{"database": "performance_attendance", "table": "member", "columns": ["Member_ID", "Name", "Nationality", "Role"]}
+{"database": "performance_attendance", "table": "performance", "columns": ["Performance_ID", "Date", "Host", "Location", "Attendance"]}
+{"database": "performance_attendance", "table": "member_attendance", "columns": ["Member_ID", "Performance_ID", "Num_of_Pieces"]}
+{"database": "perpetrator", "table": "perpetrator", "columns": ["Perpetrator_ID", "People_ID", "Date", "Year", "Location", "Country", "Killed", "Injured"]}
+{"database": "perpetrator", "table": "people", "columns": ["People_ID", "Name", "Height", "Weight", "Home Town"]}
+{"database": "pets_1", "table": "Student", "columns": ["StuID", "LName", "Fname", "Age", "Sex", "Major", "Advisor", "city_code"]}
+{"database": "pets_1", "table": "Has_Pet", "columns": ["StuID", "PetID"]}
+{"database": "pets_1", "table": "Pets", "columns": ["PetID", "PetType", "pet_age", "weight"]}
+{"database": "phone_1", "table": "chip_model", "columns": ["Model_name", "Launch_year", "RAM_MiB", "ROM_MiB", "Slots", "WiFi", "Bluetooth"]}
+{"database": "phone_1", "table": "screen_mode", "columns": ["Graphics_mode", "Char_cells", "Pixels", "Hardware_colours", "used_kb", "map", "Type"]}
+{"database": "phone_1", "table": "phone", "columns": ["Company_name", "Hardware_Model_name", "Accreditation_type", "Accreditation_level", "Date", "chip_model", "screen_mode"]}
+{"database": "phone_market", "table": "phone", "columns": ["Name", "Phone_ID", "Memory_in_G", "Carrier", "Price"]}
+{"database": "phone_market", "table": "market", "columns": ["Market_ID", "District", "Num_of_employees", "Num_of_shops", "Ranking"]}
+{"database": "phone_market", "table": "phone_market", "columns": ["Market_ID", "Phone_ID", "Num_of_stock"]}
+{"database": "pilot_1", "table": "PilotSkills", "columns": ["pilot_name", "plane_name", "age"]}
+{"database": "pilot_1", "table": "Hangar", "columns": ["plane_name", "location"]}
+{"database": "pilot_record", "table": "aircraft", "columns": ["Aircraft_ID", "Order_Year", "Manufacturer", "Model", "Fleet_Series", "Powertrain", "Fuel_Propulsion"]}
+{"database": "pilot_record", "table": "pilot", "columns": ["Pilot_ID", "Pilot_name", "Rank", "Age", "Nationality", "Position", "Join_Year", "Team"]}
+{"database": "pilot_record", "table": "pilot_record", "columns": ["Record_ID", "Pilot_ID", "Aircraft_ID", "Date"]}
+{"database": "planet_1", "table": "Employee", "columns": ["EmployeeID", "Name", "Position", "Salary", "Remarks"]}
+{"database": "planet_1", "table": "Planet", "columns": ["PlanetID", "Name", "Coordinates"]}
+{"database": "planet_1", "table": "Shipment", "columns": ["ShipmentID", "Date", "Manager", "Planet"]}
+{"database": "planet_1", "table": "Has_Clearance", "columns": ["Employee", "Planet", "Level"]}
+{"database": "planet_1", "table": "Client", "columns": ["AccountNumber", "Name"]}
+{"database": "planet_1", "table": "Package", "columns": ["Shipment", "PackageNumber", "Contents", "Weight", "Sender", "Recipient"]}
+{"database": "poker_player", "table": "poker_player", "columns": ["Poker_Player_ID", "People_ID", "Final_Table_Made", "Best_Finish", "Money_Rank", "Earnings"]}
+{"database": "poker_player", "table": "people", "columns": ["People_ID", "Nationality", "Name", "Birth_Date", "Height"]}
+{"database": "products_for_hire", "table": "Discount_Coupons", "columns": ["coupon_id", "date_issued", "coupon_amount"]}
+{"database": "products_for_hire", "table": "Customers", "columns": ["customer_id", "coupon_id", "good_or_bad_customer", "first_name", "last_name", "gender_mf", "date_became_customer", "date_last_hire"]}
+{"database": "products_for_hire", "table": "Bookings", "columns": ["booking_id", "customer_id", "booking_status_code", "returned_damaged_yn", "booking_start_date", "booking_end_date", "count_hired", "amount_payable", "amount_of_discount", "amount_outstanding", "amount_of_refund"]}
+{"database": "products_for_hire", "table": "Products_for_Hire", "columns": ["product_id", "product_type_code", "daily_hire_cost", "product_name", "product_description"]}
+{"database": "products_for_hire", "table": "Payments", "columns": ["payment_id", "booking_id", "customer_id", "payment_type_code", "amount_paid_in_full_yn", "payment_date", "amount_due", "amount_paid"]}
+{"database": "products_for_hire", "table": "Products_Booked", "columns": ["booking_id", "product_id", "returned_yn", "returned_late_yn", "booked_count", "booked_amount"]}
+{"database": "products_for_hire", "table": "View_Product_Availability", "columns": ["product_id", "booking_id", "status_date", "available_yn"]}
+{"database": "products_gen_characteristics", "table": "Ref_Characteristic_Types", "columns": ["characteristic_type_code", "characteristic_type_description"]}
+{"database": "products_gen_characteristics", "table": "Ref_Colors", "columns": ["color_code", "color_description"]}
+{"database": "products_gen_characteristics", "table": "Ref_Product_Categories", "columns": ["product_category_code", "product_category_description", "unit_of_measure"]}
+{"database": "products_gen_characteristics", "table": "Characteristics", "columns": ["characteristic_id", "characteristic_type_code", "characteristic_data_type", "characteristic_name", "other_characteristic_details"]}
+{"database": "products_gen_characteristics", "table": "Products", "columns": ["product_id", "color_code", "product_category_code", "product_name", "typical_buying_price", "typical_selling_price", "product_description", "other_product_details"]}
+{"database": "products_gen_characteristics", "table": "Product_Characteristics", "columns": ["product_id", "characteristic_id", "product_characteristic_value"]}
+{"database": "product_catalog", "table": "Attribute_Definitions", "columns": ["attribute_id", "attribute_name", "attribute_data_type"]}
+{"database": "product_catalog", "table": "Catalogs", "columns": ["catalog_id", "catalog_name", "catalog_publisher", "date_of_publication", "date_of_latest_revision"]}
+{"database": "product_catalog", "table": "Catalog_Structure", "columns": ["catalog_level_number", "catalog_id", "catalog_level_name"]}
+{"database": "product_catalog", "table": "Catalog_Contents", "columns": ["catalog_entry_id", "catalog_level_number", "parent_entry_id", "previous_entry_id", "next_entry_id", "catalog_entry_name", "product_stock_number", "price_in_dollars", "price_in_euros", "price_in_pounds", "capacity", "length", "height", "width"]}
+{"database": "product_catalog", "table": "Catalog_Contents_Additional_Attributes", "columns": ["catalog_entry_id", "catalog_level_number", "attribute_id", "attribute_value"]}
+{"database": "program_share", "table": "program", "columns": ["Program_ID", "Name", "Origin", "Launch", "Owner"]}
+{"database": "program_share", "table": "channel", "columns": ["Channel_ID", "Name", "Owner", "Share_in_percent", "Rating_in_percent"]}
+{"database": "program_share", "table": "broadcast", "columns": ["Channel_ID", "Program_ID", "Time_of_day"]}
+{"database": "program_share", "table": "broadcast_share", "columns": ["Channel_ID", "Program_ID", "Date", "Share_in_percent"]}
+{"database": "protein_institute", "table": "building", "columns": ["building_id", "Name", "Street_address", "Years_as_tallest", "Height_feet", "Floors"]}
+{"database": "protein_institute", "table": "Institution", "columns": ["Institution_id", "Institution", "Location", "Founded", "Type", "Enrollment", "Team", "Primary_Conference", "building_id"]}
+{"database": "protein_institute", "table": "protein", "columns": ["common_name", "protein_name", "divergence_from_human_lineage", "accession_number", "sequence_length", "sequence_identity_to_human_protein", "Institution_id"]}
+{"database": "race_track", "table": "race", "columns": ["Race_ID", "Name", "Class", "Date", "Track_ID"]}
+{"database": "race_track", "table": "track", "columns": ["Track_ID", "Name", "Location", "Seating", "Year_Opened"]}
+{"database": "railway", "table": "railway", "columns": ["Railway_ID", "Railway", "Builder", "Built", "Wheels", "Location", "ObjectNumber"]}
+{"database": "railway", "table": "train", "columns": ["Train_ID", "Train_Num", "Name", "From", "Arrival", "Railway_ID"]}
+{"database": "railway", "table": "manager", "columns": ["Manager_ID", "Name", "Country", "Working_year_starts", "Age", "Level"]}
+{"database": "railway", "table": "railway_manage", "columns": ["Railway_ID", "Manager_ID", "From_Year"]}
+{"database": "real_estate_properties", "table": "Ref_Feature_Types", "columns": ["feature_type_code", "feature_type_name"]}
+{"database": "real_estate_properties", "table": "Ref_Property_Types", "columns": ["property_type_code", "property_type_description"]}
+{"database": "real_estate_properties", "table": "Other_Available_Features", "columns": ["feature_id", "feature_type_code", "feature_name", "feature_description"]}
+{"database": "real_estate_properties", "table": "Properties", "columns": ["property_id", "property_type_code", "date_on_market", "date_sold", "property_name", "property_address", "room_count", "vendor_requested_price", "buyer_offered_price", "agreed_selling_price", "apt_feature_1", "apt_feature_2", "apt_feature_3", "fld_feature_1", "fld_feature_2", "fld_feature_3", "hse_feature_1", "hse_feature_2", "hse_feature_3", "oth_feature_1", "oth_feature_2", "oth_feature_3", "shp_feature_1", "shp_feature_2", "shp_feature_3", "other_property_details"]}
+{"database": "real_estate_properties", "table": "Other_Property_Features", "columns": ["property_id", "feature_id", "property_feature_description"]}
+{"database": "real_estate_rentals", "table": "Ref_Age_Categories", "columns": ["age_category_code", "age_category_description"]}
+{"database": "real_estate_rentals", "table": "Ref_Property_Types", "columns": ["property_type_code", "property_type_description"]}
+{"database": "real_estate_rentals", "table": "Ref_Room_Types", "columns": ["room_type_code", "room_type_description"]}
+{"database": "real_estate_rentals", "table": "Ref_User_Categories", "columns": ["user_category_code", "user_category_description"]}
+{"database": "real_estate_rentals", "table": "Addresses", "columns": ["address_id", "line_1_number_building", "line_2_number_street", "line_3_area_locality", "town_city", "zip_postcode", "county_state_province", "country", "other_address_details"]}
+{"database": "real_estate_rentals", "table": "Features", "columns": ["feature_id", "feature_name", "feature_description"]}
+{"database": "real_estate_rentals", "table": "Users", "columns": ["user_id", "age_category_code", "user_category_code", "user_address_id", "is_buyer", "is_seller", "login_name", "password", "date_registered", "first_name", "middle_name", "last_name", "other_user_details"]}
+{"database": "real_estate_rentals", "table": "Properties", "columns": ["property_id", "property_address_id", "owner_user_id", "property_type_code", "date_on_market", "date_off_market", "property_name", "property_description", "garage_yn", "parking_lots", "room_count", "vendor_requested_price", "price_min", "price_max", "other_property_details"]}
+{"database": "real_estate_rentals", "table": "Property_Features", "columns": ["property_id", "feature_id", "feature_value", "property_feature_description"]}
+{"database": "real_estate_rentals", "table": "Property_Photos", "columns": ["property_id", "photo_seq", "photo_title", "photo_description", "photo_filename"]}
+{"database": "real_estate_rentals", "table": "Rooms", "columns": ["property_id", "room_number", "room_type_code", "room_size", "other_room_details"]}
+{"database": "real_estate_rentals", "table": "User_Property_History", "columns": ["user_id", "property_id", "datestamp"]}
+{"database": "real_estate_rentals", "table": "User_Searches", "columns": ["user_id", "search_seq", "search_datetime", "search_string"]}
+{"database": "region_building", "table": "building", "columns": ["Building_ID", "Region_ID", "Name", "Address", "Number_of_Stories", "Completed_Year"]}
+{"database": "region_building", "table": "region", "columns": ["Region_ID", "Name", "Capital", "Area", "Population"]}
+{"database": "restaurants", "table": "GEOGRAPHIC", "columns": ["CITY_NAME", "COUNTY", "REGION"]}
+{"database": "restaurants", "table": "RESTAURANT", "columns": ["ID", "NAME", "FOOD_TYPE", "CITY_NAME", "RATING"]}
+{"database": "restaurants", "table": "LOCATION", "columns": ["RESTAURANT_ID", "HOUSE_NUMBER", "STREET_NAME", "CITY_NAME"]}
+{"database": "restaurant_1", "table": "Student", "columns": ["StuID", "LName", "Fname", "Age", "Sex", "Major", "Advisor", "city_code"]}
+{"database": "restaurant_1", "table": "Restaurant", "columns": ["ResID", "ResName", "Address", "Rating"]}
+{"database": "restaurant_1", "table": "Type_Of_Restaurant", "columns": ["ResID", "ResTypeID"]}
+{"database": "restaurant_1", "table": "Restaurant_Type", "columns": ["ResTypeID", "ResTypeName", "ResTypeDescription"]}
+{"database": "restaurant_1", "table": "Visits_Restaurant", "columns": ["StuID", "ResID", "Time", "Spent"]}
+{"database": "restaurant_bills", "table": "customer", "columns": ["Customer_ID", "Name", "Nationality", "Card_Credit", "Level_of_Membership"]}
+{"database": "restaurant_bills", "table": "branch", "columns": ["Branch_ID", "Manager", "Years_opened", "Location_of_office"]}
+{"database": "restaurant_bills", "table": "customer_order", "columns": ["Customer_ID", "Branch_ID", "Dish_Name", "Quantity"]}
+{"database": "riding_club", "table": "player", "columns": ["Player_ID", "Sponsor_name", "Player_name", "Gender", "Residence", "Occupation", "Votes", "Rank"]}
+{"database": "riding_club", "table": "club", "columns": ["Club_ID", "Club_name", "Region", "Start_year"]}
+{"database": "riding_club", "table": "coach", "columns": ["Coach_ID", "Coach_name", "Gender", "Club_ID", "Rank"]}
+{"database": "riding_club", "table": "player_coach", "columns": ["Player_ID", "Coach_ID", "Starting_year"]}
+{"database": "riding_club", "table": "match_result", "columns": ["Rank", "Club_ID", "Gold", "Big_Silver", "Small_Silver", "Bronze", "Points"]}
+{"database": "roller_coaster", "table": "roller_coaster", "columns": ["Roller_Coaster_ID", "Name", "Park", "Country_ID", "Length", "Height", "Speed", "Opened", "Status"]}
+{"database": "roller_coaster", "table": "country", "columns": ["Country_ID", "Name", "Population", "Area", "Languages"]}
+{"database": "sakila_1", "table": "actor", "columns": ["actor_id", "first_name", "last_name", "last_update"]}
+{"database": "sakila_1", "table": "address", "columns": ["address_id", "address", "address2", "district", "city_id", "postal_code", "phone", "last_update"]}
+{"database": "sakila_1", "table": "category", "columns": ["category_id", "name", "last_update"]}
+{"database": "sakila_1", "table": "city", "columns": ["city_id", "city", "country_id", "last_update"]}
+{"database": "sakila_1", "table": "country", "columns": ["country_id", "country", "last_update"]}
+{"database": "sakila_1", "table": "customer", "columns": ["customer_id", "store_id", "first_name", "last_name", "email", "address_id", "active", "create_date", "last_update"]}
+{"database": "sakila_1", "table": "film", "columns": ["film_id", "title", "description", "release_year", "language_id", "original_language_id", "rental_duration", "rental_rate", "length", "replacement_cost", "rating", "special_features", "last_update"]}
+{"database": "sakila_1", "table": "film_actor", "columns": ["actor_id", "film_id", "last_update"]}
+{"database": "sakila_1", "table": "film_category", "columns": ["film_id", "category_id", "last_update"]}
+{"database": "sakila_1", "table": "film_text", "columns": ["film_id", "title", "description"]}
+{"database": "sakila_1", "table": "inventory", "columns": ["inventory_id", "film_id", "store_id", "last_update"]}
+{"database": "sakila_1", "table": "language", "columns": ["language_id", "name", "last_update"]}
+{"database": "sakila_1", "table": "payment", "columns": ["payment_id", "customer_id", "staff_id", "rental_id", "amount", "payment_date", "last_update"]}
+{"database": "sakila_1", "table": "rental", "columns": ["rental_id", "rental_date", "inventory_id", "customer_id", "return_date", "staff_id", "last_update"]}
+{"database": "sakila_1", "table": "staff", "columns": ["staff_id", "first_name", "last_name", "address_id", "picture", "email", "store_id", "active", "username", "password", "last_update"]}
+{"database": "sakila_1", "table": "store", "columns": ["store_id", "manager_staff_id", "address_id", "last_update"]}
+{"database": "scholar", "table": "venue", "columns": ["venueId", "venueName"]}
+{"database": "scholar", "table": "author", "columns": ["authorId", "authorName"]}
+{"database": "scholar", "table": "dataset", "columns": ["datasetId", "datasetName"]}
+{"database": "scholar", "table": "journal", "columns": ["journalId", "journalName"]}
+{"database": "scholar", "table": "keyphrase", "columns": ["keyphraseId", "keyphraseName"]}
+{"database": "scholar", "table": "paper", "columns": ["paperId", "title", "venueId", "year", "numCiting", "numCitedBy", "journalId"]}
+{"database": "scholar", "table": "cite", "columns": ["citingPaperId", "citedPaperId"]}
+{"database": "scholar", "table": "paperDataset", "columns": ["paperId", "datasetId"]}
+{"database": "scholar", "table": "paperKeyphrase", "columns": ["paperId", "keyphraseId"]}
+{"database": "scholar", "table": "writes", "columns": ["paperId", "authorId"]}
+{"database": "school_bus", "table": "driver", "columns": ["Driver_ID", "Name", "Party", "Home_city", "Age"]}
+{"database": "school_bus", "table": "school", "columns": ["School_ID", "Grade", "School", "Location", "Type"]}
+{"database": "school_bus", "table": "school_bus", "columns": ["School_ID", "Driver_ID", "Years_Working", "If_full_time"]}
+{"database": "school_finance", "table": "School", "columns": ["School_id", "School_name", "Location", "Mascot", "Enrollment", "IHSAA_Class", "IHSAA_Football_Class", "County"]}
+{"database": "school_finance", "table": "budget", "columns": ["School_id", "Year", "Budgeted", "total_budget_percent_budgeted", "Invested", "total_budget_percent_invested", "Budget_invested_percent"]}
+{"database": "school_finance", "table": "endowment", "columns": ["endowment_id", "School_id", "donator_name", "amount"]}
+{"database": "school_player", "table": "school", "columns": ["School_ID", "School", "Location", "Enrollment", "Founded", "Denomination", "Boys_or_Girls", "Day_or_Boarding", "Year_Entered_Competition", "School_Colors"]}
+{"database": "school_player", "table": "school_details", "columns": ["School_ID", "Nickname", "Colors", "League", "Class", "Division"]}
+{"database": "school_player", "table": "school_performance", "columns": ["School_Id", "School_Year", "Class_A", "Class_AA"]}
+{"database": "school_player", "table": "player", "columns": ["Player_ID", "Player", "Team", "Age", "Position", "School_ID"]}
+{"database": "scientist_1", "table": "Scientists", "columns": ["SSN", "Name"]}
+{"database": "scientist_1", "table": "Projects", "columns": ["Code", "Name", "Hours"]}
+{"database": "scientist_1", "table": "AssignedTo", "columns": ["Scientist", "Project"]}
+{"database": "ship_1", "table": "captain", "columns": ["Captain_ID", "Name", "Ship_ID", "age", "Class", "Rank"]}
+{"database": "ship_1", "table": "Ship", "columns": ["Ship_ID", "Name", "Type", "Built_Year", "Class", "Flag"]}
+{"database": "ship_mission", "table": "mission", "columns": ["Mission_ID", "Ship_ID", "Code", "Launched_Year", "Location", "Speed_knots", "Fate"]}
+{"database": "ship_mission", "table": "ship", "columns": ["Ship_ID", "Name", "Type", "Nationality", "Tonnage"]}
+{"database": "shop_membership", "table": "member", "columns": ["Member_ID", "Card_Number", "Name", "Hometown", "Level"]}
+{"database": "shop_membership", "table": "branch", "columns": ["Branch_ID", "Name", "Open_year", "Address_road", "City", "membership_amount"]}
+{"database": "shop_membership", "table": "membership_register_branch", "columns": ["Member_ID", "Branch_ID", "Register_Year"]}
+{"database": "shop_membership", "table": "purchase", "columns": ["Member_ID", "Branch_ID", "Year", "Total_pounds"]}
+{"database": "singer", "table": "singer", "columns": ["Singer_ID", "Name", "Birth_Year", "Net_Worth_Millions", "Citizenship"]}
+{"database": "singer", "table": "song", "columns": ["Song_ID", "Title", "Singer_ID", "Sales", "Highest_Position"]}
+{"database": "sing_contest", "table": "participants", "columns": ["id", "name", "popularity"]}
+{"database": "sing_contest", "table": "songs", "columns": ["id", "language", "original_artist", "name", "english_translation"]}
+{"database": "sing_contest", "table": "performance_score", "columns": ["participant_id", "songs_id", "voice_sound_quality", "rhythm_tempo", "stage_presence"]}
+{"database": "small_bank_1", "table": "ACCOUNTS", "columns": ["custid", "name"]}
+{"database": "small_bank_1", "table": "SAVINGS", "columns": ["custid", "balance"]}
+{"database": "small_bank_1", "table": "CHECKING", "columns": ["custid", "balance"]}
+{"database": "soccer_1", "table": "Player_Attributes", "columns": ["id", "player_fifa_api_id", "player_api_id", "date", "overall_rating", "potential", "preferred_foot", "attacking_work_rate", "defensive_work_rate", "crossing", "finishing", "heading_accuracy", "short_passing", "volleys", "dribbling", "curve", "free_kick_accuracy", "long_passing", "ball_control", "acceleration", "sprint_speed", "agility", "reactions", "balance", "shot_power", "jumping", "stamina", "strength", "long_shots", "aggression", "interceptions", "positioning", "vision", "penalties", "marking", "standing_tackle", "sliding_tackle", "gk_diving", "gk_handling", "gk_kicking", "gk_positioning", "gk_reflexes"]}
+{"database": "soccer_1", "table": "sqlite_sequence", "columns": ["name", "seq"]}
+{"database": "soccer_1", "table": "Player", "columns": ["id", "player_api_id", "player_name", "player_fifa_api_id", "birthday", "height", "weight"]}
+{"database": "soccer_1", "table": "League", "columns": ["id", "country_id", "name"]}
+{"database": "soccer_1", "table": "Country", "columns": ["id", "name"]}
+{"database": "soccer_1", "table": "Team", "columns": ["id", "team_api_id", "team_fifa_api_id", "team_long_name", "team_short_name"]}
+{"database": "soccer_1", "table": "Team_Attributes", "columns": ["id", "team_fifa_api_id", "team_api_id", "date", "buildUpPlaySpeed", "buildUpPlaySpeedClass", "buildUpPlayDribbling", "buildUpPlayDribblingClass", "buildUpPlayPassing", "buildUpPlayPassingClass", "buildUpPlayPositioningClass", "chanceCreationPassing", "chanceCreationPassingClass", "chanceCreationCrossing", "chanceCreationCrossingClass", "chanceCreationShooting", "chanceCreationShootingClass", "chanceCreationPositioningClass", "defencePressure", "defencePressureClass", "defenceAggression", "defenceAggressionClass", "defenceTeamWidth", "defenceTeamWidthClass", "defenceDefenderLineClass"]}
+{"database": "soccer_2", "table": "College", "columns": ["cName", "state", "enr"]}
+{"database": "soccer_2", "table": "Player", "columns": ["pID", "pName", "yCard", "HS"]}
+{"database": "soccer_2", "table": "Tryout", "columns": ["pID", "cName", "pPos", "decision"]}
+{"database": "soccer_3", "table": "club", "columns": ["Club_ID", "Name", "Manager", "Captain", "Manufacturer", "Sponsor"]}
+{"database": "soccer_3", "table": "player", "columns": ["Player_ID", "Name", "Country", "Earnings", "Events_number", "Wins_count", "Club_ID"]}
+{"database": "solvency_ii", "table": "Addresses", "columns": ["Address_ID", "address_details"]}
+{"database": "solvency_ii", "table": "Locations", "columns": ["Location_ID", "Other_Details"]}
+{"database": "solvency_ii", "table": "Products", "columns": ["Product_ID", "Product_Type_Code", "Product_Name", "Product_Price"]}
+{"database": "solvency_ii", "table": "Parties", "columns": ["Party_ID", "Party_Details"]}
+{"database": "solvency_ii", "table": "Assets", "columns": ["Asset_ID", "Other_Details"]}
+{"database": "solvency_ii", "table": "Channels", "columns": ["Channel_ID", "Other_Details"]}
+{"database": "solvency_ii", "table": "Finances", "columns": ["Finance_ID", "Other_Details"]}
+{"database": "solvency_ii", "table": "Events", "columns": ["Event_ID", "Address_ID", "Channel_ID", "Event_Type_Code", "Finance_ID", "Location_ID"]}
+{"database": "solvency_ii", "table": "Products_in_Events", "columns": ["Product_in_Event_ID", "Event_ID", "Product_ID"]}
+{"database": "solvency_ii", "table": "Parties_in_Events", "columns": ["Party_ID", "Event_ID", "Role_Code"]}
+{"database": "solvency_ii", "table": "Agreements", "columns": ["Document_ID", "Event_ID"]}
+{"database": "solvency_ii", "table": "Assets_in_Events", "columns": ["Asset_ID", "Event_ID"]}
+{"database": "sports_competition", "table": "club", "columns": ["Club_ID", "name", "Region", "Start_year"]}
+{"database": "sports_competition", "table": "club_rank", "columns": ["Rank", "Club_ID", "Gold", "Silver", "Bronze", "Total"]}
+{"database": "sports_competition", "table": "player", "columns": ["Player_ID", "name", "Position", "Club_ID", "Apps", "Tries", "Goals", "Points"]}
+{"database": "sports_competition", "table": "competition", "columns": ["Competition_ID", "Year", "Competition_type", "Country"]}
+{"database": "sports_competition", "table": "competition_result", "columns": ["Competition_ID", "Club_ID_1", "Club_ID_2", "Score"]}
+{"database": "station_weather", "table": "train", "columns": ["id", "train_number", "name", "origin", "destination", "time", "interval"]}
+{"database": "station_weather", "table": "station", "columns": ["id", "network_name", "services", "local_authority"]}
+{"database": "station_weather", "table": "route", "columns": ["train_id", "station_id"]}
+{"database": "station_weather", "table": "weekly_weather", "columns": ["station_id", "day_of_week", "high_temperature", "low_temperature", "precipitation", "wind_speed_mph"]}
+{"database": "store_1", "table": "artists", "columns": ["id", "name"]}
+{"database": "store_1", "table": "sqlite_sequence", "columns": ["name", "seq"]}
+{"database": "store_1", "table": "albums", "columns": ["id", "title", "artist_id"]}
+{"database": "store_1", "table": "employees", "columns": ["id", "last_name", "first_name", "title", "reports_to", "birth_date", "hire_date", "address", "city", "state", "country", "postal_code", "phone", "fax", "email"]}
+{"database": "store_1", "table": "customers", "columns": ["id", "first_name", "last_name", "company", "address", "city", "state", "country", "postal_code", "phone", "fax", "email", "support_rep_id"]}
+{"database": "store_1", "table": "genres", "columns": ["id", "name"]}
+{"database": "store_1", "table": "invoices", "columns": ["id", "customer_id", "invoice_date", "billing_address", "billing_city", "billing_state", "billing_country", "billing_postal_code", "total"]}
+{"database": "store_1", "table": "media_types", "columns": ["id", "name"]}
+{"database": "store_1", "table": "tracks", "columns": ["id", "name", "album_id", "media_type_id", "genre_id", "composer", "milliseconds", "bytes", "unit_price"]}
+{"database": "store_1", "table": "invoice_lines", "columns": ["id", "invoice_id", "track_id", "unit_price", "quantity"]}
+{"database": "store_1", "table": "playlists", "columns": ["id", "name"]}
+{"database": "store_1", "table": "playlist_tracks", "columns": ["playlist_id", "track_id"]}
+{"database": "store_product", "table": "product", "columns": ["product_id", "product", "dimensions", "dpi", "pages_per_minute_color", "max_page_size", "interface"]}
+{"database": "store_product", "table": "store", "columns": ["Store_ID", "Store_Name", "Type", "Area_size", "Number_of_product_category", "Ranking"]}
+{"database": "store_product", "table": "district", "columns": ["District_ID", "District_name", "Headquartered_City", "City_Population", "City_Area"]}
+{"database": "store_product", "table": "store_product", "columns": ["Store_ID", "Product_ID"]}
+{"database": "store_product", "table": "store_district", "columns": ["Store_ID", "District_ID"]}
+{"database": "storm_record", "table": "storm", "columns": ["Storm_ID", "Name", "Dates_active", "Max_speed", "Damage_millions_USD", "Number_Deaths"]}
+{"database": "storm_record", "table": "region", "columns": ["Region_id", "Region_code", "Region_name"]}
+{"database": "storm_record", "table": "affected_region", "columns": ["Region_id", "Storm_ID", "Number_city_affected"]}
+{"database": "student_1", "table": "list", "columns": ["LastName", "FirstName", "Grade", "Classroom"]}
+{"database": "student_1", "table": "teachers", "columns": ["LastName", "FirstName", "Classroom"]}
+{"database": "student_assessment", "table": "Addresses", "columns": ["address_id", "line_1", "line_2", "city", "zip_postcode", "state_province_county", "country"]}
+{"database": "student_assessment", "table": "People", "columns": ["person_id", "first_name", "middle_name", "last_name", "cell_mobile_number", "email_address", "login_name", "password"]}
+{"database": "student_assessment", "table": "Students", "columns": ["student_id", "student_details"]}
+{"database": "student_assessment", "table": "Courses", "columns": ["course_id", "course_name", "course_description", "other_details"]}
+{"database": "student_assessment", "table": "People_Addresses", "columns": ["person_address_id", "person_id", "address_id", "date_from", "date_to"]}
+{"database": "student_assessment", "table": "Student_Course_Registrations", "columns": ["student_id", "course_id", "registration_date"]}
+{"database": "student_assessment", "table": "Student_Course_Attendance", "columns": ["student_id", "course_id", "date_of_attendance"]}
+{"database": "student_assessment", "table": "Candidates", "columns": ["candidate_id", "candidate_details"]}
+{"database": "student_assessment", "table": "Candidate_Assessments", "columns": ["candidate_id", "qualification", "assessment_date", "asessment_outcome_code"]}
+{"database": "student_transcripts_tracking", "table": "Addresses", "columns": ["address_id", "line_1", "line_2", "line_3", "city", "zip_postcode", "state_province_county", "country", "other_address_details"]}
+{"database": "student_transcripts_tracking", "table": "Courses", "columns": ["course_id", "course_name", "course_description", "other_details"]}
+{"database": "student_transcripts_tracking", "table": "Departments", "columns": ["department_id", "department_name", "department_description", "other_details"]}
+{"database": "student_transcripts_tracking", "table": "Degree_Programs", "columns": ["degree_program_id", "department_id", "degree_summary_name", "degree_summary_description", "other_details"]}
+{"database": "student_transcripts_tracking", "table": "Sections", "columns": ["section_id", "course_id", "section_name", "section_description", "other_details"]}
+{"database": "student_transcripts_tracking", "table": "Semesters", "columns": ["semester_id", "semester_name", "semester_description", "other_details"]}
+{"database": "student_transcripts_tracking", "table": "Students", "columns": ["student_id", "current_address_id", "permanent_address_id", "first_name", "middle_name", "last_name", "cell_mobile_number", "email_address", "ssn", "date_first_registered", "date_left", "other_student_details"]}
+{"database": "student_transcripts_tracking", "table": "Student_Enrolment", "columns": ["student_enrolment_id", "degree_program_id", "semester_id", "student_id", "other_details"]}
+{"database": "student_transcripts_tracking", "table": "Student_Enrolment_Courses", "columns": ["student_course_id", "course_id", "student_enrolment_id"]}
+{"database": "student_transcripts_tracking", "table": "Transcripts", "columns": ["transcript_id", "transcript_date", "other_details"]}
+{"database": "student_transcripts_tracking", "table": "Transcript_Contents", "columns": ["student_course_id", "transcript_id"]}
+{"database": "swimming", "table": "swimmer", "columns": ["ID", "name", "Nationality", "meter_100", "meter_200", "meter_300", "meter_400", "meter_500", "meter_600", "meter_700", "Time"]}
+{"database": "swimming", "table": "stadium", "columns": ["ID", "name", "Capacity", "City", "Country", "Opening_year"]}
+{"database": "swimming", "table": "event", "columns": ["ID", "Name", "Stadium_ID", "Year"]}
+{"database": "swimming", "table": "record", "columns": ["ID", "Result", "Swimmer_ID", "Event_ID"]}
+{"database": "theme_gallery", "table": "artist", "columns": ["Artist_ID", "Name", "Country", "Year_Join", "Age"]}
+{"database": "theme_gallery", "table": "exhibition", "columns": ["Exhibition_ID", "Year", "Theme", "Artist_ID", "Ticket_Price"]}
+{"database": "theme_gallery", "table": "exhibition_record", "columns": ["Exhibition_ID", "Date", "Attendance"]}
+{"database": "tracking_grants_for_research", "table": "Document_Types", "columns": ["document_type_code", "document_description"]}
+{"database": "tracking_grants_for_research", "table": "Documents", "columns": ["document_id", "document_type_code", "grant_id", "sent_date", "response_received_date", "other_details"]}
+{"database": "tracking_grants_for_research", "table": "Grants", "columns": ["grant_id", "organisation_id", "grant_amount", "grant_start_date", "grant_end_date", "other_details"]}
+{"database": "tracking_grants_for_research", "table": "Organisation_Types", "columns": ["organisation_type", "organisation_type_description"]}
+{"database": "tracking_grants_for_research", "table": "Organisations", "columns": ["organisation_id", "organisation_type", "organisation_details"]}
+{"database": "tracking_grants_for_research", "table": "Project_Outcomes", "columns": ["project_id", "outcome_code", "outcome_details"]}
+{"database": "tracking_grants_for_research", "table": "Project_Staff", "columns": ["staff_id", "project_id", "role_code", "date_from", "date_to", "other_details"]}
+{"database": "tracking_grants_for_research", "table": "Projects", "columns": ["project_id", "organisation_id", "project_details"]}
+{"database": "tracking_grants_for_research", "table": "Research_Outcomes", "columns": ["outcome_code", "outcome_description"]}
+{"database": "tracking_grants_for_research", "table": "Research_Staff", "columns": ["staff_id", "employer_organisation_id", "staff_details"]}
+{"database": "tracking_grants_for_research", "table": "Staff_Roles", "columns": ["role_code", "role_description"]}
+{"database": "tracking_grants_for_research", "table": "Tasks", "columns": ["task_id", "project_id", "task_details", "eg Agree Objectives"]}
+{"database": "tracking_orders", "table": "Customers", "columns": ["customer_id", "customer_name", "customer_details"]}
+{"database": "tracking_orders", "table": "Invoices", "columns": ["invoice_number", "invoice_date", "invoice_details"]}
+{"database": "tracking_orders", "table": "Orders", "columns": ["order_id", "customer_id", "order_status", "date_order_placed", "order_details"]}
+{"database": "tracking_orders", "table": "Products", "columns": ["product_id", "product_name", "product_details"]}
+{"database": "tracking_orders", "table": "Order_Items", "columns": ["order_item_id", "product_id", "order_id", "order_item_status", "order_item_details"]}
+{"database": "tracking_orders", "table": "Shipments", "columns": ["shipment_id", "order_id", "invoice_number", "shipment_tracking_number", "shipment_date", "other_shipment_details"]}
+{"database": "tracking_orders", "table": "Shipment_Items", "columns": ["shipment_id", "order_item_id"]}
+{"database": "tracking_share_transactions", "table": "Investors", "columns": ["investor_id", "Investor_details"]}
+{"database": "tracking_share_transactions", "table": "Lots", "columns": ["lot_id", "investor_id", "lot_details"]}
+{"database": "tracking_share_transactions", "table": "Ref_Transaction_Types", "columns": ["transaction_type_code", "transaction_type_description"]}
+{"database": "tracking_share_transactions", "table": "Transactions", "columns": ["transaction_id", "investor_id", "transaction_type_code", "date_of_transaction", "amount_of_transaction", "share_count", "other_details"]}
+{"database": "tracking_share_transactions", "table": "Sales", "columns": ["sales_transaction_id", "sales_details"]}
+{"database": "tracking_share_transactions", "table": "Purchases", "columns": ["purchase_transaction_id", "purchase_details"]}
+{"database": "tracking_share_transactions", "table": "Transactions_Lots", "columns": ["transaction_id", "lot_id"]}
+{"database": "tracking_software_problems", "table": "Problem_Category_Codes", "columns": ["problem_category_code", "problem_category_description"]}
+{"database": "tracking_software_problems", "table": "Problem_Log", "columns": ["problem_log_id", "assigned_to_staff_id", "problem_id", "problem_category_code", "problem_status_code", "log_entry_date", "log_entry_description", "log_entry_fix", "other_log_details"]}
+{"database": "tracking_software_problems", "table": "Problem_Status_Codes", "columns": ["problem_status_code", "problem_status_description"]}
+{"database": "tracking_software_problems", "table": "Product", "columns": ["product_id", "product_name", "product_details"]}
+{"database": "tracking_software_problems", "table": "Staff", "columns": ["staff_id", "staff_first_name", "staff_last_name", "other_staff_details"]}
+{"database": "tracking_software_problems", "table": "Problems", "columns": ["problem_id", "product_id", "closure_authorised_by_staff_id", "reported_by_staff_id", "date_problem_reported", "date_problem_closed", "problem_description", "other_problem_details"]}
+{"database": "train_station", "table": "station", "columns": ["Station_ID", "Name", "Annual_entry_exit", "Annual_interchanges", "Total_Passengers", "Location", "Main_Services", "Number_of_Platforms"]}
+{"database": "train_station", "table": "train", "columns": ["Train_ID", "Name", "Time", "Service"]}
+{"database": "train_station", "table": "train_station", "columns": ["Train_ID", "Station_ID"]}
+{"database": "tvshow", "table": "TV_Channel", "columns": ["id", "series_name", "Country", "Language", "Content", "Pixel_aspect_ratio_PAR", "Hight_definition_TV", "Pay_per_view_PPV", "Package_Option"]}
+{"database": "tvshow", "table": "TV_series", "columns": ["id", "Episode", "Air_Date", "Rating", "Share", "18_49_Rating_Share", "Viewers_m", "Weekly_Rank", "Channel"]}
+{"database": "tvshow", "table": "Cartoon", "columns": ["id", "Title", "Directed_by", "Written_by", "Original_air_date", "Production_code", "Channel"]}
+{"database": "tv_shows", "table": "city_channel", "columns": ["ID", "City", "Station_name", "Owned_Since", "Affiliation"]}
+{"database": "tv_shows", "table": "radio", "columns": ["Radio_ID", "Transmitter", "Radio_MHz", "2FM_MHz", "RnaG_MHz", "Lyric_FM_MHz", "ERP_kW"]}
+{"database": "tv_shows", "table": "tv_show", "columns": ["tv_show_ID", "tv_show_name", "Sub_tittle", "Next_show_name", "Original_Airdate"]}
+{"database": "tv_shows", "table": "city_channel_radio", "columns": ["City_channel_ID", "Radio_ID", "Is_online"]}
+{"database": "tv_shows", "table": "city_channel_tv_show", "columns": ["City_channel_ID", "tv_show_ID", "Is_online", "Is_free"]}
+{"database": "twitter_1", "table": "follows", "columns": ["f1", "f2"]}
+{"database": "twitter_1", "table": "tweets", "columns": ["id", "uid", "text", "createdate"]}
+{"database": "twitter_1", "table": "user_profiles", "columns": ["uid", "name", "email", "partitionid", "followers"]}
+{"database": "university_basketball", "table": "basketball_match", "columns": ["Team_ID", "School_ID", "Team_Name", "ACC_Regular_Season", "ACC_Percent", "ACC_Home", "ACC_Road", "All_Games", "All_Games_Percent", "All_Home", "All_Road", "All_Neutral"]}
+{"database": "university_basketball", "table": "university", "columns": ["School_ID", "School", "Location", "Founded", "Affiliation", "Enrollment", "Nickname", "Primary_conference"]}
+{"database": "university_rank", "table": "university", "columns": ["University_ID", "University_Name", "City", "State", "Team_Name", "Affiliation", "Enrollment", "Home_Conference"]}
+{"database": "university_rank", "table": "overall_ranking", "columns": ["Rank", "University_ID", "Reputation_point", "Research_point", "Citation_point", "Total"]}
+{"database": "university_rank", "table": "major", "columns": ["Major_ID", "Major_Name", "Major_Code"]}
+{"database": "university_rank", "table": "major_ranking", "columns": ["Rank", "University_ID", "Major_ID"]}
+{"database": "vehicle_driver", "table": "vehicle", "columns": ["Vehicle_ID", "Model", "Build_Year", "Top_Speed", "Power", "Builder", "Total_Production"]}
+{"database": "vehicle_driver", "table": "driver", "columns": ["Driver_ID", "Name", "Citizenship", "Racing_Series"]}
+{"database": "vehicle_driver", "table": "vehicle_driver", "columns": ["Driver_ID", "Vehicle_ID"]}
+{"database": "vehicle_rent", "table": "Customers", "columns": ["id", "name", "age", "membership_credit"]}
+{"database": "vehicle_rent", "table": "Discount", "columns": ["id", "name", "membership_credit"]}
+{"database": "vehicle_rent", "table": "Vehicles", "columns": ["id", "name", "Model_year", "Type_of_powertrain", "Combined_fuel_economy_rate", "City_fuel_economy_rate", "Highway_fuel_economy_rate", "Cost_per_25_miles", "Annual_fuel_cost", "Notes"]}
+{"database": "vehicle_rent", "table": "Renting_history", "columns": ["id", "customer_id", "discount_id", "vehicles_id", "total_hours"]}
+{"database": "video_game", "table": "platform", "columns": ["Platform_ID", "Platform_name", "Market_district", "Download_rank"]}
+{"database": "video_game", "table": "game", "columns": ["Game_ID", "Title", "Release_Date", "Franchise", "Developers", "Platform_ID", "Units_sold_Millions"]}
+{"database": "video_game", "table": "player", "columns": ["Player_ID", "Rank_of_the_year", "Player_name", "Position", "College"]}
+{"database": "video_game", "table": "game_player", "columns": ["Player_ID", "Game_ID", "If_active"]}
+{"database": "voter_1", "table": "AREA_CODE_STATE", "columns": ["area_code", "state"]}
+{"database": "voter_1", "table": "CONTESTANTS", "columns": ["contestant_number", "contestant_name"]}
+{"database": "voter_1", "table": "VOTES", "columns": ["vote_id", "phone_number", "state", "contestant_number", "created"]}
+{"database": "voter_2", "table": "Student", "columns": ["StuID", "LName", "Fname", "Age", "Sex", "Major", "Advisor", "city_code"]}
+{"database": "voter_2", "table": "Voting_record", "columns": ["StuID", "Registration_Date", "Election_Cycle", "President_Vote", "Vice_President_Vote", "Secretary_Vote", "Treasurer_Vote", "Class_President_Vote", "Class_Senator_Vote"]}
+{"database": "warehouse_1", "table": "Warehouses", "columns": ["Code", "Location", "Capacity"]}
+{"database": "warehouse_1", "table": "Boxes", "columns": ["Code", "Contents", "Value", "Warehouse"]}
+{"database": "wedding", "table": "people", "columns": ["People_ID", "Name", "Country", "Is_Male", "Age"]}
+{"database": "wedding", "table": "church", "columns": ["Church_ID", "Name", "Organized_by", "Open_Date", "Continuation_of"]}
+{"database": "wedding", "table": "wedding", "columns": ["Church_ID", "Male_ID", "Female_ID", "Year"]}
+{"database": "wine_1", "table": "grapes", "columns": ["ID", "Grape", "Color"]}
+{"database": "wine_1", "table": "appellations", "columns": ["No", "Appelation", "County", "State", "Area", "isAVA"]}
+{"database": "wine_1", "table": "wine", "columns": ["No", "Grape", "Winery", "Appelation", "State", "Name", "Year", "Price", "Score", "Cases", "Drink"]}
+{"database": "workshop_paper", "table": "workshop", "columns": ["Workshop_ID", "Date", "Venue", "Name"]}
+{"database": "workshop_paper", "table": "submission", "columns": ["Submission_ID", "Scores", "Author", "College"]}
+{"database": "workshop_paper", "table": "Acceptance", "columns": ["Submission_ID", "Workshop_ID", "Result"]}
+{"database": "world_1", "table": "city", "columns": ["ID", "Name", "CountryCode", "District", "Population"]}
+{"database": "world_1", "table": "sqlite_sequence", "columns": ["name", "seq"]}
+{"database": "world_1", "table": "country", "columns": ["Code", "Name", "Continent", "Region", "SurfaceArea", "IndepYear", "Population", "LifeExpectancy", "GNP", "GNPOld", "LocalName", "GovernmentForm", "HeadOfState", "Capital", "Code2"]}
+{"database": "world_1", "table": "countrylanguage", "columns": ["CountryCode", "Language", "IsOfficial", "Percentage"]}
+{"database": "wrestler", "table": "wrestler", "columns": ["Wrestler_ID", "Name", "Reign", "Days_held", "Location", "Event"]}
+{"database": "wrestler", "table": "Elimination", "columns": ["Elimination_ID", "Wrestler_ID", "Team", "Eliminated_By", "Elimination_Move", "Time"]}
+{"database": "wta_1", "table": "players", "columns": ["player_id", "first_name", "last_name", "hand", "birth_date", "country_code"]}
+{"database": "wta_1", "table": "matches", "columns": ["best_of", "draw_size", "loser_age", "loser_entry", "loser_hand", "loser_ht", "loser_id", "loser_ioc", "loser_name", "loser_rank", "loser_rank_points", "loser_seed", "match_num", "minutes", "round", "score", "surface", "tourney_date", "tourney_id", "tourney_level", "tourney_name", "winner_age", "winner_entry", "winner_hand", "winner_ht", "winner_id", "winner_ioc", "winner_name", "winner_rank", "winner_rank_points", "winner_seed", "year"]}
+{"database": "wta_1", "table": "rankings", "columns": ["ranking_date", "ranking", "player_id", "ranking_points", "tours"]}
+{"database": "yelp", "table": "business", "columns": ["bid", "business_id", "name", "full_address", "city", "latitude", "longitude", "review_count", "is_open", "rating", "state"]}
+{"database": "yelp", "table": "category", "columns": ["id", "business_id", "category_name"]}
+{"database": "yelp", "table": "user", "columns": ["uid", "user_id", "name"]}
+{"database": "yelp", "table": "checkin", "columns": ["cid", "business_id", "count", "day"]}
+{"database": "yelp", "table": "neighbourhood", "columns": ["id", "business_id", "neighbourhood_name"]}
+{"database": "yelp", "table": "review", "columns": ["rid", "business_id", "user_id", "rating", "text", "year", "month"]}
+{"database": "yelp", "table": "tip", "columns": ["tip_id", "business_id", "text", "user_id", "likes", "year", "month"]}
